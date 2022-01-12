@@ -1,6 +1,8 @@
 # Data prep - HSMR public dashboard
+# Output from RAP publication currently needs reconfigured to be more effective
+# to be used as input for Shiny dashboard
 
-# Global - HSMR public dashboard
+
 library(shiny)
 library(plotly)           # for charts
 library(shinyWidgets)     # for dropdowns
@@ -52,7 +54,22 @@ pub_day <-lubridate::dmy(09112021)
 ###############################################.
 
 #smr <- read.csv(paste0(data_folder, pub_day, "/output/", pub_day, "_SMR-data_dashboard.csv"))
-trend <- read.csv(paste0(data_folder, pub_day, "/output/", pub_day, "_trends-data-level1.csv"))
+trend <- read.csv((paste0(data_folder, pub_day, "/output/", pub_day, "_trends-data-level1.csv")), stringsAsFactors=FALSE)
 
 
+#create scotland crude rate
+trend %<>% mutate(scot_crd_rate = (scot_deaths/scot_pats)*100)
+
+#create generic labels and remove redundant variables
+trend %<>%
+  mutate(label_short = case_when(time_period == "Quarter" ~ quarter_short,
+                                 time_period == "Month" ~ month_label),
+         mth_qtr = case_when(time_period == "Quarter" ~ quarter,
+                             time_period == "Month" ~ month)) %>%
+  select(-month, -month_label, -quarter, -quarter_short, -quarter_full) %>%
+  select(hb, location, location_name, agg_label, time_period, mth_qtr, label_short,
+         sub_grp, label, deaths, pats, crd_rate, scot_deaths, scot_pats,
+         scot_crd_rate, completeness_date)
+
+saveRDS(trend, file = paste0("shiny_app/data/", pub_day, "-hsmr-trend-data.rds"))
 
