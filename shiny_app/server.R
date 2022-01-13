@@ -41,7 +41,7 @@ trend_data <- reactive({
     select(-completeness_date, -label, -hb, -location) %>%
     filter(location_name %in% input$geoname &
              time_period == input$timeperiod &
-             sub_grp == "All Admissions")
+             sub_grp == input$subgroup)
 })
 
 # Further analysis
@@ -64,7 +64,7 @@ fa_data <- reactive({
 # Crude trends
 output$crude_trends <- renderUI({
 
-  trend_chart_title <- paste0("Crude mortality within 30 days of admission; ", input$geoname)
+  trend_chart_title <- paste0("Crude mortality within 30 days of admission; ", input$subgroup)
 
   fluidRow(column(6, h4(paste0(trend_chart_title))),
            column(12, withSpinner(plotlyOutput("trend_chart")))) %>% br() %>%
@@ -156,7 +156,7 @@ output$fa_chart <- renderPlotly({
     #Layout
     layout(margin = list(b = 80, t=5), #to avoid labels getting cut out
            yaxis = list(title = "Crude rate", rangemode="tozero", fixedrange=TRUE),
-           xaxis = list(title = input$timeperiod,  fixedrange=TRUE, ticks=2, tickangle = 270,
+           xaxis = list(title = "Quarter",  fixedrange=TRUE, ticks=2, tickangle = 270,
                         categoryorder = "array", categoryarray = sort(fa[,"mth_qtr"])),
            legend = list(x = 100, y = 0.5)) %>% #position of legend
     # leaving only save plot button
