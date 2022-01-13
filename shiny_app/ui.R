@@ -33,23 +33,24 @@
 #navbarMenu("Crude trends", icon = icon("area-chart"),
 tabPanel(title = "Crude trends", value = "crude", icon = icon("area-chart"),
          wellPanel(actionButton("browser", "browser"),
-           column(4, div(title="Select a location",
-                         p(tags$b("Step 1. Select a geography level and then an area of interest.")),
+
+                   column(4, div(title="Select the subgroup you wish to explore.", # tooltip
+                                 radioGroupButtons("subgroup_select",
+                                                   label= "Step 1. Select the subgroup you want to explore.",
+                                                   choices = subgroup_list, status = "primary",
+                                                   direction = "vertical", justified = T))),
+
+                   column(4, div(title="Select a location",
+                         #p(tags$b("Step 2. Select a geography level and then an area of interest.")),
                          selectInput("geotype", label = NULL, choices= c("Scotland", "NHS Board of treatment", "Hospital"),
                                      selected = "Scotland")),
-                  uiOutput("geoname_ui")),
-
-           column(4, div(title="Select subgroup",
-                         p(tags$b("Step 2. Select a subgroup.")),
-                         selectInput("subgroup", label=NULL, choices= subgroup_list,
-                         selected="All Admissions")),
-                  uiOutput("subgroup_ui"),
+                  uiOutput("geoname_ui"),
 
                   div(title="Select frequency",
-                         p(tags$b("Step 3. Select to see trends by month or quarter.")),
+                         #p(tags$b("Step 3. Select to see trends by month or quarter.")),
                          selectInput("timeperiod", label =NULL, choices= c("Month", "Quarter"),
-                                     selected =  "Quarter")),
-                  uiOutput("timeperiod_ui")),
+                                     selected =  "Quarter"),
+                  uiOutput("timeperiod_ui"))),
 
            column(4,
                   actionButton("btn_data_source_modal", "Data source: SMR01 and NRS deaths data", icon = icon('question-circle')),

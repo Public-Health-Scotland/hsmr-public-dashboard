@@ -19,6 +19,63 @@ output$geoname_ui <- renderUI({
 })
 
 
+# Adding 'observeEvent' to allow reactive 'area of interest' selection on crude trends tab
+observeEvent(input$subgroup_select, {
+  x <- input$subgroup_select
+
+  if (x == "All Admissions") {
+    trend_label = "Step 2. Select a geography and area of interest"
+    trend_choices = c("Scotland", "NHS Board of treatment", "Hospital")
+    shinyjs::show("geoname_ui")
+    enable("geotype")
+  }
+
+  if (x != "All Admissions") {
+    trend_label = "Step 2. Scotland level data only for this subgroup"
+    trend_choices = c("Scotland")
+    hide("geoname_ui")
+    disable("geotype")
+  }
+
+  updateSelectInput(session, "geotype",
+                    label = trend_label,
+                    choices = trend_choices,
+                    selected = trend_choices[1]
+  )
+
+}) #observeEvent
+
+
+
+# Adding 'observeEvent' to allow reactive 'time period' selection on crude trends tab
+observeEvent(input$timeperiod, {
+  x <- input$subgroup_select
+
+  if (x == "All Admissions") {
+    trend_label = "Step 3. Select to view trends by quarter or month"
+    trend_choices = c("Quarter", "Month")
+    shinyjs::show("timeperiod_ui")
+    enable("timeperiod")
+  }
+
+  if (x != "All Admissions") {
+    trend_label = "Step 3. Trends available by quarter only for this subgroup"
+    trend_choices = c("Quarter")
+    hide("timeperiod_ui")
+    disable("timeperiod")
+  }
+
+  updateSelectInput(session, "timeperiod",
+                    label = trend_label,
+                    choices = trend_choices,
+                    selected = trend_choices[1]
+  )
+
+}) #observeEvent
+
+
+
+
 # Further analysis tab - Show list of area names depending on areatype selected
 output$geoname_fa_ui <- renderUI({
   areas_summary <- sort(geo_lookup$areaname[geo_lookup$areatype == input$geotype_fa])
@@ -38,10 +95,10 @@ output$geoname_fa_ui <- renderUI({
 trend_data <- reactive({
 
   trend %>%
-    select(-completeness_date, -label, -hb, -location) %>%
+    select(-completeness_date, label, -hb, -location) %>%
     filter(location_name %in% input$geoname &
              time_period == input$timeperiod &
-             sub_grp == input$subgroup)
+             sub_grp == input$subgroup_select)
 })
 
 # Further analysis
@@ -107,9 +164,13 @@ output$trend_chart <- renderPlotly({
   # Information to be displayed in tooltip
   tooltip_trend <- c(paste0(input$timeperiod, ": ", trend$label_short, "<br>",
                             trend$location_name, "<br>",
+                            trend$sub_grp, " : ", trend$label, "<br>",
                             "Crude mortality rate: ", round(trend$crd_rate,1)))
 
-  plot <- plot_ly(data=trend, x=~label_short) %>%
+
+  if(input$subgroup_select == "All Admissions") {
+
+   plot <- plot_ly(data=trend, x=~label_short) %>%
 
     # location line
     add_lines(y = ~crd_rate, line = list(color = pal_eth),
@@ -127,6 +188,25 @@ output$trend_chart <- renderPlotly({
            legend = list(x = 100, y = 0.5)) %>% #position of legend
     # leaving only save plot button
     config(displaylogo = F, displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove )
+  }
+
+  else {
+
+    plot <- plot_ly(data=trend, x=~label_short) %>%
+
+      # location line
+      add_lines(y = ~crd_rate, line = list(color = pal_eth),
+                text=tooltip_trend, hoverinfo="text",
+                name = trend$label) %>%
+      #Layout
+      layout(margin = list(b = 80, t=5), #to avoid labels getting cut out
+             yaxis = list(title = "Crude rate (%)", rangemode="tozero", fixedrange=TRUE),
+             xaxis = list(title = input$timeperiod,  fixedrange=TRUE, ticks=2, tickangle = 270,
+                          categoryorder = "array", categoryarray = sort(trend[,"mth_qtr"])),
+             legend = list(x = 100, y = 0.5)) %>% #position of legend
+      # leaving only save plot button
+      config(displaylogo = F, displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove )
+    }
 
   }
 )#plotly end
@@ -176,10 +256,11 @@ output$fa_chart <- renderPlotly({
 # Crude trends
 output$trend_table <- renderDataTable({
 
-  table <- trend_data() %>% select(location_name, label_short, deaths,
+  table <- trend_data() %>% select(location_name, label_short, sub_grp, label, deaths,
                                 pats, crd_rate, scot_crd_rate) %>%
-    rename(Location = location_name, Time_period = label_short, Deaths = deaths,
-           Patients = pats, Crude_rate = crd_rate, Scotland_crude_rate = scot_crd_rate) %>%
+    rename(Location = location_name, Time_period = label_short, Subgroup = sub_grp,
+           Group = label, Deaths = deaths, Patients = pats, Crude_rate = crd_rate,
+           Scotland_crude_rate = scot_crd_rate) %>%
     mutate_if(is.numeric, round, 1)
 
   table_colnames  <-  gsub("_", " ", colnames(table))
