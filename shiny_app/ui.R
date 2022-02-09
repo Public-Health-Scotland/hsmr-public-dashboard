@@ -43,7 +43,7 @@ tabPanel(title = "Crude trends", value = "crude", icon = icon("area-chart"),
                    column(4, div(title="Select a location",
                          #p(tags$b("Step 2. Select a geography level and then an area of interest.")),
                          selectInput("geotype", label = NULL, choices= c("Scotland", "NHS Board of treatment", "Hospital"),
-                                     selected = "Scotland")),
+                                     selected = "Scotland", multiple = TRUE)),
                   uiOutput("geoname_ui"),
 
                   div(title="Select frequency",
@@ -80,7 +80,7 @@ tabPanel(title = "Further analysis", value = "fa", icon = icon("chart-bar"),
                    column(4, div(title="Select a location",
                                  p(tags$b("Step 2. Select a geography level and then area of interest.")),
                                  selectInput("geotype_fa", label = NULL, choices= c("Scotland", "NHS Board of treatment"),
-                                             selected = "Scotland")),
+                                             selected = "Scotland", multiple = TRUE)),
                           uiOutput("geoname_fa_ui"))#,
                    # column(4,
                    #        actionButton("btn_data_source_modal", "Data source: SMR01 and NRS deaths data", icon = icon('question-circle')),
@@ -92,14 +92,28 @@ tabPanel(title = "Further analysis", value = "fa", icon = icon("chart-bar"),
          mainPanel(width = 12,
                    uiOutput("further_analysis")
          )# mainPanel bracket
-)#, #tab panel
+),#, #tab panel
 #) #navbarMenu
 
 ###############################################.
 ### HSMR ----
 ###############################################.
 
-# tabPanel(title = "HSMR", icon = icon("hospital"), value = "hsmr"),
+tabPanel(title = "HSMR", value = "hsmr", icon = icon("hospital"),
+         wellPanel(actionButton("browser", "browser")#,
+
+                   # column(4, div(title="Select a location",
+                   #               #p(tags$b("Step 1. Select a geography level and then an area of interest.")),
+                   #               selectInput("geotype_hsmr", label = NULL, choices= c("Scotland", "Hospital"),
+                   #                           selected = "Scotland", multiple = TRUE)),
+                   #        uiOutput("geoname_hsmr_ui"))
+
+         ), #well panel
+         mainPanel(width = 12,
+                   uiOutput("hsmr")
+         )# mainPanel bracket
+) #tab panel
+#) #navbarMenu
 
 
 

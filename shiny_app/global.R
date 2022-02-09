@@ -52,6 +52,7 @@ pub_day <-lubridate::dmy(09112021)
 
 #smr <- read.csv(paste0(data_folder, pub_day, "/output/", pub_day, "_SMR-data_dashboard.csv"))
 trend <- readRDS(paste0("data/", pub_day, "-hsmr-trend-data.rds"))
+hsmr <- readRDS(paste0("data/", pub_day, "-hsmr-data.rds"))
 
 geo_lookup <- readRDS("data/geo_lookup.rds")
 geo_lookup_fa <- readRDS("data/geo_lookup.rds") %>%
@@ -68,6 +69,9 @@ geo_lookup_fa <- readRDS("data/geo_lookup.rds") %>%
 indicator_list_fa <- c("Crude mortality (%) within 30 days of discharge" = "Discharge",
                        "Crude population mortality per 1,000 population" = "Population")
 
+subgroup_list <- c("All Admissions", "Admission Type", "Age Group", "Deprivation", "Sex",
+                   "Place of Death", "Specialty")
+
 
 ###############################################.
 ## Palettes and plot parameters ----
@@ -81,9 +85,7 @@ pal_age <- c('#543005', '#8c510a', '#bf812d',  '#d0d1e6',
 #              '#1E7F84', '#61A5A8', '#BCD9DA', '#0078D4', '#4CA0E0', '#B2D6F2',
 #              '#4A405D', '#978CA9')
 
-pal_eth <- c('#3F3685', '#7872A9', '#C5C3DA', '#9B4393', '#B97BB3', '#E1C7DF',
-             '#1E7F84', '#61A5A8', '#BCD9DA', '#0078D4', '#4CA0E0', '#B2D6F2',
-             '#4A405D', '#978CA9')
+pal_eth <- c('#IE7F84', '#0078D4', '#3F3685', '#9B4393', '#948DA3')
 
 
 
