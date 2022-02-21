@@ -48,19 +48,6 @@ observeEvent(input$subgroup_select, {
 
 
 
-
-# This updates the time period options in the drop downs depending on the sub group selection
-
-# Show list of area names depending on areatype selected
-# output$timeperiod_ui <- renderUI({
-#     selectizeInput("timeperiod", label = NULL,
-#                  choices = time_choices,
-#                  selected = time_choices[1])
-# })
-
-
-
-
 observeEvent(input$subgroup_select, {
   req(input$subgroup_select)
 
