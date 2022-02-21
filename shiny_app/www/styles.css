@@ -5,13 +5,13 @@
 /*.shiny-output-error:before { visibility: hidden; }
 
 /* Style sidebars/well panels */
-.well {background-color:#ffffff; border: 0 solid #336699;
+.well {background-color:#ffffff; border: 0 solid #9B4393;
        padding: 5px; box-shadow: none; }
 
 /* Navigation bar following PHS colour scheme */
-.navbar-default {color: #ffffff; background-color: #433684; }
+.navbar-default {color: #ffffff; background-color: #3F3685; }
 
-.navbar-default .navbar-brand, .navbar-default:hover .navbar-brand:hover, .navbar-brand {color: #433684; background-color: #ffffff}
+.navbar-default .navbar-brand, .navbar-default:hover .navbar-brand:hover, .navbar-brand {color: #3F3685; background-color: #ffffff}
 
 .navbar-default .navbar-nav > li > a {color: #ffffff;}
 

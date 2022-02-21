@@ -4,7 +4,7 @@
  tagList( #needed for shinyjs
    useShinyjs(),  # Include shinyjs
    navbarPage(id = "intabset", # id used for jumping between tabs
-              title = div(tags$a(img(src="phs-logo.png", width=120, alt = "Public Health Scotland logo"),
+                div(tags$a(img(src="phs-logo.png", width=120, alt = "Public Health Scotland logo"),
                                  href= "https://www.publichealthscotland.scot/",
                                  target = "_blank"),
                           style = "position: relative; top: -10px;"),
@@ -33,7 +33,6 @@
 #navbarMenu("Crude trends", icon = icon("area-chart"),
 tabPanel(title = "Crude trends", value = "crude", icon = icon("area-chart"),
          wellPanel(actionButton("browser", "browser"),
-
                    column(4, div(title="Select the subgroup you wish to explore.", # tooltip
                                  radioGroupButtons("subgroup_select",
                                                    label= "Step 1. Select the subgroup you want to explore.",
@@ -42,18 +41,20 @@ tabPanel(title = "Crude trends", value = "crude", icon = icon("area-chart"),
 
                    column(4, div(title="Select a location",
                          #p(tags$b("Step 2. Select a geography level and then an area of interest.")),
-                         selectInput("geotype", label = NULL, choices= c("Scotland", "NHS Board of treatment", "Hospital"),
-                                     selected = "Scotland", multiple = TRUE)),
-                  uiOutput("geoname_ui"),
+                         selectizeInput("geotype", label = NULL,
+                                        choices= c("Scotland", "NHS Board of treatment", "Hospital"),
+                                        selected = "Scotland", multiple = TRUE)),
+                         uiOutput("geoname_ui"),
 
                   div(title="Select frequency",
                          #p(tags$b("Step 3. Select to see trends by month or quarter.")),
                          selectInput("timeperiod", label =NULL, choices= c("Month", "Quarter"),
                                      selected =  "Quarter"),
-                  uiOutput("timeperiod_ui"))),
+                      uiOutput("timeperiod_ui"))),
 
            column(4,
-                  actionButton("btn_data_source_modal", "Data source: SMR01 and NRS deaths data", icon = icon('question-circle')),
+                  actionButton("btn_data_source_modal", "Data source: SMR01 and NRS deaths data",
+                               icon = icon('question-circle')),
                   fluidRow(br()),
                   downloadButton("download_hsmr_data", "Download data"),
                   fluidRow(br()),
@@ -73,21 +74,16 @@ tabPanel(title = "Crude trends", value = "crude", icon = icon("area-chart"),
 tabPanel(title = "Further analysis", value = "fa", icon = icon("chart-bar"),
          wellPanel(actionButton("browser", "browser"),
                    column(4, div(title="Select indicator.", # tooltip
-                                            radioGroupButtons("indicator_select_fa",
-                                                              label= "Step 1. Select the data you want to explore.",
-                                                              choices = indicator_list_fa, status = "primary",
-                                                              direction = "vertical", justified = T))),
+                                 radioGroupButtons("indicator_select_fa",
+                                                   label= "Step 1. Select the data you want to explore.",
+                                                   choices = indicator_list_fa, status = "primary",
+                                                   direction = "vertical", justified = T))),
                    column(4, div(title="Select a location",
                                  p(tags$b("Step 2. Select a geography level and then area of interest.")),
-                                 selectInput("geotype_fa", label = NULL, choices= c("Scotland", "NHS Board of treatment"),
+                                 selectInput("geotype_fa", label = NULL,
+                                             choices= c("Scotland", "NHS Board of treatment"),
                                              selected = "Scotland", multiple = TRUE)),
-                          uiOutput("geoname_fa_ui"))#,
-                   # column(4,
-                   #        actionButton("btn_data_source_modal", "Data source: SMR01 and NRS deaths data", icon = icon('question-circle')),
-                   #        fluidRow(br()),
-                   #        downloadButton("download_hsmr_data", "Download data"),
-                   #        fluidRow(br()),
-                   #        actionButton("jump_commentary_hsmr","Go to methodology"))
+                          uiOutput("geoname_fa_ui"))
          ), #well panel
          mainPanel(width = 12,
                    uiOutput("further_analysis")
@@ -100,24 +96,12 @@ tabPanel(title = "Further analysis", value = "fa", icon = icon("chart-bar"),
 ###############################################.
 
 tabPanel(title = "HSMR", value = "hsmr", icon = icon("hospital"),
-         wellPanel(actionButton("browser", "browser")#,
-
-                   # column(4, div(title="Select a location",
-                   #               #p(tags$b("Step 1. Select a geography level and then an area of interest.")),
-                   #               selectInput("geotype_hsmr", label = NULL, choices= c("Scotland", "Hospital"),
-                   #                           selected = "Scotland", multiple = TRUE)),
-                   #        uiOutput("geoname_hsmr_ui"))
-
-         ), #well panel
+         wellPanel(actionButton("browser", "browser")), #well panel
          mainPanel(width = 12,
                    uiOutput("hsmr")
          )# mainPanel bracket
 ) #tab panel
 #) #navbarMenu
-
-
-
-
 
 
 ) # navbarPage

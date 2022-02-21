@@ -38,7 +38,7 @@ observeEvent(input$subgroup_select, {
     disable("geotype")
   }
 
-  updateSelectInput(session, "geotype",
+  updateSelectizeInput(session, "geotype",
                     label = trend_label,
                     choices = trend_choices,
                     selected = trend_choices[1]
@@ -48,36 +48,21 @@ observeEvent(input$subgroup_select, {
 
 
 
-#Adding 'observeEvent' to allow reactive 'time period' selection on crude trends tab
-# observeEvent(input$timeperiod, {
-#
-#   x <- input$subgroup_select
-#
-#   if (x == "All Admissions") {
-#     time_label = "Step 3. Select to view trends by quarter or month"
-#     time_choices = c("Quarter", "Month")
-#     shinyjs::show("timeperiod_ui")
-#     enable("timeperiod_ui")
-#   }
-#
-#   if (x != "All Admissions") {
-#     time_label = "Step 3. Trends available by quarter only for this subgroup"
-#     time_choices = c("Quarter")
-#     shinyjs::hide("timeperiod_ui")
-#     #disable("timeperiod_ui")
-#   }
-#
-#   updateSelectInput(session, "timeperiod",
-#                     label = time_label,
-#                     choices = time_choices,
-#                     selected = time_choices[1]
-#   )
-#
-# }) #observeEvent
-
 
 # This updates the time period options in the drop downs depending on the sub group selection
+
+# Show list of area names depending on areatype selected
+# output$timeperiod_ui <- renderUI({
+#     selectizeInput("timeperiod", label = NULL,
+#                  choices = time_choices,
+#                  selected = time_choices[1])
+# })
+
+
+
+
 observeEvent(input$subgroup_select, {
+  req(input$subgroup_select)
 
 toggleState ("timeperiod", condition =
                input$subgroup_select == "All Admissions")
@@ -85,37 +70,32 @@ toggleState ("timeperiod", condition =
 
      updateSelectizeInput(session, "timeperiod",
                          label = "Step 3. Quarterly data available only",
-                         choices = c("Quarter"))}
+                         choices = c("Quarter"))
+                         }
+
   else {
     updateSelectizeInput(session, "timeperiod",
                          label = "Step 3. Select to view trends by month or quarter",
                          choices = c("Quarter","Month"))
 
-    enable("timeperiod")}
+
+    enable("timeperiod")
+    }
 })
 
 
 # Further analysis tab
 # Show list of area names depending on areatype selected
 output$geoname_fa_ui <- renderUI({
-  areas_summary <- sort(geo_lookup$areaname[geo_lookup$areatype %in% input$geotype_fa])
+  areas_summary_fa <- sort(geo_lookup_fa$areaname[geo_lookup_fa$areatype %in% input$geotype_fa])
   selectizeInput("geoname_fa", label = NULL,
-                 choices = areas_summary,
+                 choices = areas_summary_fa,
                  multiple = TRUE,
                  selected = "Scotland")
 })
 
 
 
-# HSMR tab
-# Show list of area names depending on areatype selected
-# output$geoname_hsmr_ui <- renderUI({
-#   areas_summary <- sort(geo_lookup$areaname[geo_lookup$areatype %in% input$geotype])
-#   selectizeInput("geoname_hsmr", label = NULL,
-#                  choices = areas_summary,
-#                  multiple = TRUE,
-#                  selected = "Scotland")
-#})
 
 ###############################################.
 ## Reactive datasets  ----
@@ -125,8 +105,7 @@ output$geoname_fa_ui <- renderUI({
 hsmr_data <- reactive({
 
   hsmr %>%
-    select(-completeness_date, -hb, -location) #%>%
-    #filter(location_name %in% input$geoname_hsmr)
+    select(-completeness_date, -hb, -location)
 })
 
 
@@ -135,7 +114,7 @@ hsmr_data <- reactive({
 trend_data <- reactive({
 
   trend %>%
-    select(-completeness_date, label, -hb, -location) %>%
+    select(-completeness_date, -hb, -location) %>%
     filter(location_name %in% input$geoname &
              time_period == input$timeperiod &
              sub_grp == input$subgroup_select)
@@ -145,7 +124,7 @@ trend_data <- reactive({
 fa_data <- reactive({
 
   trend_fa <- trend %>%
-    select(-completeness_date, -label, -hb, -location) %>%
+    select(-completeness_date, -hb, -location) %>%
     filter(location_name %in% input$geoname_fa &
              time_period == "Quarter" &
              sub_grp == input$indicator_select_fa)
@@ -231,10 +210,6 @@ output$trend_chart <- renderPlotly({
     add_lines(y = ~crd_rate, color= ~location_name, line = list(color = pal_eth),
               text=tooltip_trend, hoverinfo="text",
               name = ~location_name) %>%
-    # # Scotland line
-    # add_lines(y = ~scot_crd_rate, line = list(color = '#3F3685', dash = 'dash'),
-    #           text=tooltip_trend, hoverinfo="text",
-    #           name = "Scotland") %>%
     #Layout
     layout(margin = list(b = 80, t=5), #to avoid labels getting cut out
            yaxis = list(title = "Crude rate (%)", rangemode="tozero", fixedrange=TRUE),
@@ -256,8 +231,8 @@ output$trend_chart <- renderPlotly({
       #Layout
       layout(margin = list(b = 80, t=5), #to avoid labels getting cut out
              yaxis = list(title = "Crude rate (%)", rangemode="tozero", fixedrange=TRUE),
-             xaxis = list(title = input$timeperiod,  fixedrange=TRUE, ticks=2, tickangle = 270,
-                          categoryorder = "array", categoryarray = sort(trend[,"mth_qtr"])),
+             xaxis = list(title = input$timeperiod,  fixedrange=TRUE, ticks=2, tickangle = 270),
+                          #categoryorder = "array", categoryarray = sort(trend[,"mth_qtr"])),
              legend = list(x = 100, y = 0.5)) %>% #position of legend
       # leaving only save plot button
       config(displaylogo = F, displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove )
@@ -284,10 +259,6 @@ output$fa_chart <- renderPlotly({
     add_lines(y = ~crd_rate, line = list(color = pal_eth),
               text=tooltip_fa, hoverinfo="text",
               name = fa$location_name) %>%
-    # # Scotland line
-    # add_lines(y = ~scot_crd_rate, line = list(color = '#3F3685', dash = 'dash'),
-    #           text=tooltip_fa, hoverinfo="text",
-    #           name = "Scotland") %>%
     #Layout
     layout(margin = list(b = 80, t=5), #to avoid labels getting cut out
            yaxis = list(title = "Crude rate", rangemode="tozero", fixedrange=TRUE),
@@ -310,8 +281,8 @@ output$hsmr_chart <- renderPlotly({
 
 
   # Information to be displayed in tooltip
-  tooltip_hsmr <- c(paste0(hsmr$period_label, "<br>",
-                            hsmr$location_name, "<br>",
+  tooltip_hsmr <- c(paste0(hsmr$location_name, "<br>",
+                           hsmr$period_label, "<br>",
                             "HSMR: ", round(hsmr$smr,2)))
 
 
@@ -340,10 +311,6 @@ output$hsmr_chart <- renderPlotly({
       add_lines(y = ~lcl, mode='line', type='scatter', line = list(color = 'FF0000'),
                 text=tooltip_hsmr, hoverinfo="text",
                 name = "LCL") %>%
-      # # Scotland line
-      # add_lines(y = ~scot_crd_rate, line = list(color = '#3F3685', dash = 'dash'),
-      #           text=tooltip_trend, hoverinfo="text",
-      #           name = "Scotland") %>%
       #Layout
       layout(margin = list(b = 80, t=5), #to avoid labels getting cut out
              yaxis = list(title = "HSMR", rangemode="tozero", fixedrange=TRUE, range = c(0, 2)),
