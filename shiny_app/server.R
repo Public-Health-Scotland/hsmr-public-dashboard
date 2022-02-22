@@ -12,7 +12,7 @@ observeEvent(input$browser, browser())
 # Crude trends tab
 # Show list of area names depending on areatype selected
 output$geoname_ui <- renderUI({
-  areas_summary <- sort(geo_lookup$areaname[geo_lookup$areatype %in% input$geotype])
+  areas_summary <- (geo_lookup$areaname[geo_lookup$areatype %in% input$geotype])
   selectizeInput("geoname", label = NULL,
                  choices = areas_summary,
                  multiple = TRUE,
@@ -74,9 +74,9 @@ toggleState ("timeperiod", condition =
 # Further analysis tab
 # Show list of area names depending on areatype selected
 output$geoname_fa_ui <- renderUI({
-  areas_summary_fa <- sort(geo_lookup_fa$areaname[geo_lookup_fa$areatype %in% input$geotype_fa])
+  areas_summary <- arrange(geo_lookup_fa$areaname[geo_lookup_fa$areatype %in% input$geotype_fa])
   selectizeInput("geoname_fa", label = NULL,
-                 choices = areas_summary_fa,
+                 choices = areas_summary,
                  multiple = TRUE,
                  selected = "Scotland")
 })
@@ -201,7 +201,7 @@ output$trend_chart <- renderPlotly({
     layout(margin = list(b = 80, t=5), #to avoid labels getting cut out
            yaxis = list(title = "Crude rate (%)", rangemode="tozero", fixedrange=TRUE),
            xaxis = list(title = input$timeperiod,  fixedrange=TRUE, ticks=2, tickangle = 270,
-                        categoryorder = "array", categoryarray = sort(trend[,"mth_qtr"])),
+                        categoryorder = "array", categoryarray = arrange(trend[,"mth_qtr"])),
            legend = list(x = 100, y = 0.5)) %>% #position of legend
     # leaving only save plot button
     config(displaylogo = F, displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove )
@@ -218,8 +218,8 @@ output$trend_chart <- renderPlotly({
       #Layout
       layout(margin = list(b = 80, t=5), #to avoid labels getting cut out
              yaxis = list(title = "Crude rate (%)", rangemode="tozero", fixedrange=TRUE),
-             xaxis = list(title = input$timeperiod,  fixedrange=TRUE, ticks=2, tickangle = 270),
-                          #categoryorder = "array", categoryarray = sort(trend[,"mth_qtr"])),
+             xaxis = list(title = input$timeperiod,  fixedrange=TRUE, ticks=2, tickangle = 270,
+                          categoryorder = "array", categoryarray = arrange(trend[,"mth_qtr"])),
              legend = list(x = 100, y = 0.5)) %>% #position of legend
       # leaving only save plot button
       config(displaylogo = F, displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove )
@@ -250,7 +250,7 @@ output$fa_chart <- renderPlotly({
     layout(margin = list(b = 80, t=5), #to avoid labels getting cut out
            yaxis = list(title = "Crude rate", rangemode="tozero", fixedrange=TRUE),
            xaxis = list(title = "Quarter",  fixedrange=TRUE, ticks=2, tickangle = 270,
-                        categoryorder = "array", categoryarray = sort(fa[,"mth_qtr"])),
+                        categoryorder = "array", categoryarray = arrange(fa[,"mth_qtr"])),
            legend = list(x = 100, y = 0.5)) %>% #position of legend
     # leaving only save plot button
     config(displaylogo = F, displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove )
