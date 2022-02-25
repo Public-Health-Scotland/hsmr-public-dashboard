@@ -65,22 +65,20 @@ saveRDS(trend, file = paste0("shiny_app/data/", pub_day, "-hsmr-trend-data.rds")
 
 ### HSMR
 
+# read data
+hsmr <- read_csv(paste0(data_folder, pub_day, "/output/", pub_day, "_SMR-data_dashboard.csv"))
+
 # List of locations included in the Excel tables/dashboard files/markdown
 hosp_filter = c('A101H', 'A111H', 'A210H', 'B120H', 'D102H', 'F704H',
                 'G107H', 'C313H', 'G405H', 'C418H', 'H212H', 'H103H', 'C121H',
                 'H202H', 'L302H', 'L106H', 'L308H', 'N101H', 'N411H', 'R103H',
                 'S314H', 'S308H', 'S116H', 'T101H', 'T202H', 'T312H', 'V217H',
-                'W107H', 'Y146H', 'Y144H', 'Z102H')
-
-scot_filter = "Scot"
-
-hsmr <- read_csv(paste0(data_folder, pub_day, "/output/", pub_day, "_SMR-data.csv"))
+                'W107H', 'Y146H', 'Y144H', 'Z102H', 'Scot')
 
 
 # create warning and control confidence limits for funnel plot
-
 hsmr %<>%
-  filter(period == 3 & location %in% c(hosp_filter, scot_filter)) %>%
+  filter(period == 3 & location %in% c(hosp_filter)) %>%
   mutate(st_err = round_half_up(sqrt(1/round_half_up(pred, 8)), 8),
          z = if_else(location_type == "hospital",
                      round_half_up(((round_half_up(smr, 8) - 1)/round_half_up(st_err,8)), 8),

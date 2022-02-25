@@ -19,27 +19,61 @@
 ###############################################.
 ### Contents ----
 ###############################################.
-# tabPanel(title = "Contents", icon = icon("list-ul"), value = "contents",
-#
-#          h3("Hospital Standardised Mortality Ratios"),
-#          h4(paste0("Publication Date: ", pub_day))
-# ), # tabPanel
+tabPanel(title = "Contents", icon = icon("list-ul"), value = "contents",
 
+         h3(tags$b("Hospital Standardised Mortality Ratios")),
+         h4(tags$b(paste0("Publication Date: ", pub_day))),br(),
+
+         p("This dashboard, updated quarterly, presents the Hospital Standardised
+           Mortality Ratio (HSMR) for the latest 12 month period by Health Board of
+           Treatment and Hospital. In addition crude mortality trends are presented
+           for the last five years.")
+
+), # tabPanel
+
+
+###############################################.
+### HSMR ----
+###############################################.
+
+tabPanel(title = "HSMR", value = "hsmr", icon = icon("hospital"),
+         wellPanel(actionButton("browser", "browser"),
+                   column(3, div(title="Select NHS Board of treatment to highlight on chart",
+                                 #p(tags$b("Step 3. Select to see trends by month or quarter.")),
+                                 selectInput("hb_hsmr",
+                                             label = "Step 1. Select NHS Board of treatment to highlight hospitals on the chart.",
+                                             choices= geo_lookup_hb$code,
+                                             selected =  "Scotland"),
+                                 uiOutput("hb_hsmr_ui"))),
+                   column(3, div(title="Select a time period.",
+                                 selectizeInput("timeperiod_hsmr",
+                                                label = "Step 2. Select a time period.",
+                                                choices= timeperiod_list,
+                                                selected = "July 2020 to June 2021")),
+                          uiOutput("timeperiod_hsmr_ui")),
+                   column(3,
+                          actionButton("funnel_help","Interpretation of this chart",
+                                       icon = icon('question-circle')))
+                   ), #well panel
+         mainPanel(width = 10,
+                   uiOutput("hsmr")
+         )# mainPanel bracket
+), #tab panel
+#) #navbarMenu
 
 
 ###############################################.
 ### Crude trends tab ----
 ##############################################.
-#navbarMenu("Crude trends", icon = icon("area-chart"),
 tabPanel(title = "Crude trends", value = "crude", icon = icon("area-chart"),
-         wellPanel(actionButton("browser", "browser"),
-                   column(4, div(title="Select the subgroup you wish to explore.", # tooltip
+         wellPanel(#actionButton("browser", "browser"),
+                   column(3, div(title="Select the subgroup you wish to explore.", # tooltip
                                  radioGroupButtons("subgroup_select",
                                                    label= "Step 1. Select the subgroup you want to explore.",
                                                    choices = subgroup_list, status = "primary",
                                                    direction = "vertical", justified = T))),
 
-                   column(4, div(title="Select a location",
+                   column(3, div(title="Select a location",
                          #p(tags$b("Step 2. Select a geography level and then an area of interest.")),
                          selectizeInput("geotype", label = NULL,
                                         choices= c("Scotland", "NHS Board of treatment", "Hospital"),
@@ -52,56 +86,47 @@ tabPanel(title = "Crude trends", value = "crude", icon = icon("area-chart"),
                                      selected =  "Quarter"),
                       uiOutput("timeperiod_ui"))),
 
-           column(4,
-                  actionButton("btn_data_source_modal", "Data source: SMR01 and NRS deaths data",
-                               icon = icon('question-circle')),
+           column(3, div(style = "float: right",
+                  actionButton("btn_methodology", "Learn more",
+                               icon = icon('th'),
+                               style = "float: right",
+                               onclick = "window.open('https://www.isdscotland.org/Health-Topics/Quality-Indicators/HSMR/', '_blank')"),
+
                   fluidRow(br()),
-                  downloadButton("download_hsmr_data", "Download data"),
-                  fluidRow(br()),
-                  actionButton("jump_commentary_hsmr","Go to methodology"))
+                  downloadButton("download_hsmr_data", "Download data", style = "float: right")))
+
          ), #well panel
-        mainPanel(width = 12,
+        mainPanel(width = 10,
                   uiOutput("crude_trends")
          )# mainPanel bracket
 ), #tab panel
-#) #navbarMenu
+
 
 
 ###############################################.
 ### Further analysis tab ----
 ##############################################.
-#navbarMenu("Further analysis", icon = icon("chart-bar"),
 tabPanel(title = "Further analysis", value = "fa", icon = icon("chart-bar"),
          wellPanel(actionButton("browser", "browser"),
-                   column(4, div(title="Select indicator.", # tooltip
+                   column(3, div(title="Select indicator.", # tooltip
                                  radioGroupButtons("indicator_select_fa",
                                                    label= "Step 1. Select the data you want to explore.",
                                                    choices = indicator_list_fa, status = "primary",
                                                    direction = "vertical", justified = T))),
-                   column(4, div(title="Select a location",
+                   column(3, div(title="Select a location",
                                  p(tags$b("Step 2. Select a geography level and then area of interest.")),
                                  selectInput("geotype_fa", label = NULL,
                                              choices= c("Scotland", "NHS Board of treatment"),
                                              selected = "Scotland", multiple = TRUE)),
                           uiOutput("geoname_fa_ui"))
          ), #well panel
-         mainPanel(width = 12,
+         mainPanel(width = 10,
                    uiOutput("further_analysis")
          )# mainPanel bracket
-),#, #tab panel
+)#, #tab panel
 #) #navbarMenu
 
-###############################################.
-### HSMR ----
-###############################################.
 
-tabPanel(title = "HSMR", value = "hsmr", icon = icon("hospital"),
-         wellPanel(actionButton("browser", "browser")), #well panel
-         mainPanel(width = 12,
-                   uiOutput("hsmr")
-         )# mainPanel bracket
-) #tab panel
-#) #navbarMenu
 
 
 ) # navbarPage

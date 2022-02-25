@@ -12,7 +12,7 @@ observeEvent(input$browser, browser())
 # Crude trends tab
 # Show list of area names depending on areatype selected
 output$geoname_ui <- renderUI({
-  areas_summary <- (geo_lookup$areaname[geo_lookup$areatype %in% input$geotype])
+  areas_summary <- sort(geo_lookup$areaname[geo_lookup$areatype %in% input$geotype])
   selectizeInput("geoname", label = NULL,
                  choices = areas_summary,
                  multiple = TRUE,
@@ -74,13 +74,42 @@ toggleState ("timeperiod", condition =
 # Further analysis tab
 # Show list of area names depending on areatype selected
 output$geoname_fa_ui <- renderUI({
-  areas_summary <- arrange(geo_lookup_fa$areaname[geo_lookup_fa$areatype %in% input$geotype_fa])
+  areas_summary <- sort(geo_lookup_hb$areaname[geo_lookup_hb$areatype %in% input$geotype_fa])
   selectizeInput("geoname_fa", label = NULL,
                  choices = areas_summary,
                  multiple = TRUE,
                  selected = "Scotland")
 })
 
+
+###############################################.
+## Modals  ----
+###############################################.
+
+funnel_modal <- modalDialog(
+  h5(tags$b("Interpretation of this chart")),
+  p("The ethnic group field in the Scottish Morbidity Record (SMR)
+  classifies the person according to their own perceived ethnic group and cultural
+  background. More information can be found ", tags$a(href="https://www.ndc.scot.nhs.uk/Dictionary-A-Z/Definitions/index.asp?Search=E&ID=243&Title=Ethnic%20Group", "here.",
+                                                      target="_blank")),
+  p("It became mandatory for NHS Scotland organisations to record ethnic group
+    on SMR outpatient (SMR00) returns from 1 February 2021. There is currently
+  significant variation in the completeness of ethnic group recording in new
+  outpatient appointment records between NHS Boards. More information can be found
+    ", tags$a(href="https://www.isdscotland.org/products-and-Services/Data-Support-and-Monitoring/SMR-Ethnic-Group-Recording/",
+              "here.", target="_blank")),
+  p("The following list is the current ethnicity classification (2011 Census categories)
+  used by NHS Scotland organisations for SMR return purposes, and the ethnic groups
+  that we have used in this dashboard."),
+  p("The ‘Missing’ ethnic group category includes those where ethnic group was
+    recorded as 'Not Known', 'Refused/Not Provided by the Patient' or was not recorded at all."),
+  p("It is important to note that the trends for ethnic groups with small populations should be
+  interpreted with caution as they will be subject to greater variability due to small numbers."),
+  size = "l",
+  easyClose = TRUE, fade=TRUE, footer = modalButton("Close (Esc)")
+)
+# Link action button click to modal launch
+observeEvent(input$funnel_help, { showModal(funnel_modal) })
 
 
 
@@ -92,9 +121,16 @@ output$geoname_fa_ui <- renderUI({
 hsmr_data <- reactive({
 
   hsmr %>%
-    select(-completeness_date, -hb, -location)
+    select(-completeness_date, -location) %>%
+    filter(period_label == input$timeperiod_hsmr)
 })
 
+hsmr_highlight <- reactive({
+
+  hsmr %>%
+    select(-completeness_date, -location) %>%
+      filter(period_label == input$timeperiod_hsmr & hb == input$hb_hsmr)
+})
 
 
 # Crude trends
@@ -106,6 +142,7 @@ trend_data <- reactive({
              time_period == input$timeperiod &
              sub_grp == input$subgroup_select)
 })
+
 
 # Further analysis
 fa_data <- reactive({
@@ -124,8 +161,33 @@ fa_data <- reactive({
 ###############################################.
 ##  Reactive layout  ----
 ###############################################.
+
+# HSMR
+output$hsmr <- renderUI({
+
+  hsmr_chart_title <- paste0("HSMR for deaths within 30-days of admission by hospital; ", input$timeperiod_hsmr)
+
+
+    tagList(p("HSMR is presented using a 12 month reporting period when
+making comparisons against the national average. This is advanced by three
+months with each quarterly update."),
+
+    fluidRow(column(6, h4(paste0(hsmr_chart_title))),
+           column(12, withSpinner(plotlyOutput("hsmr_chart")))) %>% br() %>%
+
+    fluidRow(column(6, h4(paste0(hsmr_chart_title))),
+             column(12, dataTableOutput("hsmr_table"))))
+
+})
+
+
+
+
 # Crude trends
 output$crude_trends <- renderUI({
+
+  actionButton("jump_commentary_hsmr", "Interpretation of this chart",
+               icon = icon('fas fa-exclamation-circle'))
 
   trend_chart_title <- paste0("Crude mortality within 30 days of admission; ", input$subgroup_select)
 
@@ -157,24 +219,64 @@ output$further_analysis <- renderUI({
 })
 
 
-# HSMR
-output$hsmr <- renderUI({
-
-  hsmr_chart_title <- paste0("HSMR by hospital")
-
-   fluidRow(column(6, h4(paste0(hsmr_chart_title))),
-            column(12, withSpinner(plotlyOutput("hsmr_chart")))) %>% br() %>%
-
-    fluidRow(column(6, h4(paste0(hsmr_chart_title))),
-             column(12, dataTableOutput("hsmr_table")))
-
-})
-
-
 
 ###############################################.
 ## Charts ----
 ###############################################.
+
+# HSMR - funnel plot
+output$hsmr_chart <- renderPlotly({
+
+  hsmr <- hsmr_data() %>%
+    filter(location_name != "Scotland")
+
+  highlight <- hsmr_highlight()
+
+
+  # Information to be displayed in tooltip
+  tooltip_hsmr <- c(paste0(hsmr$location_name, "<br>",
+                           hsmr$period_label, "<br>",
+                           "HSMR: ", round(hsmr$smr,2)))
+
+  plot <- plot_ly(data=hsmr, x=~pred) %>%
+
+    add_trace(y = ~smr, text=tooltip_hsmr, hoverinfo="text", name = 'Hospital',
+              type = 'scatter', mode = 'markers', size=3) %>%
+
+
+    # Scotland line
+    add_lines(y = ~smr_scot, mode='line', type='scatter', line = list(color = '#0B0B45', dash ='dash'),
+              text=tooltip_hsmr, hoverinfo="text", name = "Scotland") %>%
+
+    # uwl line
+    add_lines(y = ~uwl, mode='line', type='scatter', line = list(color = '#FFA500'),
+              text=tooltip_hsmr, hoverinfo="text",
+              name = "UWL") %>%
+    # ucl line
+    add_lines(y = ~ucl, mode='line', type='scatter', line = list(color = 'FF0000'),
+              text=tooltip_hsmr, hoverinfo="text",
+              name = "UCL") %>%
+    # lwl line
+    add_lines(y = ~lwl, mode='line', type='scatter', line = list(color = '#FFA500'),
+              text=tooltip_hsmr, hoverinfo="text",
+              name = "LWL") %>%
+    # lcl line
+    add_lines(y = ~lcl, mode='line', type='scatter', line = list(color = 'FF0000'),
+              text=tooltip_hsmr, hoverinfo="text",
+              name = "LCL") %>%
+    #Layout
+    layout(margin = list(b = 80, t=5), #to avoid labels getting cut out
+           yaxis = list(title = "HSMR", rangemode="tozero", fixedrange=TRUE, range = c(0, 2)),
+           xaxis = list(title = "Predicted deaths", fixedrange=TRUE, ticks=2,
+                        tickangle = 270, rangemode="tozero"),
+           legend = list(x = 100, y = 0.5)) %>% #position of legend
+    # leaving only save plot button
+    config(displaylogo = F, displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove )
+}
+)#plotly end
+
+
+
 
 # Crude trends
 output$trend_chart <- renderPlotly({
@@ -194,14 +296,14 @@ output$trend_chart <- renderPlotly({
    plot <- plot_ly(data=trend, x=~label_short) %>%
 
     # location line
-    add_lines(y = ~crd_rate, color= ~location_name, line = list(color = pal_eth),
+    add_lines(y = ~crd_rate, color= ~location_name, colors = chart_colours,
               text=tooltip_trend, hoverinfo="text",
               name = ~location_name) %>%
     #Layout
     layout(margin = list(b = 80, t=5), #to avoid labels getting cut out
            yaxis = list(title = "Crude rate (%)", rangemode="tozero", fixedrange=TRUE),
            xaxis = list(title = input$timeperiod,  fixedrange=TRUE, ticks=2, tickangle = 270,
-                        categoryorder = "array", categoryarray = arrange(trend[,"mth_qtr"])),
+                        automargin = TRUE,categoryorder = "array", categoryarray = arrange(trend[,"mth_qtr"])),
            legend = list(x = 100, y = 0.5)) %>% #position of legend
     # leaving only save plot button
     config(displaylogo = F, displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove )
@@ -212,14 +314,14 @@ output$trend_chart <- renderPlotly({
     plot <- plot_ly(data=trend, x=~label_short) %>%
 
       # location line
-      add_lines(y = ~crd_rate, color = ~label, line = list(color = pal_eth),
+      add_lines(y = ~crd_rate, color = ~label, colors = chart_colours,
                 text=tooltip_trend, hoverinfo="text",
-                name = trend$label) %>%
+                name = ~label) %>%
       #Layout
       layout(margin = list(b = 80, t=5), #to avoid labels getting cut out
              yaxis = list(title = "Crude rate (%)", rangemode="tozero", fixedrange=TRUE),
              xaxis = list(title = input$timeperiod,  fixedrange=TRUE, ticks=2, tickangle = 270,
-                          categoryorder = "array", categoryarray = arrange(trend[,"mth_qtr"])),
+                          automargin = TRUE, categoryorder = "array", categoryarray = arrange(trend[,"mth_qtr"])),
              legend = list(x = 100, y = 0.5)) %>% #position of legend
       # leaving only save plot button
       config(displaylogo = F, displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove )
@@ -243,14 +345,14 @@ output$fa_chart <- renderPlotly({
   plot <- plot_ly(data=fa, x=~label_short) %>%
 
     # location line
-    add_lines(y = ~crd_rate, line = list(color = pal_eth),
+    add_lines(y = ~crd_rate, colors = chart_colours,
               text=tooltip_fa, hoverinfo="text",
               name = fa$location_name) %>%
     #Layout
     layout(margin = list(b = 80, t=5), #to avoid labels getting cut out
            yaxis = list(title = "Crude rate", rangemode="tozero", fixedrange=TRUE),
            xaxis = list(title = "Quarter",  fixedrange=TRUE, ticks=2, tickangle = 270,
-                        categoryorder = "array", categoryarray = arrange(fa[,"mth_qtr"])),
+                        automargin = TRUE, categoryorder = "array", categoryarray = arrange(fa[,"mth_qtr"])),
            legend = list(x = 100, y = 0.5)) %>% #position of legend
     # leaving only save plot button
     config(displaylogo = F, displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove )
@@ -260,55 +362,6 @@ output$fa_chart <- renderPlotly({
 
 
 
-# HSMR - funnel plot
-output$hsmr_chart <- renderPlotly({
-
-  hsmr <- hsmr_data() %>%
-    filter(location_name != "Scotland")
-
-
-  # Information to be displayed in tooltip
-  tooltip_hsmr <- c(paste0(hsmr$location_name, "<br>",
-                           hsmr$period_label, "<br>",
-                            "HSMR: ", round(hsmr$smr,2)))
-
-
-    plot <- plot_ly(data=hsmr, x=~pred) %>%
-
-    add_trace(y = ~smr, text=tooltip_hsmr, hoverinfo="text", name = 'Hospital',
-              type = 'scatter', mode = 'markers', size=3) %>%
-
-      # Scotland line
-      add_lines(y = ~smr_scot, mode='line', type='scatter', line = list(color = '#0B0B45', dash ='dash'),
-                 text=tooltip_hsmr, hoverinfo="text", name = "Scotland") %>%
-
-      # uwl line
-      add_lines(y = ~uwl, mode='line', type='scatter', line = list(color = '#FFA500'),
-                text=tooltip_hsmr, hoverinfo="text",
-                name = "UWL") %>%
-      # ucl line
-      add_lines(y = ~ucl, mode='line', type='scatter', line = list(color = 'FF0000'),
-                text=tooltip_hsmr, hoverinfo="text",
-                name = "UCL") %>%
-      # lwl line
-      add_lines(y = ~lwl, mode='line', type='scatter', line = list(color = '#FFA500'),
-                text=tooltip_hsmr, hoverinfo="text",
-                name = "LWL") %>%
-      # lcl line
-      add_lines(y = ~lcl, mode='line', type='scatter', line = list(color = 'FF0000'),
-                text=tooltip_hsmr, hoverinfo="text",
-                name = "LCL") %>%
-      #Layout
-      layout(margin = list(b = 80, t=5), #to avoid labels getting cut out
-             yaxis = list(title = "HSMR", rangemode="tozero", fixedrange=TRUE, range = c(0, 2)),
-             xaxis = list(title = "Predicted deaths", fixedrange=TRUE, ticks=2,
-                          tickangle = 270, rangemode="tozero"),
-             legend = list(x = 100, y = 0.5)) %>% #position of legend
-            # leaving only save plot button
-      config(displaylogo = F, displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove )
-
-}
-)#plotly end
 
 
 
@@ -317,6 +370,35 @@ output$hsmr_chart <- renderPlotly({
 ###############################################.
 ## Table ----
 ###############################################.
+
+# HSMR
+output$hsmr_table <- renderDataTable({
+
+  table <- hsmr_highlight() %>%
+    filter(hb == input$hb_hsmr) %>%
+    select(location_name, period_label, deaths, pred,
+                                  pats, smr, crd_rate) %>%
+    rename(Location = location_name, "Time period" = period_label, Deaths = deaths,
+           "Predicted deaths" = pred, Patients = pats, Crude_rate = crd_rate,
+           "Standardised Mortality Ratio (SMR)" = smr) %>%
+    mutate_if(is.numeric, round, 2)
+
+  table_colnames  <-  gsub("_", " ", colnames(table))
+
+  datatable(table,
+            style = 'bootstrap',
+            class = 'table-bordered table-condensed',
+            rownames = FALSE,
+            options = list(pageLength = 20,
+                           dom = 'tip',
+                           autoWidth = TRUE),
+            filter = "top",
+            colnames = table_colnames)
+
+})
+
+
+
 
 # Crude trends
 output$trend_table <- renderDataTable({
@@ -366,29 +448,7 @@ output$fa_table <- renderDataTable({
 
 })
 
-# HSMR
-output$hsmr_table <- renderDataTable({
 
-  table <- hsmr_data() %>% select(location_name, deaths, pred,
-                                   pats, smr, crd_rate) %>%
-    rename(Location = location_name, Deaths = deaths, "Predicted deaths" = pred,
-           Patients = pats, Crude_rate = crd_rate,
-           "Standardised Mortality Ratio (SMR)" = smr) %>%
-    mutate_if(is.numeric, round, 2)
-
-  table_colnames  <-  gsub("_", " ", colnames(table))
-
-  datatable(table,
-            style = 'bootstrap',
-            class = 'table-bordered table-condensed',
-            rownames = FALSE,
-            options = list(pageLength = 20,
-                           dom = 'tip',
-                           autoWidth = TRUE),
-            filter = "top",
-            colnames = table_colnames)
-
-})
 
 
 

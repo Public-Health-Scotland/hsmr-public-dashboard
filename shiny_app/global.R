@@ -17,8 +17,7 @@ library(magrittr)
 library(shinymanager)
 library(lubridate)
 library(readxl)
-
-
+library(phsstyles)
 
 
 ###############################################.
@@ -55,7 +54,7 @@ trend <- readRDS(paste0("data/", pub_day, "-hsmr-trend-data.rds"))
 hsmr <- readRDS(paste0("data/", pub_day, "-hsmr-data.rds"))
 
 geo_lookup <- readRDS("data/geo_lookup.rds")
-geo_lookup_fa <- readRDS("data/geo_lookup.rds") %>%
+geo_lookup_hb <- readRDS("data/geo_lookup.rds") %>%
   filter(areatype %in% c("Scotland", "NHS Board of treatment"))
 
 
@@ -72,10 +71,23 @@ indicator_list_fa <- c("Crude mortality (%) within 30 days of discharge" = "Disc
 subgroup_list <- c("All Admissions", "Admission Type", "Age Group", "Deprivation", "Sex",
                    "Place of Death", "Specialty")
 
+timeperiod_list <- c(unique(hsmr$period_label))
+
+# nhsboard_list <- hsmr %>%  filter(location_type %in% c("NHS Board", "Scotland")) %>%
+#                                     (unique(hsmr$location_name))
+
 
 ###############################################.
 ## Palettes and plot parameters ----
 ###############################################.
+
+# PHS colour palette from phsstyles package
+#chart_colours <- as.character(phs_colours()[1:15])
+
+chart_colours <- c('#3F3685','#9B4393','#0078D4',
+                   '#83BB26','#948DA3','#1E7F84',
+                   '#6B5C85','#C73918')
+
 
 #Palette for 7 series in a gradient
 pal_age <- c('#543005', '#8c510a', '#bf812d',  '#d0d1e6',
