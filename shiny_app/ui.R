@@ -22,12 +22,20 @@
 tabPanel(title = "Contents", icon = icon("list-ul"), value = "contents",
 
          h3(tags$b("Hospital Standardised Mortality Ratios")),
-         h4(tags$b(paste0("Publication Date: ", pub_day))),br(),
+         h4(tags$b(paste0("Publication Date: ", format(pub_day, "%d %B %Y")))),br(),
 
          p("This dashboard, updated quarterly, presents the Hospital Standardised
-           Mortality Ratio (HSMR) for the latest 12 month period by Health Board of
-           Treatment and Hospital. In addition crude mortality trends are presented
-           for the last five years.")
+           Mortality Ratios (HSMRs) for the latest 12 month period for hospitals in Scotland.
+          In addition crude mortality trends are presented by month and quarter
+           for the last five years."),
+         p("Hospital mortality measures have an important role to play in stimulating
+           reflection on the quality and safety of patient care. "),
+         p("The data from this publication is available to download from the ",
+           tags$a(href="https://publichealthscotland.scot/publications/hospital-standardised-mortality-ratios/",
+                  "publication data filess.", target="_blank"), "Open data from this publication is available from the ",
+           tags$a(href="https://www.opendata.nhs.scot/dataset/hospital-standardised-mortality-ratios",
+                  "Scottish Health and Social Care Open Data platform.", target="_blank"))
+
 
 ), # tabPanel
 
@@ -108,12 +116,12 @@ tabPanel(title = "Crude trends", value = "crude", icon = icon("area-chart"),
 ##############################################.
 tabPanel(title = "Further analysis", value = "fa", icon = icon("chart-bar"),
          wellPanel(actionButton("browser", "browser"),
-                   column(3, div(title="Select indicator.", # tooltip
+                   column(4, div(title="Select indicator.", # tooltip
                                  radioGroupButtons("indicator_select_fa",
                                                    label= "Step 1. Select the data you want to explore.",
                                                    choices = indicator_list_fa, status = "primary",
                                                    direction = "vertical", justified = T))),
-                   column(3, div(title="Select a location",
+                   column(4, div(title="Select a location",
                                  p(tags$b("Step 2. Select a geography level and then area of interest.")),
                                  selectInput("geotype_fa", label = NULL,
                                              choices= c("Scotland", "NHS Board of treatment"),

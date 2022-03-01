@@ -88,23 +88,21 @@ output$geoname_fa_ui <- renderUI({
 
 funnel_modal <- modalDialog(
   h5(tags$b("Interpretation of this chart")),
-  p("The ethnic group field in the Scottish Morbidity Record (SMR)
-  classifies the person according to their own perceived ethnic group and cultural
-  background. More information can be found ", tags$a(href="https://www.ndc.scot.nhs.uk/Dictionary-A-Z/Definitions/index.asp?Search=E&ID=243&Title=Ethnic%20Group", "here.",
-                                                      target="_blank")),
-  p("It became mandatory for NHS Scotland organisations to record ethnic group
-    on SMR outpatient (SMR00) returns from 1 February 2021. There is currently
-  significant variation in the completeness of ethnic group recording in new
-  outpatient appointment records between NHS Boards. More information can be found
-    ", tags$a(href="https://www.isdscotland.org/products-and-Services/Data-Support-and-Monitoring/SMR-Ethnic-Group-Recording/",
-              "here.", target="_blank")),
-  p("The following list is the current ethnicity classification (2011 Census categories)
-  used by NHS Scotland organisations for SMR return purposes, and the ethnic groups
-  that we have used in this dashboard."),
-  p("The ‘Missing’ ethnic group category includes those where ethnic group was
-    recorded as 'Not Known', 'Refused/Not Provided by the Patient' or was not recorded at all."),
-  p("It is important to note that the trends for ethnic groups with small populations should be
-  interpreted with caution as they will be subject to greater variability due to small numbers."),
+  p("HSMRs are based on all acute inpatient and day case patients admitted to all
+    specialties in hospital (apart from obstetrics and psychiatry which are
+    excluded). The calculation takes account of patients who died within 30 days
+    from admission and includes deaths that occurred in the community as well as
+    those occurring in hospitals."),
+  p("The Scottish HSMR is 1.00. If an HSMR value for a hospital is less than one,
+  this means the number of deaths within 30 days of admission for this hospital is
+  fewer than predicted. If an HSMR value for a hospital is greater than one, this
+  means the number of deaths within 30 days for this hospital is more than predicted.
+  If the number of deaths is more than predicted this does not necessarily mean that
+  these were avoidable deaths (i.e. that they should not have happened), or that
+  they were unexpected, or were attributable to failings in the quality of care."),
+  p("Centre line (dashed blue) - Scottish average"),
+  p("Control limits (red) - plotted at 3 standard deviations from the Scottish average"),
+  p("Warning limits (orange) - plotted at 2 standard deviations from the Scottish average"),
   size = "l",
   easyClose = TRUE, fade=TRUE, footer = modalButton("Close (Esc)")
 )
