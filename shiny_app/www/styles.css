@@ -24,4 +24,22 @@
     color: #ffffff;     background-color: #5343a3;}
 
 
+/*Added by CP */
+.btn-primary {
+    color: #fff;
+    background-color: #3393DD;
+    border-color: #80BCEA;
+}
 
+.btn-primary.active, .btn-primary:active, .open>.dropdown-toggle.btn-primary {
+    color: #fff;
+    background-color: #0078D4;
+    background-image: none;
+    border-color: #0078D4;
+}
+
+.btn-primary.active.focus, btn-primary.active:focus, .btn-primary.active:hover {
+    color: #fff;
+    background-color: #0078D4;
+    border-color: #0078D4;
+}
