@@ -18,7 +18,7 @@ library(shinymanager)
 library(lubridate)
 library(readxl)
 library(phsstyles)
-
+library(formattable)
 
 ###############################################.
 ## Set up environment ----
@@ -73,6 +73,22 @@ subgroup_list <- c("All Admissions", "Admission Type", "Age Group", "Deprivation
 
 timeperiod_list <- c(unique(hsmr$period_label))
 
+hb_list <- c("Scotland" = "Scotland",
+             "NHS Ayrshire & Arran" = "S08000015",
+             "NHS Borders" = "S08000016",
+             "NHS Dumfries & Galloway" = "S08000017",
+             "NHS Fife" = "S08000029",
+             "NHS Forth Valley" = "S08000019",
+             "NHS Grampian" = "S08000020",
+             "NHS Greater Glasgow and Clyde" = "S08000031",
+             "NHS Highland" = "S08000022",
+             "NHS Lanarkshire" = "S08000032",
+             "NHS Lothian" = "S08000024",
+             "NHS Orkney" = "S08000025",
+             "NHS Shetland" = "S08000026",
+             "NHS Tayside" = "S08000030",
+             "NHS Western Isles" = "S08000028")
+
 # nhsboard_list <- hsmr %>%  filter(location_type %in% c("NHS Board", "Scotland")) %>%
 #                                     (unique(hsmr$location_name))
 
@@ -84,9 +100,9 @@ timeperiod_list <- c(unique(hsmr$period_label))
 # PHS colour palette from phsstyles package
 #chart_colours <- as.character(phs_colours()[1:15])
 
-chart_colours <- c('#3F3685','#9B4393','#0078D4',
-                   '#83BB26','#948DA3','#1E7F84',
-                   '#6B5C85','#C73918')
+chart_colours <- c('#9B4393','#83BB26','#C73918',
+                   '#948DA3','#0078D4','#1E7F84',
+                   '#6B5C85')
 
 
 #Palette for 7 series in a gradient
@@ -102,11 +118,16 @@ pal_eth <- c('#IE7F84', '#0078D4', '#3F3685', '#9B4393', '#948DA3')
 
 
 # #Style of x and y axis
-# xaxis_plots <- list(title = FALSE, tickfont = list(size=14), titlefont = list(size=14),
-#                     showline = TRUE, fixedrange=TRUE)
-#
-# yaxis_plots <- list(title = FALSE, rangemode="tozero", fixedrange=TRUE, size = 4,
-#                     tickfont = list(size=14), titlefont = list(size=14))
+xaxis_plots <- list(title = FALSE, fixedrange=TRUE, ticks="outside", tickangle = 270,
+                     rangemode="tozero")
+
+yaxis_plots <- list(title = FALSE, rangemode="tozero", fixedrange=TRUE,
+                    ticks = "outside", showline=TRUE, range = FALSE)
+
+
+# table_format <- list(style = 'bootstrap', class = 'table-bordered table-condensed',
+#                      rownames = FALSE, options = list(pageLength = 20, dom = 'tip',
+#                                                       autoWidth = TRUE), filter = "top")
 
 # Buttons to remove
 bttn_remove <-  list('select2d', 'lasso2d', 'zoomIn2d', 'zoomOut2d',
