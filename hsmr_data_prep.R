@@ -75,6 +75,13 @@ hosp_filter = c('A101H', 'A111H', 'A210H', 'B120H', 'D102H', 'F704H',
                 'S314H', 'S308H', 'S116H', 'T101H', 'T202H', 'T312H', 'V217H',
                 'W107H', 'Y146H', 'Y144H', 'Z102H', 'Scot')
 
+# Need to update the HB codes to be the 2019 codes - this can be updated in RAP
+hsmr %<>% mutate(hb = case_when(hb == "S08000018" ~ "S08000029",
+                           hb == "S08000027" ~ "S08000030",
+                           hb == "S08000021" ~ "S08000031",
+                           hb == "S08000023" ~ "S08000032",
+                           TRUE ~ hb))
+
 
 # create warning and control confidence limits for funnel plot
 hsmr %<>%
@@ -116,15 +123,7 @@ hsmr %<>%
 hsmr %<>% select(hb, location, location_name, period_label, deaths, pred, pats, smr, crd_rate, smr_scot, death_scot, pats_scot,
                  uwl, ucl, lwl, lcl, flag, flag_above, flag_below, completeness_date)
 
-# force control limits at upper and lower end - makes the lines look odd
-# hsmr %<>% mutate(lwl = case_when(lwl < 0 ~ 0,
-#                     TRUE ~ lwl),
-#                  lcl = case_when(lcl <0 ~ 0,
-#                                  TRUE ~ lcl),
-#                  uwl = case_when(uwl >2 ~ 2,
-#                                  TRUE ~ uwl),
-#                  ucl = case_when(ucl >2 ~2,
-#                                  TRUE ~ ucl))
+
 
 
 saveRDS(hsmr, file = paste0("shiny_app/data/", pub_day, "-hsmr-data.rds"))
