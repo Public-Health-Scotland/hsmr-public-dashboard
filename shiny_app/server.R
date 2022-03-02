@@ -123,6 +123,7 @@ hsmr_data <- reactive({
     filter(period_label == input$timeperiod_hsmr)
 })
 
+# HSMR - chart highlight
 hsmr_highlight <- reactive({
 
   hsmr %>%
@@ -163,18 +164,17 @@ fa_data <- reactive({
 # HSMR
 output$hsmr <- renderUI({
 
-  hsmr_chart_title <- paste0("HSMR for deaths within 30-days of admission by hospital; ", input$timeperiod_hsmr)
+  hsmr_chart_title <- paste0("HSMR for deaths within 30 days of admission by hospital; ", input$timeperiod_hsmr)
 
 
     tagList(p("HSMR is presented using a 12 month reporting period when
 making comparisons against the national average. This is advanced by three
 months with each quarterly update."),
 
-    fluidRow(column(6, h4(paste0(hsmr_chart_title))),
+    fluidRow(column(12, h4(paste0(hsmr_chart_title))),
            column(12, withSpinner(plotlyOutput("hsmr_chart")))) %>% br() %>%
 
-    fluidRow(column(6, h4(paste0(hsmr_chart_title))),
-             column(12, dataTableOutput("hsmr_table"))))
+    fluidRow(column(12, dataTableOutput("hsmr_table"))))
 
 })
 
@@ -189,11 +189,10 @@ output$crude_trends <- renderUI({
 
   trend_chart_title <- paste0("Crude mortality within 30 days of admission; ", input$subgroup_select)
 
-  fluidRow(column(6, h4(paste0(trend_chart_title))),
+  fluidRow(column(12, h4(paste0(trend_chart_title))),
            column(12, withSpinner(plotlyOutput("trend_chart")))) %>% br() %>%
 
-  fluidRow(column(6, h4(paste0(trend_chart_title))),
-           column(12, dataTableOutput("trend_table")))
+  fluidRow(column(12, dataTableOutput("trend_table")))
 
   })
 
@@ -208,11 +207,10 @@ output$further_analysis <- renderUI({
     input$indicator_select_fa == "Population" ~
       paste0("Crude population mortality per 1,000 population"))
 
-    fluidRow(column(6, h4(paste0(fa_chart_title))),
+    fluidRow(column(12, h4(paste0(fa_chart_title))),
            column(12, withSpinner(plotlyOutput("fa_chart")))) %>% br() %>%
 
-    fluidRow(column(6, h4(paste0(fa_chart_title))),
-             column(12, dataTableOutput("fa_table")))
+    fluidRow(column(12, dataTableOutput("fa_table")))
 
 })
 
@@ -221,6 +219,7 @@ output$further_analysis <- renderUI({
 ###############################################.
 ## Charts ----
 ###############################################.
+
 
 # HSMR - funnel plot
 output$hsmr_chart <- renderPlotly({
@@ -234,39 +233,37 @@ output$hsmr_chart <- renderPlotly({
   # Information to be displayed in tooltip
   tooltip_hsmr <- c(paste0(hsmr$location_name, "<br>",
                            hsmr$period_label, "<br>",
-                           "HSMR: ", round(hsmr$smr,2)))
+                           "HSMR: ", round(hsmr$smr,2), "<br>",
+                           "Predicted deaths: ", round(hsmr$pred,0)))
+  # Define titles
+  yaxis_plots[["range"]] <- c(0, 2)
+  yaxis_plots[["title"]] <- "SMR"
+  xaxis_plots[["title"]] <- "Predicted deaths"
 
   plot <- plot_ly(data=hsmr, x=~pred) %>%
 
     add_trace(y = ~smr, text=tooltip_hsmr, hoverinfo="text", name = 'Hospital',
               type = 'scatter', mode = 'markers', size=3) %>%
 
-
     # Scotland line
-    add_lines(y = ~smr_scot, mode='line', type='scatter', line = list(color = '#0B0B45', dash ='dash'),
+    add_lines(y = ~smr_scot, mode='line', type='scatter', line = list(color = '#003399', dash ='dash'),
               text=tooltip_hsmr, hoverinfo="text", name = "Scotland") %>%
-
     # uwl line
     add_lines(y = ~uwl, mode='line', type='scatter', line = list(color = '#FFA500'),
-              text=tooltip_hsmr, hoverinfo="text",
-              name = "UWL") %>%
+              text=tooltip_hsmr, hoverinfo="text", name = "UWL") %>%
     # ucl line
     add_lines(y = ~ucl, mode='line', type='scatter', line = list(color = 'FF0000'),
-              text=tooltip_hsmr, hoverinfo="text",
-              name = "UCL") %>%
+              text=tooltip_hsmr, hoverinfo="text", name = "UCL") %>%
     # lwl line
     add_lines(y = ~lwl, mode='line', type='scatter', line = list(color = '#FFA500'),
-              text=tooltip_hsmr, hoverinfo="text",
-              name = "LWL") %>%
+              text=tooltip_hsmr, hoverinfo="text", name = "LWL") %>%
     # lcl line
     add_lines(y = ~lcl, mode='line', type='scatter', line = list(color = 'FF0000'),
-              text=tooltip_hsmr, hoverinfo="text",
-              name = "LCL") %>%
+              text=tooltip_hsmr, hoverinfo="text", name = "LCL") %>%
     #Layout
     layout(margin = list(b = 80, t=5), #to avoid labels getting cut out
-           yaxis = list(title = "HSMR", rangemode="tozero", fixedrange=TRUE, range = c(0, 2)),
-           xaxis = list(title = "Predicted deaths", fixedrange=TRUE, ticks=2,
-                        tickangle = 270, rangemode="tozero"),
+           yaxis = yaxis_plots,
+           xaxis = xaxis_plots,
            legend = list(x = 100, y = 0.5)) %>% #position of legend
     # leaving only save plot button
     config(displaylogo = F, displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove )
@@ -279,7 +276,7 @@ output$hsmr_chart <- renderPlotly({
 # Crude trends
 output$trend_chart <- renderPlotly({
 
-  trend <- trend_data() %>%
+   trend <- trend_data() %>%
     mutate(label_short = factor(label_short, levels = unique(trend_data()$label_short)))
 
   # Information to be displayed in tooltip
@@ -288,6 +285,10 @@ output$trend_chart <- renderPlotly({
                             trend$sub_grp, " : ", trend$label, "<br>",
                             "Crude mortality rate: ", round(trend$crd_rate,1)))
 
+  # Titles for axes
+  yaxis_plots[["title"]] <- "Crude rate (%)"
+  xaxis_plots[["title"]]<- input$timeperiod
+
 
   if(input$subgroup_select == "All Admissions") {
 
@@ -295,16 +296,15 @@ output$trend_chart <- renderPlotly({
 
     # location line
     add_lines(y = ~crd_rate, color= ~location_name, colors = chart_colours,
-              text=tooltip_trend, hoverinfo="text",
-              name = ~location_name) %>%
+              text=tooltip_trend, hoverinfo="text", name = ~location_name) %>%
     #Layout
     layout(margin = list(b = 80, t=5), #to avoid labels getting cut out
-           yaxis = list(title = "Crude rate (%)", rangemode="tozero", fixedrange=TRUE),
-           xaxis = list(title = input$timeperiod,  fixedrange=TRUE, ticks=2, tickangle = 270,
-                        automargin = TRUE,categoryorder = "array", categoryarray = arrange(trend[,"mth_qtr"])),
+           yaxis = yaxis_plots,
+           xaxis = xaxis_plots, list(categoryorder = "array", categoryarray = arrange(trend[,"mth_qtr"])),
            legend = list(x = 100, y = 0.5)) %>% #position of legend
     # leaving only save plot button
-    config(displaylogo = F, displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove )
+    config(displaylogo = F, displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove)
+
   }
 
   else {
@@ -313,16 +313,15 @@ output$trend_chart <- renderPlotly({
 
       # location line
       add_lines(y = ~crd_rate, color = ~label, colors = chart_colours,
-                text=tooltip_trend, hoverinfo="text",
-                name = ~label) %>%
+                text=tooltip_trend, hoverinfo="text", name = ~label) %>%
       #Layout
       layout(margin = list(b = 80, t=5), #to avoid labels getting cut out
-             yaxis = list(title = "Crude rate (%)", rangemode="tozero", fixedrange=TRUE),
-             xaxis = list(title = input$timeperiod,  fixedrange=TRUE, ticks=2, tickangle = 270,
-                          automargin = TRUE, categoryorder = "array", categoryarray = arrange(trend[,"mth_qtr"])),
+             yaxis = yaxis_plots,
+             xaxis = xaxis_plots, list(categoryorder = "array",
+                          categoryarray = arrange(trend[,"mth_qtr"])),
              legend = list(x = 100, y = 0.5)) %>% #position of legend
       # leaving only save plot button
-      config(displaylogo = F, displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove )
+      config(displaylogo = F, displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove)
     }
 
   }
@@ -340,29 +339,25 @@ output$fa_chart <- renderPlotly({
                             fa$location_name, "<br>",
                             "Crude mortality rate: ", round(fa$crd_rate,1)))
 
+  # Titles for axes
+  yaxis_plots[["title"]] <- "Crude rate (%)"
+  xaxis_plots[["title"]]<- "Quarter"
+
   plot <- plot_ly(data=fa, x=~label_short) %>%
 
     # location line
-    add_lines(y = ~crd_rate, colors = chart_colours,
-              text=tooltip_fa, hoverinfo="text",
+    add_lines(y = ~crd_rate, colors = chart_colours, text=tooltip_fa, hoverinfo="text",
               name = fa$location_name) %>%
     #Layout
     layout(margin = list(b = 80, t=5), #to avoid labels getting cut out
-           yaxis = list(title = "Crude rate", rangemode="tozero", fixedrange=TRUE),
-           xaxis = list(title = "Quarter",  fixedrange=TRUE, ticks=2, tickangle = 270,
-                        automargin = TRUE, categoryorder = "array", categoryarray = arrange(fa[,"mth_qtr"])),
+           yaxis = yaxis_plots,
+           xaxis = xaxis_plots, list(categoryorder = "array", categoryarray = arrange(fa[,"mth_qtr"])),
            legend = list(x = 100, y = 0.5)) %>% #position of legend
     # leaving only save plot button
     config(displaylogo = F, displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove )
 
 }
 )#plotly end
-
-
-
-
-
-
 
 
 ###############################################.
