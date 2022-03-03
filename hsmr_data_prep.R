@@ -75,12 +75,24 @@ hosp_filter = c('A101H', 'A111H', 'A210H', 'B120H', 'D102H', 'F704H',
                 'S314H', 'S308H', 'S116H', 'T101H', 'T202H', 'T312H', 'V217H',
                 'W107H', 'Y146H', 'Y144H', 'Z102H', 'Scot')
 
-# Need to update the HB codes to be the 2019 codes - this can be updated in RAP
+# Need to update the HB codes to be the 2019 codes - this could be added to RAP process
 hsmr %<>% mutate(hb = case_when(hb == "S08000018" ~ "S08000029",
                            hb == "S08000027" ~ "S08000030",
                            hb == "S08000021" ~ "S08000031",
                            hb == "S08000023" ~ "S08000032",
                            TRUE ~ hb))
+
+# Create a quarter number to enable sorting - this could be added to RAP process
+hsmr %<>% mutate(q_num = case_when(period_label == "April 2018 to March 2019" ~ 1,
+                                   period_label == "July 2018 to June 2019" ~ 2,
+                                   period_label == "October 2018 to September 2019" ~ 3,
+                                   period_label == "January 2019 to December 2019" ~ 4,
+                                   period_label == "April 2019 to March 2020" ~ 5,
+                                   period_label == "July 2019 to June 2020" ~ 6,
+                                   period_label == "October 2019 to September 2020" ~ 7,
+                                   period_label == "January 2020 to December 2020" ~ 8,
+                                   period_label == "April 2020 to March 2021"~ 9,
+                                   period_label == "July 2020 to June 2021" ~ 10))
 
 
 # create warning and control confidence limits for funnel plot
@@ -120,10 +132,8 @@ hsmr %<>%
                                 TRUE ~ FALSE))
 
 
-hsmr %<>% select(hb, location, location_name, period_label, deaths, pred, pats, smr, crd_rate, smr_scot, death_scot, pats_scot,
+hsmr %<>% select(hb, location, location_name, q_num, period_label, deaths, pred, pats, smr, crd_rate, smr_scot, death_scot, pats_scot,
                  uwl, ucl, lwl, lcl, flag, flag_above, flag_below, completeness_date)
-
-
 
 
 saveRDS(hsmr, file = paste0("shiny_app/data/", pub_day, "-hsmr-data.rds"))
