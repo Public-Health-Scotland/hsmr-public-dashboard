@@ -168,15 +168,18 @@ output$hsmr <- renderUI({
 
   hsmr_chart_title <- paste0("HSMR for deaths within 30 days of admission by hospital; ", input$timeperiod_hsmr)
 
-  tagList(p("HSMR is presented using a 12 month reporting period when
-  making comparisons against the national average. This is advanced by three
-  months with each quarterly update."),
+  tagList(column(12,
 
-          fluidRow(column(12, h4(paste0(hsmr_chart_title))),
-           column(12, withSpinner(plotlyOutput("hsmr_chart")))) %>% br() %>%
+  p("HSMR is presented using a 12 month reporting period when making comparisons
+  against the national average. This is advanced by three months with each
+    quarterly update.")), br(),
 
-    fluidRow(column(12, dataTableOutput("hsmr_table"))))
+  column(3, actionButton("funnel_help","Interpretation of this chart", icon = icon('question-circle'))),
+  column(12, h4(paste0(hsmr_chart_title))),
+  column(12, withSpinner(plotlyOutput("hsmr_chart"))),
+  column(12, dataTableOutput("hsmr_table"))
 
+    )#taglist
 })
 
 
@@ -191,7 +194,7 @@ output$crude_trends <- renderUI({
   trend_chart_title <- paste0("Crude mortality within 30 days of admission; ", input$subgroup_select)
 
   fluidRow(column(12, h4(paste0(trend_chart_title))),
-           column(12, withSpinner(plotlyOutput("trend_chart")))) %>% br() %>%
+           column(12, withSpinner(plotlyOutput("trend_chart")))) %>%
 
   fluidRow(column(12, dataTableOutput("trend_table")))
 
@@ -202,16 +205,28 @@ output$crude_trends <- renderUI({
 output$further_analysis <- renderUI({
 
   # dynamic chart title
-  fa_chart_title <- case_when(
-    input$indicator_select_fa == "Discharge" ~
-      paste0("Crude mortality (%) within 30 days of discharge"),
+fa_chart_title <- case_when(input$indicator_select_fa == "Discharge" ~
+    paste0("Crude mortality (%) within 30 days of discharge"),
     input$indicator_select_fa == "Population" ~
-      paste0("Crude population mortality per 1,000 population"))
+    paste0("Crude population mortality per 1,000 population"))
 
-    fluidRow(column(12, h4(paste0(fa_chart_title))),
-           column(12, withSpinner(plotlyOutput("fa_chart")))) %>% br() %>%
+# Indicator description to update depending on selection
+fa_indicator_desc <- case_when(input$indicator_select_fa == "Discharge" ~
+    paste0("This shows the trend in mortality at Scotland and NHS Board of Treatment level according to a definition
+    similar to the Summary Hospital-level Mortality Indicator in England. SHMI takes
+    account of in-patient mortality and deaths within 30-days of discharge.
+    The Scottish HSMR does not include patients that die in-hospital more than 30-days from admission."),
+    input$indicator_select_fa == "Population" ~
+    paste0("This shows the trend in overall population mortality for Scotland and NHS
+    Boards of Residence. This shows an overall picture of the number of deaths relative to the population."))
+
+tagList(column(12, fa_indicator_desc, br(),
+               h4(paste0(fa_chart_title)),
+               column(12, withSpinner(plotlyOutput("fa_chart")))) %>% br() %>%
 
     fluidRow(column(12, dataTableOutput("fa_table")))
+
+  ) #taglist
 
 })
 
@@ -249,7 +264,7 @@ output$hsmr_chart <- renderPlotly({
 
   # Define titles
   yaxis_plots[["range"]] <- c(0, 2)
-  yaxis_plots[["title"]] <- "SMR"
+  yaxis_plots[["title"]] <- "HSMR"
   xaxis_plots[["title"]] <- "Predicted deaths"
 
   plot <- plot_ly() %>%
@@ -465,9 +480,18 @@ output$fa_table <- renderDataTable({
 
 })
 
+###############################################.
+## Data downloads ----
+###############################################.
+
+# Allow data to be downloaded
+
+
+
 
 
 } # server end
 
 ##END
+
 
