@@ -33,12 +33,11 @@ tabPanel(title = "Introduction", icon = icon("list-ul"), value = "intro",
 
          h4(tags$b("Main points")),
 
-          # Perhaps this could be automated from the funnel_text function
-          p(tags$li("For the period July 2020 to July 2021 no hospitals had a
+          # This could be automated from the funnel_text function
+         p(tags$li("For the period July 2020 to July 2021 no hospitals had a
            significantly higher standardised mortality ratio than the national average."),
           tags$li("For the period July 2020 to July 2021 one hospital had a significantly
            lower standardised mortality ratio than the national average: Western General Hospital (0.75).")), br(),
-
          p("The data from this publication is available to download from the ",
            tags$a(href="https://publichealthscotland.scot/publications/hospital-standardised-mortality-ratios/",
          "publication data files.", target="_blank"), "Open data from this publication is available from the ",
@@ -55,8 +54,7 @@ tabPanel(title = "Introduction", icon = icon("list-ul"), value = "intro",
 
 tabPanel(title = "HSMR", value = "hsmr", icon = icon("hospital"),
          wellPanel(#actionButton("browser", "browser"),
-                   column(3, div(title="Select NHS Board of treatment to highlight on chart",
-                                 #p(tags$b("Step 3. Select to see trends by month or quarter.")),
+                   column(4, div(title="Select NHS Board of treatment to highlight on chart",
                                  selectInput("hb_hsmr",
                                              label = "Step 1. Select NHS Board to highlight on chart.",
                                              choices = hb_list,
@@ -67,38 +65,31 @@ tabPanel(title = "HSMR", value = "hsmr", icon = icon("hospital"),
                                                 label = "Step 2. Select a time period.",
                                                 choices= timeperiod_list,
                                                 selected = "July 2020 to June 2021")),
-                          uiOutput("timeperiod_hsmr_ui"))#,
-                   # column(3,
-                   #        actionButton("funnel_help","Interpretation of this chart",
-                   #                     icon = icon('question-circle')))
+                          uiOutput("timeperiod_hsmr_ui"))
                    ), #well panel
-         mainPanel(width = 10,
+         mainPanel(width = 12,
                    uiOutput("hsmr")
          )# mainPanel bracket
 ), #tab panel
-#) #navbarMenu
-
 
 ###############################################.
 ### Crude trends tab ----
 ##############################################.
 tabPanel(title = "Crude trends", value = "crude", icon = icon("area-chart"),
          wellPanel(#actionButton("browser", "browser"),
-                   column(3, div(title="Select the subgroup you wish to explore.", # tooltip
+                   column(4, div(title="Select the subgroup you wish to explore.", # tooltip
                                  radioGroupButtons("subgroup_select",
                                                    label= "Step 1. Select the subgroup you want to explore.",
                                                    choices = subgroup_list, status = "primary",
                                                    direction = "vertical", justified = T))),
 
                    column(4, div(title="Select a location",
-                         #p(tags$b("Step 2. Select a geography level and then an area of interest.")),
                          selectizeInput("geotype", label = NULL,
                                         choices= c("Scotland", "NHS Board of treatment", "Hospital"),
                                         selected = "Scotland", multiple = TRUE)),
                          uiOutput("geoname_ui"),
 
                   div(title="Select frequency",
-                         #p(tags$b("Step 3. Select to see trends by month or quarter.")),
                          selectInput("timeperiod", label =NULL, choices= c("Month", "Quarter"),
                                      selected =  "Quarter"),
                       uiOutput("timeperiod_ui"))),
@@ -141,8 +132,6 @@ tabPanel(title = "Further analysis", value = "fa", icon = icon("chart-bar"),
                    uiOutput("further_analysis")
          )# mainPanel bracket
 )#, #tab panel
-#) #navbarMenu
-
 
 
 

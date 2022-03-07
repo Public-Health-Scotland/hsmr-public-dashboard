@@ -49,15 +49,13 @@ pub_day <-lubridate::dmy(09112021)
 ## Data ----
 ###############################################.
 
-#smr <- read.csv(paste0(data_folder, pub_day, "/output/", pub_day, "_SMR-data_dashboard.csv"))
 trend <- readRDS(paste0("data/", pub_day, "-hsmr-trend-data.rds"))
-hsmr <- readRDS(paste0("data/", pub_day, "-hsmr-data.rds"))
+hsmr <- readRDS(paste0("data/", pub_day, "-hsmr-data.rds")) %>% arrange(hsmr[,"q_num"])
+
 
 geo_lookup <- readRDS("data/geo_lookup.rds")
 geo_lookup_hb <- readRDS("data/geo_lookup.rds") %>%
   filter(areatype %in% c("Scotland", "NHS Board of treatment"))
-
-
 
 
 ###############################################.
@@ -87,10 +85,8 @@ hb_list <- c("Scotland" = "Scotland",
              "NHS Orkney" = "S08000025",
              "NHS Shetland" = "S08000026",
              "NHS Tayside" = "S08000030",
-             "NHS Western Isles" = "S08000028")
-
-# nhsboard_list <- hsmr %>%  filter(location_type %in% c("NHS Board", "Scotland")) %>%
-#                                     (unique(hsmr$location_name))
+             "NHS Western Isles" = "S08000028",
+             "Golden Jubilee" = "S08100001")
 
 
 ###############################################.
@@ -98,24 +94,11 @@ hb_list <- c("Scotland" = "Scotland",
 ###############################################.
 
 # PHS colour palette from phsstyles package
-#chart_colours <- as.character(phs_colours()[1:15])
+chart_colours <- as.character(phs_colours()[1:8])
 
-chart_colours <- c('#9B4393','#83BB26','#C73918',
-                   '#948DA3','#0078D4','#1E7F84',
-                   '#6B5C85')
-
-
-#Palette for 7 series in a gradient
-pal_age <- c('#543005', '#8c510a', '#bf812d',  '#d0d1e6',
-            '#74add1', '#4575b4', '#313695')
-
-# pal_eth <- c('#3F3685', '#7872A9', '#C5C3DA', '#9B4393', '#B97BB3', '#E1C7DF',
-#              '#1E7F84', '#61A5A8', '#BCD9DA', '#0078D4', '#4CA0E0', '#B2D6F2',
-#              '#4A405D', '#978CA9')
-
-pal_eth <- c('#IE7F84', '#0078D4', '#3F3685', '#9B4393', '#948DA3')
-
-
+# chart_colours <- c('#9B4393','#83BB26','#C73918',
+#                    '#948DA3','#0078D4','#1E7F84',
+#                    '#6B5C85')
 
 # #Style of x and y axis
 xaxis_plots <- list(title = FALSE, fixedrange=TRUE, ticks="outside", tickangle = 270,
@@ -123,11 +106,6 @@ xaxis_plots <- list(title = FALSE, fixedrange=TRUE, ticks="outside", tickangle =
 
 yaxis_plots <- list(title = FALSE, rangemode="tozero", fixedrange=TRUE,
                     ticks = "outside", showline=TRUE, range = FALSE)
-
-
-# table_format <- list(style = 'bootstrap', class = 'table-bordered table-condensed',
-#                      rownames = FALSE, options = list(pageLength = 20, dom = 'tip',
-#                                                       autoWidth = TRUE), filter = "top")
 
 # Buttons to remove
 bttn_remove <-  list('select2d', 'lasso2d', 'zoomIn2d', 'zoomOut2d',
