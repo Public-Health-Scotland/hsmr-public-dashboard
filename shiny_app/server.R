@@ -170,13 +170,12 @@ output$hsmr <- renderUI({
 
   tagList(p("HSMR is presented using a 12 month reporting period when making comparisons
   against the national average. This is advanced by three months with each
-    quarterly update."),
-  fluidRow(column(12, h4(paste0(hsmr_chart_title)),
-           column(12, actionButton("funnel_help","Interpretation of this chart",
-                                   icon = icon('question-circle'))))),
+    quarterly update."), br(),
+  fluidRow(column(9, h4(paste0(hsmr_chart_title))),
+           column(3, actionButton("funnel_help","Interpretation of this chart",
+                                   icon = icon('question-circle')))),
   fluidRow(column(12, withSpinner(plotlyOutput("hsmr_chart")))),
-  fluidRow(column(12, dataTableOutput("hsmr_table")))
-)
+  fluidRow(column(12, dataTableOutput("hsmr_table"))))
 })
 
 
@@ -256,6 +255,7 @@ output$hsmr_chart <- renderPlotly({
   yaxis_plots[["range"]] <- c(0, 2)
   yaxis_plots[["title"]] <- "HSMR"
   xaxis_plots[["title"]] <- "Predicted deaths"
+  xaxis_plots[["dtick"]] <- FALSE
 
   plot <- plot_ly() %>%
 
@@ -268,30 +268,30 @@ output$hsmr_chart <- renderPlotly({
     # Scotland line
     add_lines(data=hsmr, x=~pred, y = ~smr_scot, mode='line', type='scatter',
               line = list(color = '#003399', dash ='dash'),
-              text=tooltip_hsmr, hoverinfo="text", name = "Scotland") %>%
+              hoverinfo='skip', name = "Scotland") %>%
     # ucl line
     add_lines(data=hsmr, x=~pred, y = ~ucl, mode='line', type='scatter', line = list(color = 'FF0000'),
-              text=tooltip_hsmr, hoverinfo="text", name = "Upper/lower control limit") %>%
+              hoverinfo='skip', name = "Upper/lower control limit") %>%
     # uwl line
     add_lines(data=hsmr, x=~pred, y = ~uwl, mode='line', type='scatter', line = list(color = '#FFA500'),
-              text=tooltip_hsmr, hoverinfo="text", name = "Upper/lower warning limit") %>%
+              hoverinfo='skip', name = "Upper/lower warning limit") %>%
     # lwl line
     add_lines(data=hsmr, x=~pred, y = ~lwl, mode='line', type='scatter', line = list(color = '#FFA500'),
-              text=tooltip_hsmr, hoverinfo="text", showlegend=F) %>%
+              hoverinfo='skip', showlegend=F) %>%
     # lcl line
     add_lines(data=hsmr, x=~pred, y = ~lcl, mode='line', type='scatter', line = list(color = 'FF0000'),
-              text=tooltip_hsmr, hoverinfo="text", showlegend=F) %>%
+              hoverinfo='skip', showlegend=F) %>%
     #Layout
     layout(margin = list(b = 80, t=5), #to avoid labels getting cut out
            yaxis = yaxis_plots,
            xaxis = xaxis_plots,
-           legend = list(x = 100, y = 0.5)) %>% #position of legend
+           legend = list(orientation = "h", x=0, y=1.2)) %>% #position of legend
     # leaving only save plot button
     config(displaylogo = F, displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove )
 }
 )#plotly end
 
-
+#legend=list(orientation="h",xanchor="center",x=0,y=1)) , x = 0, y = 1
 
 
 # Crude trends
@@ -323,10 +323,11 @@ output$trend_chart <- renderPlotly({
     layout(margin = list(b = 80, t=5), #to avoid labels getting cut out
            yaxis = yaxis_plots,
            xaxis = xaxis_plots, list(categoryorder = "array", categoryarray = arrange(trend[,"mth_qtr"])),
-           legend = list(x = 100, y = 0.5)) %>% #position of legend
+           legend = list(orientation = "h", x=0, y=1.2)) %>% #position of legend
     # leaving only save plot button
     config(displaylogo = F, displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove)
-
+   #legend = list(x = 100, y = 0.5)
+#, xanchor = "left", x=0.55, y=1.2
   }
 
   else {
@@ -343,9 +344,10 @@ output$trend_chart <- renderPlotly({
              yaxis = yaxis_plots,
              xaxis = xaxis_plots, list(categoryorder = "array",
                           categoryarray = arrange(trend[,"mth_qtr"])),
-             legend = list(x = 100, y = 0.5)) %>% #position of legend
+             legend = list(orientation = "h", x=0, y=1.2)) %>% #position of legend
       # leaving only save plot button
       config(displaylogo = F, displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove)
+    #
     }
 
   }
@@ -379,7 +381,7 @@ output$fa_chart <- renderPlotly({
     layout(margin = list(b = 80, t=5), #to avoid labels getting cut out
            yaxis = yaxis_plots,
            xaxis = xaxis_plots, list(categoryorder = "array", categoryarray = arrange(fa[,"mth_qtr"])),
-           legend = list(x = 100, y = 0.5)) %>% #position of legend
+           legend = list(orientation = "h", x=0, y=1.2)) %>% #position of legend
     # leaving only save plot button
     config(displaylogo = F, displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove)
 
@@ -396,12 +398,14 @@ output$hsmr_table <- renderDataTable({
 
   table <- hsmr_highlight() %>%
     filter(hb == input$hb_hsmr) %>%
+    mutate(pred = round(pred,0),
+           crd_rate = round(crd_rate,1),
+           smr = round(smr, 2)) %>%
     select(location_name, period_label, deaths, pred,
                                   pats, smr, crd_rate) %>%
     rename(Location = location_name, "Time period" = period_label, Deaths = deaths,
            "Predicted deaths" = pred, Patients = pats, Crude_rate = crd_rate,
-           "Standardised Mortality Ratio (SMR)" = smr) %>%
-    mutate_if(is.numeric, round, 2)
+           "Standardised Mortality Ratio (SMR)" = smr)
 
   table_colnames  <-  gsub("_", " ", colnames(table))
 
@@ -411,9 +415,9 @@ output$hsmr_table <- renderDataTable({
             class = 'table-bordered table-condensed',
             rownames = FALSE,
             options = list(pageLength = 20,
-                           dom = 'tip',
+                           dom = 't',
                            autoWidth = TRUE),
-            filter = "top",
+            filter = "none",
             colnames = table_colnames)
 
 })
@@ -438,9 +442,9 @@ output$trend_table <- renderDataTable({
   class = 'table-bordered table-condensed',
   rownames = FALSE,
   options = list(pageLength = 20,
-                dom = 'tip',
+                dom = 't',
                 autoWidth = TRUE),
-  filter = "top",
+  filter = "none",
   colnames = table_colnames)
 
 })
@@ -462,9 +466,9 @@ output$fa_table <- renderDataTable({
             class = 'table-bordered table-condensed',
             rownames = FALSE,
             options = list(pageLength = 20,
-                           dom = 'tip',
+                           dom = 't',
                            autoWidth = TRUE),
-            filter = "top",
+            filter = "none",
             colnames = table_colnames)
 
 
