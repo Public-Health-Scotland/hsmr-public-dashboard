@@ -26,20 +26,32 @@
 
 /*Added by CP */
 .btn-primary {
-    color: #fff;
-    background-color: #3393DD;
-    border-color: #80BCEA;
+    color: #ffffff;
+    background-color: #0060A9;
+    border-color: #ffffff;
 }
 
+.btn-primary:hover {
+    color: #ffffff;
+    background-color: #004275;
+    border-color: #ffffff;
+}
+
+
+
 .btn-primary.active, .btn-primary:active, .open>.dropdown-toggle.btn-primary {
-    color: #fff;
-    background-color: #0078D4;
+    color: #ffffff;
+    background-color: #004275;
     background-image: none;
-    border-color: #0078D4;
+    border-color: #ffffff;
 }
 
 .btn-primary.active.focus, btn-primary.active:focus, .btn-primary.active:hover {
-    color: #fff;
-    background-color: #0078D4;
-    border-color: #0078D4;
+    color: #ffffff;
+    background-color: #004275;
+    border-color: #ffffff;
+}
+
+.infolayer [class^='y'][class$='title'] {
+  transform: rotate(0deg) translate(0px, 0px);
 }
