@@ -50,12 +50,16 @@ pub_day <-lubridate::dmy(09112021)
 ###############################################.
 
 trend <- readRDS(paste0("data/", pub_day, "-hsmr-trend-data.rds"))
-hsmr <- readRDS(paste0("data/", pub_day, "-hsmr-data.rds")) %>% arrange(hsmr[,"q_num"])
+hsmr <- readRDS(paste0("data/", pub_day, "-hsmr-data.rds"))
+
+hsmr <- hsmr %>% arrange(hsmr[,"q_num"])
 
 
 geo_lookup <- readRDS("data/geo_lookup.rds")
 geo_lookup_hb <- readRDS("data/geo_lookup.rds") %>%
   filter(areatype %in% c("Scotland", "NHS Board of treatment"))
+
+#geo_lookup_list <- readRDS("data/geo_lookup_list.rds")
 
 
 ###############################################.
@@ -66,8 +70,14 @@ geo_lookup_hb <- readRDS("data/geo_lookup.rds") %>%
 indicator_list_fa <- c("Crude mortality (%) within 30 days of discharge" = "Discharge",
                        "Crude population mortality per 1,000 population" = "Population")
 
-subgroup_list <- c("All Admissions", "Admission Type", "Age Group", "Deprivation", "Sex",
-                   "Place of Death", "Specialty")
+# Could be updated if the outputs from the publication are updated
+subgroup_list <- c("All admissions" = "All Admissions",
+                   "Admission type" = "Admission Type",
+                   "Age group" = "Age Group",
+                   "Deprivation",
+                   "Sex",
+                   "Place of death" = "Place of Death",
+                   "Specialty")
 
 timeperiod_list <- c(unique(hsmr$period_label))
 
@@ -88,6 +98,20 @@ hb_list <- c("Scotland" = "Scotland",
              "NHS Western Isles" = "S08000028",
              "Golden Jubilee" = "S08100001")
 
+# selectInput('x4', 'X4', choices = list(
+#   Eastern = c(`New York` = 'NY', `New Jersey` = 'NJ'),
+#   Western = c(`California` = 'CA', `Washington` = 'WA')
+# ), selectize = FALSE)
+
+location_list <- list(
+'Scotland' = c('Scotland'),
+'NHS Ayrshire & Arran' = c('NHS Ayrshire & Arran',
+                           'Arran War Memorial Hospital',
+                           'University Hospital Crosshouse',
+                           'University Hospital Ayr'),
+'NHS Borders' = c('NHS Borders',
+                  'Borders General Hospital'))
+
 
 ###############################################.
 ## Palettes and plot parameters ----
@@ -101,8 +125,8 @@ chart_colours <- as.character(phs_colours()[1:8])
 #                    '#6B5C85')
 
 # #Style of x and y axis
-xaxis_plots <- list(title = FALSE, fixedrange=TRUE, ticks="outside", tickangle = 270,
-                     rangemode="tozero")
+xaxis_plots <- list(title = FALSE, fixedrange=TRUE, ticks="outside",
+                     rangemode="tozero", dtick = 2)
 
 yaxis_plots <- list(title = FALSE, rangemode="tozero", fixedrange=TRUE,
                     ticks = "outside", showline=TRUE, range = FALSE)

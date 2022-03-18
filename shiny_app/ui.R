@@ -60,7 +60,7 @@ tabPanel(title = "HSMR", value = "hsmr", icon = icon("hospital"),
                                              choices = hb_list,
                                              selected =  "Scotland"),
                                  uiOutput("hb_hsmr_ui"))),
-                   column(3, div(title="Select a time period.",
+                   column(4, div(title="Select a time period.",
                                  selectizeInput("timeperiod_hsmr",
                                                 label = "Step 2. Select a time period.",
                                                 choices= timeperiod_list,
@@ -76,7 +76,7 @@ tabPanel(title = "HSMR", value = "hsmr", icon = icon("hospital"),
 ### Crude trends tab ----
 ##############################################.
 tabPanel(title = "Crude trends", value = "crude", icon = icon("area-chart"),
-         wellPanel(#actionButton("browser", "browser"),
+         wellPanel(actionButton("browser", "browser"),
                    column(4, div(title="Select the subgroup you wish to explore.", # tooltip
                                  radioGroupButtons("subgroup_select",
                                                    label= "Step 1. Select the subgroup you want to explore.",
@@ -85,7 +85,8 @@ tabPanel(title = "Crude trends", value = "crude", icon = icon("area-chart"),
 
                    column(4, div(title="Select a location",
                          selectizeInput("geotype", label = NULL,
-                                        choices= c("Scotland", "NHS Board of treatment", "Hospital"),
+                                        choices = location_list,
+                                        #choices= c("Scotland", "NHS Board of treatment", "Hospital"),
                                         selected = "Scotland", multiple = TRUE)),
                          uiOutput("geoname_ui"),
 
@@ -104,7 +105,7 @@ tabPanel(title = "Crude trends", value = "crude", icon = icon("area-chart"),
                                  )))
 
          ), #well panel
-        mainPanel(width = 10,
+        mainPanel(width = 12,
                   uiOutput("crude_trends")
          )# mainPanel bracket
 ), #tab panel
@@ -115,20 +116,21 @@ tabPanel(title = "Crude trends", value = "crude", icon = icon("area-chart"),
 ### Further analysis tab ----
 ##############################################.
 tabPanel(title = "Further analysis", value = "fa", icon = icon("chart-bar"),
-         wellPanel(#actionButton("browser", "browser"),
+         wellPanel(actionButton("browser", "browser"),
                    column(4, div(title="Select indicator.", # tooltip
                                  radioGroupButtons("indicator_select_fa",
                                                    label= "Step 1. Select the data you want to explore.",
                                                    choices = indicator_list_fa, status = "primary",
                                                    direction = "vertical", justified = T))),
                    column(4, div(title="Select a location",
-                                 p(tags$b("Step 2. Select a geography level and then area of interest (max 8).")),
-                                 selectInput("geotype_fa", label = NULL,
-                                             choices= c("Scotland", "NHS Board of treatment"),
+                                 selectizeInput("geotype_fa", label = "Step 2. Select NHS Board/s of interest.",
+                                             choices= hb_list,
                                              selected = "Scotland", multiple = TRUE)),
                           uiOutput("geoname_fa_ui"))
+
+
          ), #well panel
-         mainPanel(width = 10,
+         mainPanel(width = 12,
                    uiOutput("further_analysis")
          )# mainPanel bracket
 )#, #tab panel

@@ -11,14 +11,15 @@ observeEvent(input$browser, browser())
 
 # Crude trends tab
 # Show list of area names depending on areatype selected
-output$geoname_ui <- renderUI({
-  areas_summary <- sort(geo_lookup$areaname[geo_lookup$areatype %in% input$geotype])
-  selectizeInput("geoname", label = NULL,
-                 choices = areas_summary,
-                 multiple = TRUE,
-                 selected = "Scotland",
-                 options = list(maxItems = 8))
-})
+# output$geoname_ui <- renderUI({
+#   areas_summary <- sort(geo_lookup$areaname[geo_lookup$areatype %in% input$geotype])
+#   selectizeInput("geoname", label = NULL,
+#                  choices = areas_summary,
+#                  multiple = TRUE,
+#                  selected = "Scotland",
+#                  options = list(maxItems = 8))
+# })
+
 
 
 # This updates the location options in the drop downs depending on the sub group selection
@@ -26,16 +27,16 @@ observeEvent(input$subgroup_select, {
   x <- input$subgroup_select
 
   if (x == "All Admissions") {
-    trend_label = "Step 2. Select a geography and area of interest (max 8)"
-    trend_choices = c("Scotland", "NHS Board of treatment", "Hospital")
-    shinyjs::show("geoname_ui")
+    trend_label = "Step 2. Select locations of interest"
+    trend_choices = location_list
+    #shinyjs::show("geoname_ui")
     enable("geotype")
   }
 
   if (x != "All Admissions") {
     trend_label = "Step 2. Scotland level data only for this subgroup"
     trend_choices = c("Scotland")
-    hide("geoname_ui")
+    #hide("geoname_ui")
     disable("geotype")
   }
 
@@ -74,14 +75,14 @@ toggleState ("timeperiod", condition =
 
 # Further analysis tab
 # Show list of area names depending on areatype selected
-output$geoname_fa_ui <- renderUI({
-  areas_summary <- sort(geo_lookup_hb$areaname[geo_lookup_hb$areatype %in% input$geotype_fa])
-  selectizeInput("geoname_fa", label = NULL,
-                 choices = areas_summary,
-                 multiple = TRUE,
-                 selected = "Scotland",
-                 options = list(maxItems = 8))
-})
+# output$geoname_fa_ui <- renderUI({
+#   areas_summary <- sort(geo_lookup_hb$areaname[geo_lookup_hb$areatype %in% input$geotype_fa])
+#   selectizeInput("geoname_fa", label = NULL,
+#                  choices = areas_summary,
+#                  multiple = TRUE,
+#                  selected = "Scotland",
+#                  options = list(maxItems = 8))
+# })
 
 
 ###############################################.
@@ -139,7 +140,7 @@ trend_data <- reactive({
 
   trend %>%
     select(-completeness_date, -hb, -location) %>%
-    filter(location_name %in% input$geoname &
+    filter(location_name %in% input$geotype &
              time_period == input$timeperiod &
              sub_grp == input$subgroup_select)
 })
@@ -149,8 +150,8 @@ trend_data <- reactive({
 fa_data <- reactive({
 
   trend_fa <- trend %>%
-    select(-completeness_date, -hb, -location) %>%
-    filter(location_name %in% input$geoname_fa &
+    select(-completeness_date, -hb) %>%
+    filter(location_name %in% input$geotype_fa &
              time_period == "Quarter" &
              sub_grp == input$indicator_select_fa)
 })
@@ -251,7 +252,7 @@ output$hsmr_chart <- renderPlotly({
                           highlight$flag_below == TRUE ~ "#FF9999",
                           TRUE ~ "#80BCEA")
 
-  # Define titles
+  # Define formats
   yaxis_plots[["range"]] <- c(0, 2)
   yaxis_plots[["title"]] <- "HSMR"
   xaxis_plots[["title"]] <- "Predicted deaths"
@@ -324,6 +325,7 @@ output$trend_chart <- renderPlotly({
            yaxis = yaxis_plots,
            xaxis = xaxis_plots, list(categoryorder = "array", categoryarray = arrange(trend[,"mth_qtr"])),
            legend = list(orientation = "h", x=0, y=1.2)) %>% #position of legend
+     #add_annotations(text = "hello", x = -0.1, xref = 'paper', y = 0.5, yref = 'paper', showarrow = FALSE)) %>%
     # leaving only save plot button
     config(displaylogo = F, displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove)
    #legend = list(x = 100, y = 0.5)
