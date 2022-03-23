@@ -125,15 +125,19 @@ hsmr %<>%
   # Create flag for where hospital sits on funnel plot
   mutate(flag = case_when(smr > ucl ~ "2",
                           smr > uwl & smr <= ucl ~ "1",
-                          TRUE ~ "0"),
-         flag_above = case_when(smr > ucl ~ TRUE,
-                                TRUE ~ FALSE),
-         flag_below = case_when(smr < lcl ~ TRUE,
-                                TRUE ~ FALSE))
+                          smr <lcl ~ "3",
+                          smr <lwl & smr >= lcl ~ "4",
+                          TRUE ~ "0"))
+
+
+         #  flag_above_ucl = case_when(smr > ucl ~ TRUE,
+         #                        TRUE ~ FALSE),
+         # flag_below_lcl = case_when(smr < lcl ~ TRUE,
+         #                        TRUE ~ FALSE))
 
 
 hsmr %<>% select(hb, location, location_name, q_num, period_label, deaths, pred, pats, smr, crd_rate, smr_scot, death_scot, pats_scot,
-                 uwl, ucl, lwl, lcl, flag, flag_above, flag_below, completeness_date)
+                 uwl, ucl, lwl, lcl, flag, completeness_date)
 
 
 saveRDS(hsmr, file = paste0("shiny_app/data/", pub_day, "-hsmr-data.rds"))

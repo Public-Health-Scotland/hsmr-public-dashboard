@@ -57,16 +57,15 @@ toggleState ("timeperiod", condition =
                input$subgroup_select == "All Admissions")
   if (input$subgroup_select != "All Admissions") {
 
-     updateSelectizeInput(session, "timeperiod",
+     updateRadioGroupButtons(session, "timeperiod",
                          label = "Step 3. Quarterly data available only",
                          choices = c("Quarter"))
                          }
 
   else {
-    updateSelectizeInput(session, "timeperiod",
+    updateRadioGroupButtons(session, "timeperiod",
                          label = "Step 3. Select to view trends by month or quarter",
                          choices = c("Quarter","Month"))
-
 
     enable("timeperiod")
     }
@@ -244,13 +243,25 @@ output$hsmr_chart <- renderPlotly({
                            "Predicted deaths: ", round(hsmr$pred,0)))
 
 
- hosp_colour <- case_when(hsmr$flag_above == TRUE ~ "#FF0000",
-                          hsmr$flag_below == TRUE ~ "#FF0000",
+#  hosp_colour <- case_when(hsmr$flag_above_ucl == TRUE ~ "#FF0000",
+#                           hsmr$flag_below_lcl == TRUE ~ "#FF0000",
+#                           TRUE ~ "#0078D4")
+
+ hosp_colour <- case_when(hsmr$flag == 2 ~ "#FF0000",
+                          hsmr$flag == 3 ~ "#FF0000",
+                          hsmr$flag == 1 ~ "#FFA500",
+                          hsmr$flag == 4 ~ "#FFA500",
                           TRUE ~ "#0078D4")
 
- hosp_highlight <- case_when(highlight$flag_above == TRUE ~ "#FF9999",
-                          highlight$flag_below == TRUE ~ "#FF9999",
-                          TRUE ~ "#80BCEA")
+ # hosp_highlight <- case_when(highlight$flag_above_ucl == TRUE ~ "#FF9999",
+ #                          highlight$flag_below_lcl == TRUE ~ "#FF9999",
+ #                          TRUE ~ "#80BCEA")
+
+ hosp_highlight <- case_when(highlight$flag == 2 ~ "#FF9999",
+                             highlight$flag == 3 ~ "#FF9999",
+                             highlight$flag == 1 ~ "#FFC04D",
+                             highlight$flag == 4 ~ "#FFC04D",
+                             TRUE ~ "#80BCEA")
 
   # Define formats
   yaxis_plots[["range"]] <- c(0, 2)
