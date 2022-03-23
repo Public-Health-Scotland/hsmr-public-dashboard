@@ -40,10 +40,17 @@ tabPanel(title = "Introduction", icon = icon("list-ul"), value = "intro",
            lower standardised mortality ratio than the national average: Western General Hospital (0.75).")), br(),
          p("The data from this publication is available to download from the ",
            tags$a(href="https://publichealthscotland.scot/publications/hospital-standardised-mortality-ratios/",
-         "publication data files.", target="_blank"), "Open data from this publication is available from the ",
+         "publication data files.", target="_blank")),
+         p("Open data from this publication is available from the ",
          tags$a(href="https://www.opendata.nhs.scot/dataset/hospital-standardised-mortality-ratios",
-         "Scottish Health and Social Care Open Data platform.", target="_blank"))
-
+         "Scottish Health and Social Care Open Data platform.", target="_blank")),
+         p("The ", tags$a(href="https://www.isdscotland.org/Health-Topics/Quality-Indicators/HSMR/Methodology/_docs/HSMR-2019-Technical-Specification.pdf",
+                        "Technical Document", target="_blank"), " explains how HSMR is calculated and the ",
+           tags$a(href="https://www.isdscotland.org/Health-Topics/Quality-Indicators/HSMR/FAQ/_docs/HSMR-2019-FAQs.pdf",
+                        "Frequently Asked Questions", target="_blank"), "document answers common questions about the HSMR."),
+         p("For more information visit the ", tags$a(href="https://www.isdscotland.org/Health-Topics/Quality-Indicators/HSMR/",
+                                                     "HSMR webpages.", target="_blank")), br(),
+         p("The next release of this publication will be ", tags$b("10 May 2022"), ".")
 
 ), # tabPanel
 
@@ -91,9 +98,11 @@ tabPanel(title = "Crude trends", value = "crude", icon = icon("area-chart"),
                          uiOutput("geoname_ui"),
 
                   div(title="Select frequency",
-                         selectInput("timeperiod", label =NULL, choices= c("Month", "Quarter"),
-                                     selected =  "Quarter"),
-                      uiOutput("timeperiod_ui"))),
+                      radioGroupButtons("timeperiod", label = "Step 3. Select frequency", choices=c("Month", "Quarter"),
+                                        status = "primary", direction = "vertical", justified = T))),
+                      # selectInput("timeperiod", label =NULL, choices= c("Month", "Quarter"),
+                      #                selected =  "Quarter"),
+                      #uiOutput("timeperiod_ui"))),
 
            column(3, div(actionButton("btn_methodology", "Learn more",
                                icon = icon('th'),
