@@ -4,10 +4,11 @@
  tagList( #needed for shinyjs
    useShinyjs(),  # Include shinyjs
    navbarPage(id = "intabset", # id used for jumping between tabs
-                div(tags$a(img(src="phs-logo.png", width=120, alt = "Public Health Scotland logo"),
+                 div(
+                  tags$a(img(src="phs-logo.png", width=120, alt = "Public Health Scotland logo"),
                                  href= "https://www.publichealthscotland.scot/",
                                  target = "_blank"),
-                          style = "position: relative; top: -10px;"),
+                         style = "position: relative; top: -12px;"),
               windowTitle = "Hospital Standardised Mortality Ratios", #title for browser tab
               header = tags$head(includeCSS("www/styles.css"), # CSS styles
                                  HTML("<html lang='en'>"),
@@ -15,51 +16,43 @@
                                  #Including Google analytics
                                  includeScript("google-analytics.js")),
 
-
 ###############################################.
-### Contents ----
+### Home ----
 ###############################################.
-tabPanel(title = "Introduction", icon = icon("list-ul"), value = "intro",
+tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
 
-         h3(tags$b("Hospital Standardised Mortality Ratios")),
-         h4(tags$b(paste0("Publication Date: ", format(pub_day, "%d %B %Y")))),br(),
+         sidebarLayout(
+           sidebarPanel(width = 3,
+                        radioGroupButtons("home_select",
+                                          choices = home_list, status = "primary",
+                                          direction = "vertical", justified = T)),
+#             mainPanel(
 
-         p("This dashboard, updated quarterly, presents the Hospital Standardised
-           Mortality Ratios (HSMRs) for the latest 12 month period for hospitals in Scotland.
-          In addition crude mortality trends are presented by month and quarter
-           for the last five years."),
-         p("Hospital mortality measures have an important role to play in stimulating
-           reflection on the quality and safety of patient care. "), br(),
+               mainPanel(width = 9,
+                         uiOutput("home"))
 
-         h4(tags$b("Main points")),
 
-          # This could be automated from the funnel_text function
-         p(tags$li("For the period July 2020 to July 2021 no hospitals had a
-           significantly higher standardised mortality ratio than the national average."),
-          tags$li("For the period July 2020 to July 2021 one hospital had a significantly
-           lower standardised mortality ratio than the national average: Western General Hospital (0.75).")), br(),
-         p("The data from this publication is available to download from the ",
-           tags$a(href="https://publichealthscotland.scot/publications/hospital-standardised-mortality-ratios/",
-         "publication data files.", target="_blank")),
-         p("Open data from this publication is available from the ",
-         tags$a(href="https://www.opendata.nhs.scot/dataset/hospital-standardised-mortality-ratios",
-         "Scottish Health and Social Care Open Data platform.", target="_blank")),
-         p("The ", tags$a(href="https://www.isdscotland.org/Health-Topics/Quality-Indicators/HSMR/Methodology/_docs/HSMR-2019-Technical-Specification.pdf",
-                        "Technical Document", target="_blank"), " explains how HSMR is calculated and the ",
-           tags$a(href="https://www.isdscotland.org/Health-Topics/Quality-Indicators/HSMR/FAQ/_docs/HSMR-2019-FAQs.pdf",
-                        "Frequently Asked Questions", target="_blank"), "document answers common questions about the HSMR."),
-         p("For more information visit the ", tags$a(href="https://www.isdscotland.org/Health-Topics/Quality-Indicators/HSMR/",
-                                                     "HSMR webpages.", target="_blank")), br(),
-         p("The next release of this publication will be ", tags$b("10 May 2022"), ".")
+      #
+      #    # h4(tags$b("Main points")),
+      #    #
+      #    #  # This could be automated from the funnel_text function
+      #    # p(tags$li("For the period July 2020 to July 2021 no hospitals had a
+      #    #   significantly higher standardised mortality ratio than the national average."),
+      #    #  tags$li("For the period July 2020 to July 2021 one hospital had a significantly
+      #    #   lower standardised mortality ratio than the national average: Western General Hospital (0.75).")), br(),
 
+      #
+      # ) # mainPanel
+  ) # sidebarLayout
 ), # tabPanel
+
 
 
 ###############################################.
 ### HSMR ----
 ###############################################.
 
-tabPanel(title = "HSMR", value = "hsmr", icon = icon("hospital"),
+tabPanel(title = "HSMR", value = "hsmr", icon = icon("bed"),
          wellPanel(#actionButton("browser", "browser"),
                    column(4, div(title="Select NHS Board of treatment to highlight on chart",
                                  selectInput("hb_hsmr",
@@ -73,51 +66,58 @@ tabPanel(title = "HSMR", value = "hsmr", icon = icon("hospital"),
                                                 choices= timeperiod_list,
                                                 selected = "July 2020 to June 2021")),
                           uiOutput("timeperiod_hsmr_ui"))
-                   ), #well panel
+                   ), # wellPanel
          mainPanel(width = 12,
                    uiOutput("hsmr")
-         )# mainPanel bracket
-), #tab panel
+         ) # mainPanel
+), # tabPanel
 
 ###############################################.
 ### Crude trends tab ----
 ##############################################.
 tabPanel(title = "Crude trends", value = "crude", icon = icon("area-chart"),
-         wellPanel(actionButton("browser", "browser"),
+
+
+           wellPanel(
+                   # column(4, div(title="Select the subgroup you wish to explore.", # tooltip
+                   #               radioGroupButtons("subgroup_select",
+                   #                                 label= "Step 1. Select the subgroup you want to explore.",
+                   #                                 choices = subgroup_list, status = "primary",
+                   #                                 direction = "vertical", justified = T))),
+
                    column(4, div(title="Select the subgroup you wish to explore.", # tooltip
-                                 radioGroupButtons("subgroup_select",
-                                                   label= "Step 1. Select the subgroup you want to explore.",
-                                                   choices = subgroup_list, status = "primary",
-                                                   direction = "vertical", justified = T))),
+                                 selectizeInput("subgroup_select",
+                                                label= "Step 1. Select the subgroup you want to explore.",
+                                                choices = subgroup_list, selected = "All admissions",
+                                                multiple = F))),
 
                    column(4, div(title="Select a location",
                          selectizeInput("geotype", label = NULL,
                                         choices = location_list,
                                         #choices= c("Scotland", "NHS Board of treatment", "Hospital"),
                                         selected = "Scotland", multiple = TRUE)),
-                         uiOutput("geoname_ui"),
+                         uiOutput("geoname_ui")),
 
-                  div(title="Select frequency",
+                  column(4, div(title="Select frequency",
                       radioGroupButtons("timeperiod", label = "Step 3. Select frequency", choices=c("Month", "Quarter"),
-                                        status = "primary", direction = "vertical", justified = T))),
-                      # selectInput("timeperiod", label =NULL, choices= c("Month", "Quarter"),
-                      #                selected =  "Quarter"),
-                      #uiOutput("timeperiod_ui"))),
+                                        status = "primary", direction = "horizontal", justified = T)),
+                  uiOutput("timeperiod_ui"))
+                  #downloadButton("download_hsmr_data", "Download data", style = "float: left"))
 
-           column(3, div(actionButton("btn_methodology", "Learn more",
-                               icon = icon('th'),
-                               #style = "float: right",
-                               onclick = "window.open('https://www.isdscotland.org/Health-Topics/Quality-Indicators/HSMR/', '_blank')"),
+                 # fluidRow(
+                    # column(9, div(actionButton("btn_methodology", "Learn more",
+                    #            icon = icon('th'),
+                    #            #style = "float: right",
+                    #            onclick = "window.open('https://www.isdscotland.org/Health-Topics/Quality-Indicators/HSMR/', '_blank')")),
 
-                  fluidRow(br()),
-                  downloadButton("download_hsmr_data", "Download data"#, style = "float: right"
-                                 )))
 
-         ), #well panel
-        mainPanel(width = 12,
+                              #  )
+           ), #wellPanel
+        mainPanel(
+          width = 12,
                   uiOutput("crude_trends")
-         )# mainPanel bracket
-), #tab panel
+         )# mainPanel
+), # tabPanel
 
 
 
@@ -142,9 +142,11 @@ tabPanel(title = "Further analysis", value = "fa", icon = icon("chart-bar"),
          mainPanel(width = 12,
                    uiOutput("further_analysis")
          )# mainPanel bracket
+
 )#, #tab panel
 
 
 
 ) # navbarPage
+
 ) #tagList
