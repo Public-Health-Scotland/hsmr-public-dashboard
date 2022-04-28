@@ -44,13 +44,15 @@ data_folder <- dplyr::if_else(platform == "server",
 # Define publication date
 pub_day <-lubridate::dmy(09112021)
 
+latest_hsmr <- c("July 2020 to June 2021")
 
 ###############################################.
 ## Data ----
 ###############################################.
 
 trend <- readRDS(paste0("data/", pub_day, "-hsmr-trend-data.rds"))
-hsmr <- readRDS(paste0("data/", pub_day, "-hsmr-data.rds"))
+hsmr <- readRDS(paste0("data/", pub_day, "-hsmr-data.rds")) %>%
+  mutate(completeness_date = dmy(completeness_date))
 
 hsmr <- hsmr %>% arrange(hsmr[,"q_num"])
 
@@ -79,24 +81,48 @@ subgroup_list <- c("All admissions" = "All Admissions",
                    "Place of death" = "Place of Death",
                    "Specialty")
 
+home_list <- c("About this publication" = "about",
+               "Accessibility" = "access",
+               "How to use" = "use",
+               "Glossary" = "glossary",
+               "Further information" = "info")
+
+
 timeperiod_list <- c(unique(hsmr$period_label))
 
-hb_list <- c("Scotland" = "Scotland",
-             "NHS Ayrshire & Arran" = "S08000015",
-             "NHS Borders" = "S08000016",
-             "NHS Dumfries & Galloway" = "S08000017",
-             "NHS Fife" = "S08000029",
-             "NHS Forth Valley" = "S08000019",
-             "NHS Grampian" = "S08000020",
-             "NHS Greater Glasgow and Clyde" = "S08000031",
-             "NHS Highland" = "S08000022",
-             "NHS Lanarkshire" = "S08000032",
-             "NHS Lothian" = "S08000024",
-             "NHS Orkney" = "S08000025",
-             "NHS Shetland" = "S08000026",
-             "NHS Tayside" = "S08000030",
-             "NHS Western Isles" = "S08000028",
-             "Golden Jubilee" = "S08100001")
+hb_list <- c("Scotland",
+             "NHS Ayrshire & Arran",
+             "NHS Borders",
+             "NHS Dumfries & Galloway",
+             "NHS Fife",
+             "NHS Forth Valley",
+             "NHS Grampian",
+             "NHS Greater Glasgow & Clyde",
+             "NHS Highland",
+             "NHS Lanarkshire",
+             "NHS Lothian",
+             "NHS Orkney",
+             "NHS Shetland",
+             "NHS Tayside",
+             "NHS Western Isles",
+             "Golden Jubilee")
+
+# hb_list <- c("Scotland" = "Scotland",
+#              "NHS Ayrshire & Arran" = "S08000015",
+#              "NHS Borders" = "S08000016",
+#              "NHS Dumfries & Galloway" = "S08000017",
+#              "NHS Fife" = "S08000029",
+#              "NHS Forth Valley" = "S08000019",
+#              "NHS Grampian" = "S08000020",
+#              "NHS Greater Glasgow and Clyde" = "S08000031",
+#              "NHS Highland" = "S08000022",
+#              "NHS Lanarkshire" = "S08000032",
+#              "NHS Lothian" = "S08000024",
+#              "NHS Orkney" = "S08000025",
+#              "NHS Shetland" = "S08000026",
+#              "NHS Tayside" = "S08000030",
+#              "NHS Western Isles" = "S08000028",
+#              "Golden Jubilee" = "S08100001")
 
 # selectInput('x4', 'X4', choices = list(
 #   Eastern = c(`New York` = 'NY', `New Jersey` = 'NJ'),
