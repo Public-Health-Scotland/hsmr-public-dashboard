@@ -26,26 +26,10 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
                         radioGroupButtons("home_select",
                                           choices = home_list, status = "primary",
                                           direction = "vertical", justified = T)),
-#             mainPanel(
-
-               mainPanel(width = 9,
-                         uiOutput("home"))
-
-
-      #
-      #    # h4(tags$b("Main points")),
-      #    #
-      #    #  # This could be automated from the funnel_text function
-      #    # p(tags$li("For the period July 2020 to July 2021 no hospitals had a
-      #    #   significantly higher standardised mortality ratio than the national average."),
-      #    #  tags$li("For the period July 2020 to July 2021 one hospital had a significantly
-      #    #   lower standardised mortality ratio than the national average: Western General Hospital (0.75).")), br(),
-
-      #
-      # ) # mainPanel
-  ) # sidebarLayout
-), # tabPanel
-
+           mainPanel(width = 9,
+                     uiOutput("home"))
+           ) # sidebarLayout
+         ), # tabPanel
 
 
 ###############################################.
@@ -53,7 +37,7 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
 ###############################################.
 
 tabPanel(title = "HSMR", value = "hsmr", icon = icon("bed"),
-         wellPanel(#actionButton("browser", "browser"),
+         wellPanel(actionButton("browser", "browser"),
                    column(4, div(title="Select NHS Board of treatment to highlight on chart",
                                  selectInput("hb_hsmr",
                                              label = "Step 1. Select NHS Board to highlight on chart.",
@@ -92,10 +76,9 @@ tabPanel(title = "Crude trends", value = "crude", icon = icon("area-chart"),
                                                 multiple = F))),
 
                    column(4, div(title="Select a location",
-                         selectizeInput("geotype", label = NULL,
+                                 pickerInput("geotype", label = "Select a location",
                                         choices = location_list,
-                                        #choices= c("Scotland", "NHS Board of treatment", "Hospital"),
-                                        selected = "Scotland", multiple = TRUE)),
+                                        selected = "Scotland", multiple = T)),
                          uiOutput("geoname_ui")),
 
                   column(4, div(title="Select frequency",
@@ -104,15 +87,7 @@ tabPanel(title = "Crude trends", value = "crude", icon = icon("area-chart"),
                   uiOutput("timeperiod_ui"))
                   #downloadButton("download_hsmr_data", "Download data", style = "float: left"))
 
-                 # fluidRow(
-                    # column(9, div(actionButton("btn_methodology", "Learn more",
-                    #            icon = icon('th'),
-                    #            #style = "float: right",
-                    #            onclick = "window.open('https://www.isdscotland.org/Health-Topics/Quality-Indicators/HSMR/', '_blank')")),
-
-
-                              #  )
-           ), #wellPanel
+                 ), # wellPanel
         mainPanel(
           width = 12,
                   uiOutput("crude_trends")
@@ -125,8 +100,7 @@ tabPanel(title = "Crude trends", value = "crude", icon = icon("area-chart"),
 ### Further analysis tab ----
 ##############################################.
 tabPanel(title = "Further analysis", value = "fa", icon = icon("chart-bar"),
-         wellPanel(actionButton("browser", "browser"),
-                   column(4, div(title="Select indicator.", # tooltip
+         wellPanel(column(4, div(title="Select indicator.", # tooltip
                                  radioGroupButtons("indicator_select_fa",
                                                    label= "Step 1. Select the data you want to explore.",
                                                    choices = indicator_list_fa, status = "primary",
@@ -136,17 +110,13 @@ tabPanel(title = "Further analysis", value = "fa", icon = icon("chart-bar"),
                                              choices= hb_list,
                                              selected = "Scotland", multiple = TRUE)),
                           uiOutput("geoname_fa_ui"))
-
-
-         ), #well panel
+                   ), # wellPanel
          mainPanel(width = 12,
                    uiOutput("further_analysis")
-         )# mainPanel bracket
+                   )# mainPanel bracket
 
-)#, #tab panel
+    ) # tabPanel
+  ) # navbarPage
+) # tagList
 
-
-
-) # navbarPage
-
-) #tagList
+# END
