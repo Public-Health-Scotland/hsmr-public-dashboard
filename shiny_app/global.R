@@ -54,6 +54,7 @@ trend <- readRDS(paste0("data/", pub_day, "-hsmr-trend-data.rds"))
 hsmr <- readRDS(paste0("data/", pub_day, "-hsmr-data.rds")) %>%
   mutate(completeness_date = dmy(completeness_date))
 
+# Sort quarters in chronological order
 hsmr <- hsmr %>% arrange(hsmr[,"q_num"])
 
 
@@ -72,24 +73,21 @@ geo_lookup_hb <- readRDS("data/geo_lookup.rds") %>%
 indicator_list_fa <- c("Crude mortality (%) within 30 days of discharge" = "Discharge",
                        "Crude population mortality per 1,000 population" = "Population")
 
-# Could be updated if the outputs from the publication are updated
-subgroup_list <- c("All admissions" = "All Admissions",
-                   "Admission type" = "Admission Type",
-                   "Age group" = "Age Group",
-                   "Deprivation",
-                   "Sex",
-                   "Place of death" = "Place of Death",
-                   "Specialty")
+# List of sub groups for Crude trends tab
+subgroup_list <- c("All admissions", "Admission type", "Age group", "Deprivation",
+                   "Sex", "Place of death", "Specialty")
 
-home_list <- c("About this publication" = "about",
-               "Accessibility" = "access",
-               "How to use" = "use",
-               "Glossary" = "glossary",
-               "Further information" = "info")
+# List of sections in Home tab
+home_list <- c("About HSMR" = "about",
+               "Using the dashboard" = "use",
+               #"Glossary" = "glossary",
+               "Further information" = "info",
+               "Accessibility" = "accessibility")
 
-
+# List of quarters for HSMR time period drop-down
 timeperiod_list <- c(unique(hsmr$period_label))
 
+# List of HBs, used in drop-downs in HSMR and Further analysis tabs
 hb_list <- c("Scotland",
              "NHS Ayrshire & Arran",
              "NHS Borders",
@@ -124,19 +122,34 @@ hb_list <- c("Scotland",
 #              "NHS Western Isles" = "S08000028",
 #              "Golden Jubilee" = "S08100001")
 
-# selectInput('x4', 'X4', choices = list(
-#   Eastern = c(`New York` = 'NY', `New Jersey` = 'NJ'),
-#   Western = c(`California` = 'CA', `Washington` = 'WA')
-# ), selectize = FALSE)
 
+# List of locations for Crude trends tab
+# IMPORTANT: update this list if there are any changes to the hospitals included
 location_list <- list(
-'Scotland' = c('Scotland'),
-'NHS Ayrshire & Arran' = c('NHS Ayrshire & Arran',
-                           'Arran War Memorial Hospital',
-                           'University Hospital Crosshouse',
-                           'University Hospital Ayr'),
-'NHS Borders' = c('NHS Borders',
-                  'Borders General Hospital'))
+  "Scotland" = c("Scotland"),
+  "NHS Ayrshire & Arran" = c("NHS Ayrshire & Arran", "Arran War Memorial Hospital",
+                             "University Hospital Ayr", "University Hospital Crosshouse"),
+  "NHS Borders" = c("NHS Borders", "Borders General Hospital"),
+  "NHS Dumfries & Galloway" = c("NHS Dumfries & Galloway", "Dumfries & Galloway Royal Infirmary",
+                                "Galloway Community Hospital"),
+  "NHS Fife" = c("NHS Fife", "Victoria Hospital"),
+  "NHS Forth Valley" = c("NHS Forth Valley", "Forth Valley Royal Hospital"),
+  "NHS Grampian" = c("NHS Grampian", "Aberdeen Royal Infirmary", "Dr Gray's Hospital"),
+  "NHS Greater Glasgow & Clyde" = c("NHS Greater Glasgow & Clyde", "Glasgow Royal Infirmary",
+                                    "Inverclyde Royal Hospital", "Queen Elizabeth University Hospital",
+                                    "Royal Alexandra/Vale of Leven"),
+  "NHS Highland" = c("NHS Highland", "Belford Hospital", "Caithness General Hospital",
+                     "Lorn & Islands Hospital", "Raigmore Hospital"),
+  "NHS Lanarkshire" = c("NHS Lanarkshire", "University Hospital Hairmyres",
+                        "University Hospital Monklands", "University Hospital Wishaw"),
+  "NHS Lothian" = c("NHS Lothian", "Royal Infirmary of Edinburgh at Little France",
+                    "St John's Hospital", "Western General Hospital"),
+  "NHS Orkney" = c("NHS Orkney", "The Balfour"),
+  "NHS Shetland" = c("NHS Shetland", "Gilbert Bain Hospital"),
+  "NHS Tayside" = c("NHS Tayside", "Ninewells Hospital", "Perth Royal Infirmary",
+                  "Stracathro Hospital"),
+  "NHS Western Isles" = c("NHS Western Isles", "Western Isles Hospital"),
+  "Golden Jubilee" = c("Golden Jubilee National Hospital"))
 
 
 ###############################################.
@@ -150,7 +163,7 @@ chart_colours <- as.character(phs_colours()[1:8])
 #                    '#948DA3','#0078D4','#1E7F84',
 #                    '#6B5C85')
 
-# #Style of x and y axis
+# Style of x and y axis
 xaxis_plots <- list(title = FALSE, fixedrange=TRUE, ticks="outside",
                      rangemode="tozero", dtick = 2)
 
