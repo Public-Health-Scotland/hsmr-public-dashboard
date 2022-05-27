@@ -55,6 +55,7 @@ trend %<>%
                                  time_period == "Month" ~ month_label),
          mth_qtr = case_when(time_period == "Quarter" ~ quarter,
                              time_period == "Month" ~ month),
+         # these could be updated in the output from RAP process
          sub_grp = case_when(sub_grp == "All Admissions" ~ "All admissions",
                              sub_grp == "Admission Type" ~ "Admission type",
                              sub_grp == "Age Group" ~ "Age group",
