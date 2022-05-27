@@ -19,6 +19,7 @@ library(lubridate)
 library(readxl)
 library(phsstyles)
 library(formattable)
+library(scales)
 
 ###############################################.
 ## Set up environment ----
@@ -51,8 +52,7 @@ latest_hsmr <- c("July 2020 to June 2021")
 ###############################################.
 
 trend <- readRDS(paste0("data/", pub_day, "-hsmr-trend-data.rds"))
-hsmr <- readRDS(paste0("data/", pub_day, "-hsmr-data.rds")) %>%
-  mutate(completeness_date = dmy(completeness_date))
+hsmr <- readRDS(paste0("data/", pub_day, "-hsmr-data.rds"))
 
 # Sort quarters in chronological order
 hsmr <- hsmr %>% arrange(hsmr[,"q_num"])
@@ -87,7 +87,7 @@ home_list <- c("About HSMR" = "about",
 # List of quarters for HSMR time period drop-down
 timeperiod_list <- c(unique(hsmr$period_label))
 
-# List of HBs, used in drop-downs in HSMR and Further analysis tabs
+# List of HBs, used in Further analysis tab
 hb_list <- c("Scotland",
              "NHS Ayrshire & Arran",
              "NHS Borders",
@@ -105,22 +105,23 @@ hb_list <- c("Scotland",
              "NHS Western Isles",
              "Golden Jubilee")
 
-# hb_list <- c("Scotland" = "Scotland",
-#              "NHS Ayrshire & Arran" = "S08000015",
-#              "NHS Borders" = "S08000016",
-#              "NHS Dumfries & Galloway" = "S08000017",
-#              "NHS Fife" = "S08000029",
-#              "NHS Forth Valley" = "S08000019",
-#              "NHS Grampian" = "S08000020",
-#              "NHS Greater Glasgow and Clyde" = "S08000031",
-#              "NHS Highland" = "S08000022",
-#              "NHS Lanarkshire" = "S08000032",
-#              "NHS Lothian" = "S08000024",
-#              "NHS Orkney" = "S08000025",
-#              "NHS Shetland" = "S08000026",
-#              "NHS Tayside" = "S08000030",
-#              "NHS Western Isles" = "S08000028",
-#              "Golden Jubilee" = "S08100001")
+# This is required for the HSMR funnel and table
+hsmr_hb_list <- c("Scotland" = "Scotland",
+             "NHS Ayrshire & Arran" = "S08000015",
+             "NHS Borders" = "S08000016",
+             "NHS Dumfries & Galloway" = "S08000017",
+             "NHS Fife" = "S08000029",
+             "NHS Forth Valley" = "S08000019",
+             "NHS Grampian" = "S08000020",
+             "NHS Greater Glasgow and Clyde" = "S08000031",
+             "NHS Highland" = "S08000022",
+             "NHS Lanarkshire" = "S08000032",
+             "NHS Lothian" = "S08000024",
+             "NHS Orkney" = "S08000025",
+             "NHS Shetland" = "S08000026",
+             "NHS Tayside" = "S08000030",
+             "NHS Western Isles" = "S08000028",
+             "Golden Jubilee" = "S08100001")
 
 
 # List of locations for Crude trends tab
@@ -151,6 +152,28 @@ location_list <- list(
   "NHS Western Isles" = c("NHS Western Isles", "Western Isles Hospital"),
   "Golden Jubilee" = c("Golden Jubilee National Hospital"))
 
+trend_variable_names <- c("period_label" = "label_short",
+                    "period_number" = "mth_qtr",
+                    "subgroup" = "sub_grp",
+                    "group" = "label",
+                    "patients" = "pats",
+                    "crude_rate" = "crd_rate",
+                    "scotland_deaths" = "scot_deaths",
+                    "scotland_patients" = "scot_pats",
+                    "scotland_crude_rate" = "scot_crd_rate")
+
+
+hsmr_variable_names <- c("predicted_deaths" = "pred",
+                    "patients" = "pats",
+                    "crude_rate" = "crd_rate",
+                    "standardised_mortality_ratio" = "smr",
+                    "scotland_standardised_mortality_ratio" = "smr_scot",
+                    "scotland_deaths" = "death_scot",
+                    "scotland_patients" = "pats_scot",
+                    "upper_warning_limit" = "uwl",
+                    "upper_control_limit" = "ucl",
+                    "lower_control_limit" = "lcl",
+                    "lower_warning_limit" = "lwl")
 
 ###############################################.
 ## Palettes and plot parameters ----
@@ -174,6 +197,15 @@ yaxis_plots <- list(title = FALSE, rangemode="tozero", fixedrange=TRUE,
 bttn_remove <-  list('select2d', 'lasso2d', 'zoomIn2d', 'zoomOut2d',
                      'autoScale2d',   'toggleSpikelines',  'hoverCompareCartesian',
                      'hoverClosestCartesian', 'zoom2d', 'pan2d', 'resetScale2d')
+
+# couldn't get this to work
+# table_format <- list(c(style = 'bootstrap',
+#   class = 'table-bordered table-condensed',
+#   rownames = FALSE,
+#   options = list(pageLength = 20,
+#                  dom = 't',
+#                  autoWidth = TRUE),
+#   filter = "none"))
 
 ## END
 
