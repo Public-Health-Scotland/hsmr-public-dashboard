@@ -4,23 +4,10 @@ function(input, output, session) {
 
 
   # For debugging
-   observeEvent(input$browser, browser())
+  # observeEvent(input$browser, browser())
   ###############################################.
   ## Reactive controls  ----
   ###############################################.
-
-  # Crude trends tab
-  # Show list of area names depending on areatype selected
-  # output$geoname_ui <- renderUI({
-  #   areas_summary <- sort(geo_lookup$areaname[geo_lookup$areatype %in% input$geotype])
-  #   selectizeInput("geoname", label = NULL,
-  #                  choices = areas_summary,
-  #                  multiple = TRUE,
-  #                  selected = "Scotland",
-  #                  options = list(maxItems = 8))
-  # })
-
-
 
   # This updates the location options in the drop downs depending on the sub group selection
   observeEvent(input$subgroup_select, {
@@ -49,7 +36,8 @@ function(input, output, session) {
   }) #observeEvent
 
 
-
+  # This updates the time period options depending on the sub group selection i.e.
+  # monthly data is only available for Scotland
   observeEvent(input$subgroup_select, {
     req(input$subgroup_select)
 
@@ -76,6 +64,7 @@ function(input, output, session) {
   ## Modals  ----
   ###############################################.
 
+  # Text for 'What is a funnel plot?' info button
   funnel_modal <- modalDialog(
     p("A funnel plot is a type of ‘Statistical Process Control’ chart that helps to show
       data at a particular point in time. Funnel plots in this report allow comparisons
@@ -90,8 +79,9 @@ function(input, output, session) {
     p("An overdispersion factor has been applied to the funnel plot limits to reduce
       the effect of possibly false outliers. This is discussed in more detail in
       the ", tags$a(href="https://www.isdscotland.org/Health-Topics/Quality-Indicators/HSMR/Methodology/_docs/HSMR-2019-Technical-Specification.pdf",
-"Scottish HSMR Technical Document.", target="_blank")),
-p(tags$b("How to interpret a funnel plot")),
+                    "Scottish HSMR Technical Document.", target="_blank")),
+
+    p(tags$b("How to interpret a funnel plot")),
     p("Data points outwith the control limits (referred to here as ‘outliers’) are
       said to exhibit ‘special cause variation’. Variations may reflect a number
       of factors, such as characteristics of the patients being cared for (case-mix),
@@ -104,7 +94,32 @@ p(tags$b("How to interpret a funnel plot")),
     easyClose = TRUE, fade=TRUE, footer = modalButton("Close (Esc)")
     )
   # Link action button click to modal launch
-  observeEvent(input$funnel_help, { showModal(funnel_modal) })
+  observeEvent(input$funnel_info, { showModal(funnel_modal) })
+
+
+  # Text for 'What are the sub groups'' info button
+  subgroup_modal <- modalDialog(
+    p("The subgroups that we have included are as follows:"),
+    p(tags$b("Age group: "),"this refers to the patient's age on admission. The ages are grouped into 5 year age bands."),
+    p(tags$b("Admission type: "), "this refers to whether the patient was an elective (planned) admission to hopsital, or
+      non-elective (emergency) admission to hospital."),
+    p(tags$b("Deprivation: "), "this is based on the patient's postcode of residence using the Scottish Index of Multiple
+      Deprivation (SIMD). The SIMD is calculated by the Scottish Government and is a
+      relative measure of deprivation across 6,976 small areas (called data zones). If an area is identified as ‘deprived’,
+      this can relate to people having a low income but it can also mean fewer resources or opportunities. SIMD looks at the
+      extent to which an area is deprived across seven domains: income, employment, education, health, access to services,
+      crime and housing."),
+    p(tags$b("Sex: "), "refers to the sex recorded on the episode of admission."),
+    p(tags$b("Place of death: "), "this is the location where the patient died; in hospital or in the community (e.g residential
+      home, care home etc."),
+    p(tags$b("Specialty: "), "we classify specialty group according to the specialty of the consultant/GP/healthcare
+    professional who was in charge of the patient episode. The specialties are grouped into seven distinct specialty
+    groups: Community, Dental, Emergency, Medical, Paediatrics, Surgery, and Women & Newborn."),
+    size = "l",
+    easyClose = TRUE, fade=TRUE, footer = modalButton("Close (Esc)")
+    )
+  # Link action button click to modal launch
+  observeEvent(input$subgroup_info, { showModal(subgroup_modal) })
 
 
 
@@ -158,175 +173,6 @@ p(tags$b("How to interpret a funnel plot")),
   ##  Reactive layout  ----
   ###############################################.
 
-  # Home
-  output$home <- renderUI({
-
-   if (input$home_select == "about") {
-     tagList(
-       h3(tags$b("Hospital Standardised Mortality Ratios")),
-       h4(tags$b(latest_hsmr)),
-       p(tags$b(paste0("Publication Date: ", format(pub_day, "%d %B %Y")))),br(),
-       p(paste0("This dashboard, which accompanies the quarterly Hospital Standardised
-           Mortality Ratio (HSMR) publication, presents the latest HSMR for the period ",
-                latest_hsmr, " for hospitals in Scotland. In addition crude mortality
-        trends are presented by month and quarter for the last five years. Hospital
-        mortality measures have an important role to play in stimulating reflection
-        on the quality and safety of patient care.")),
-       p(tags$b("What is a Hospital Standardised Mortality Ratio?")),
-       p("Hospital Standardised Mortality Ratios adjust death data, also known as
-         mortality data, to take account of some of the factors known to affect
-         the underlying risk of death. The mix of patients seen varies between
-         hospitals, and the mortality rate may be higher or lower at a hospital
-         for many reasons; the patients seen, for example, may be more seriously
-         ill than average. The adjusted mortality at individual hospitals
-         can then be compared to the Scottish average. This approach provides a better
-         starting point for investigating hospital mortality than crude mortality rates,
-         which do not provide a fair comparison."),
-       p(tags$b("How is the HSMR calculated?")),
-       p("We calculate HSMRs using information from validated SMR01 records (acute
-         inpatient and day case admissions only) which includes patients admitted
-         to all medical and surgical specialties in NHS Scotland apart from obstetrics
-         and psychiatry. Our calculation takes account of patients who died within
-         30 days of hospital admission. This means that HSMR values also include
-         some deaths that occurred outside hospital, and excludes deaths that occurred
-         in hospital more than 30 days after admission."),
-       p(tags$b("What does the HSMR value mean?")),
-       p("The Scottish HSMR is 1.00. If an HSMR value for a hospital is less than one,
-         this means the number of deaths within 30 days of admission for this hospital is
-         fewer than predicted. If an HSMR value for a hospital is greater than one, this
-         means the number of deaths within 30 days for this hospital is more than predicted.
-         If the number of deaths is more than predicted this does not necessarily mean that
-         these were avoidable deaths (i.e. that they should not have happened), or that
-         they were unexpected, or were attributable to failings in the quality of care."),
-
-       p(tags$b("Next publication")),
-       p("The next release of this publication will be ", tags$b("10 May 2022"), ".")
-
-
-       ) # tagList
-   }
-
-
-
-
-    else if(input$home_select == "use") {
-      tagList(
-        h3(tags$b("Using the dashboard")),
-        p("The dashboard has 4 tabs across the top which can be selected:
-          Home, HSMR, Crude trends, and Further analysis."),
-        p(tags$li(tags$b("Home: "), "includes sub-sections on the left hand side
-          which provide an introduction to the HSMR publication, accessibility
-          information and suggested resources to find out more.")),
-        p(tags$li(tags$b("HSMR: "), "view the HSMR for each hospital in Scotland for the
-          latest 12 month period, and the previous publications.")),
-        p(tags$li(tags$b("Crude trends: "), "view the crude mortality trends for all admissions
-          and key subgroups including age, sex, deprivation, admission type, specialty
-          and place of death by NHS Board of treatment and hospital.")),
-        p(tags$li(tags$b("Further analysis: "), "additional data is provided including crude
-          mortality trends within 30 days of discharge by NHS Board of treatment
-          and population mortality rates by NHS Board of residence.")), br(),
-
-        p(tags$b("Interacting with the dashboard")),
-        p("On each tab there are drop-down menus which allow the user to update
-          the charts and data tables for a specific NHS Board, hospital,
-          or subgroup. On the Crude trends and Further Analysis tabs,
-          the location drop-down allows multiple locations to be added to the chart and table.
-          These can easily be removed by highlighting the location and deleting."),
-
-        p(tags$b("Downloading data")),
-        p(tags$li("There is the option to download data as a csv file by clicking the
-        'Download data' button which can be found above the table on each tab.")),
-        p(tags$li("To download an image of a chart, click the camera icon in the top-right
-        corner of any chart in the dashboard and a png image file will automatically download."))
-
-
-      ) #tagList
-    }
-
-
-
-
-
-    else if(input$home_select == "info") {
-      tagList(
-        h3(tags$b("Further information")),
-        p("The summary report and full report for this publication can be found
-          on the ", tags$a(href="https://publichealthscotland.scot/publications/hospital-standardised-mortality-ratios/",
-        "HSMR publication page", target="_blank"), ". For more detailed information about the HSMR publication, visit the ",
-          tags$a(href="https://www.isdscotland.org/Health-Topics/Quality-Indicators/HSMR/",
-                                                    "HSMR webpages.", target="_blank")),
-        p("The ", tags$a(href="https://www.isdscotland.org/Health-Topics/Quality-Indicators/HSMR/Methodology/_docs/HSMR-2019-Technical-Specification.pdf",
-                         "Technical Document", target="_blank"), " explains in more detail about how the HSMRs
-          are calculated and the ",
-          tags$a(href="https://www.isdscotland.org/Health-Topics/Quality-Indicators/HSMR/FAQ/_docs/HSMR-2019-FAQs.pdf",
-          "Frequently Asked Questions", target="_blank"), "document answers common
-          questions about the HSMR publication."),
-
-        p(tags$b("Data files")),
-        p("The data from this dashboard can be downloaded by clicking the 'Download data'
-          button above each of the tables, or it is available to download from the ",
-          tags$a(href="https://publichealthscotland.scot/publications/hospital-standardised-mortality-ratios/",
-                 "publication data files.", target="_blank")),
-        p(tags$b("Open data")),
-        p("Open data from this publication is available from the ",
-          tags$a(href="https://www.opendata.nhs.scot/dataset/hospital-standardised-mortality-ratios",
-                 "Scottish Health and Social Care Open Data platform.", target="_blank")),
-        p("The code used to produce this publication can be accessed in this ",
-        tags$a(href= "https://github.com/Public-Health-Scotland/hsmr", "GitHub repository.",
-               target="_blank")),
-        p(tags$b("Data sources")),
-        p(tags$a(href="https://www.ndc.scot.nhs.uk/National-Datasets/data.asp?ID=1&SubID=5",
-        "General Acute Inpatient and Day Case - Scottish Morbidity Record (SMR01)", target="_blank")),
-        p(tags$a(href="https://www.ndc.scot.nhs.uk/National-Datasets/data.asp?ID=3&SubID=13",
-                 "National Records of Scotland (NRS) - Deaths Data", target="_blank")),
-        p(tags$b("Data completeness")),
-        p("Information about the completeness of the SMR01 dataset at the time of this
-          publication can be found on the ", tags$a(href="https://beta.isdscotland.org/products-and-services/data-management-hospital-activity/smr-completeness/",
-        "SMR completeness webpage.", target="_blank")),
-        p(tags$b("Contact us")),
-        p("Please contact the ", tags$a(href="mailto:phs.qualityindicators@phs.scot",
-        "Quality Indicators team"), "if you have any questions about this publication or dashboard.")
-
-      ) #tagList
-
-
-    }
-
-    else if (input$home_select == "accessibility") {
-      tagList(
-        h3(tags$b("Accessibility")),
-        p("This website is run by ", tags$a(href="https://www.publichealthscotland.scot/",
-                                            "Public Health Scotland", target="_blank"),
-          ", Scotland's national organisation for public health. As a new organisation formed
-        on 1 April 2020, Public Health Scotland is currently reviewing its web estate. Public
-        Health Scotland is committed to making its website accessible, in accordance with
-        the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility
-        Regulations 2018. This accessibility statement applies to the dashboard that accompanies
-        the HSMR quarterly publication."),
-        p(tags$a(href="https://mcmw.abilitynet.org.uk/", "AbilityNet", target="_blank"),
-          " has advice on making your device easier to use if you have a disability."),
-        p(tags$b("Compliance status")),
-        p("This site has not yet been evaluated against Web Content Accessibility Guidelines
-        version 2.1 level AA standard."),
-        p(tags$b("Reporting any accessibility problems with this website")),
-        p("If you wish to contact us about any accessibility issues you encounter on this
-        site, please email ", tags$a(href="mailto:phs.qualityindicators@phs.scot", "phs.qualityindicators@phs.scot", ".")),
-        p(tags$b("Enforcement procedure")),
-        p("The Equality and Human Rights Commission (EHRC) is responsible for enforcing the
-        Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations
-        2018 (the ‘accessibility regulations’)."),
-        p("If you’re not happy with how we respond to your complaint, ",
-          tags$a(href="https://www.equalityadvisoryservice.com/", "contact the Equality Advisory and Support Service (EASS).",
-                 target = "_blank")),
-        p(tags$b("Preparation of this accessibility statement")),
-        p("This statement was prepared on DD MMM 2022. It was last reviewed on DD MMM 2022.")
-
-      )
-    }
-
-        })
-
-
   # HSMR
   output$hsmr <- renderUI({
 
@@ -351,8 +197,8 @@ p(tags$b("How to interpret a funnel plot")),
       #   quarterly update."),
       main_points, br(),
       fluidRow(column(9, h4(tags$b(paste0(hsmr_chart_title)))),
-               column(3, actionButton("funnel_help","What is a funnel plot?",
-                                      icon = icon('question-circle')))),
+               column(3, div(actionButton("funnel_info","What is a funnel plot?",
+                                      icon = icon('question-circle')), style = "float: right"))),
       fluidRow(column(12, withSpinner(plotlyOutput("hsmr_chart")))),
       fluidRow(column(3, downloadButton('download_hsmr_data', 'Download data'))),
       fluidRow(column(12, dataTableOutput("hsmr_table"))), br(), br()
@@ -369,21 +215,22 @@ p(tags$b("How to interpret a funnel plot")),
 
     tagList(
     p("This section presents crude mortality rates for deaths within 30 days of
-      admission, which can be used to show trends through time. Since crude mortality
+      admission, which can be used to explore trends through time. Since crude mortality
       rates do not account for differences in case mix, they are less appropriate
       for comparing individual hospitals to Scotland. The data is also split by some
       of the factors that affect the underlying risk of death such as age, admission type
       and deprivation."),
 
-    fluidRow(column(12, h4(tags$b(paste0(trend_chart_title)))),
-             column(12, withSpinner(plotlyOutput("trend_chart")))) %>%
-      br() %>%
-      fluidRow(column(3, downloadButton('download_trend_data', 'Download data'))),
-      fluidRow(column(12, dataTableOutput("trend_table"))), br(), br()
+    fluidRow(column(9, h4(tags$b(paste0(trend_chart_title)))),
+             column(3, div(actionButton("subgroup_info","What are the subgroups?",
+                                    icon = icon('question-circle'), style = "float: right"))),
+             column(12, withSpinner(plotlyOutput("trend_chart"))), br(),
+             column(3, downloadButton('download_trend_data', 'Download data')),
+             column(12, dataTableOutput("trend_table"))), br(), br()
     ) #tagList
 
   })
-
+  #fluidRow(column(12, div(submitButton(), style = "float: right")))
 
   # Further analysis
   output$further_analysis <- renderUI({
@@ -409,9 +256,9 @@ p(tags$b("How to interpret a funnel plot")),
       population. Crude population mortality rates for Scotland and NHS Boards of Residence are given
       in this chart using the total number of deaths in each quarter and mid-year population estimates."))
 
-    tagList(fluidRow(column(12, fa_indicator_desc)),
+    tagList(fluidRow(column(12, fa_indicator_desc)), br(),
             fluidRow(column(12, h4(tags$b(paste0(fa_chart_title)))),
-                     column(12, withSpinner(plotlyOutput("fa_chart")))) %>% br() %>%
+                     column(12, withSpinner(plotlyOutput("fa_chart")))) %>%
               fluidRow(column(3, downloadButton('download_fa_data', 'Download data'))),
               fluidRow(column(12, dataTableOutput("fa_table"))), br(), br()
     )
@@ -440,22 +287,14 @@ p(tags$b("How to interpret a funnel plot")),
                              "HSMR: ", round(hsmr$smr,2), "<br>",
                              "Predicted deaths: ", round(hsmr$pred,0)))
 
-
-    #  hosp_colour <- case_when(hsmr$flag_above_ucl == TRUE ~ "#FF0000",
-    #                           hsmr$flag_below_lcl == TRUE ~ "#FF0000",
-    #                           TRUE ~ "#0078D4")
-
+     # Assign colours for hospital data points depending on flag
     hosp_colour <- case_when(hsmr$flag == 2 ~ "#FF0000", # ucl
                              hsmr$flag == 3 ~ "#FF0000", # lcl
                              hsmr$flag == 1 ~ "#FF6700", # uwl
                              hsmr$flag == 4 ~ "#FF6700", # lwl
                              TRUE ~ "#0078D4")
 
-
-    # hosp_highlight <- case_when(highlight$flag_above_ucl == TRUE ~ "#FF9999",
-    #                          highlight$flag_below_lcl == TRUE ~ "#FF9999",
-    #                          TRUE ~ "#80BCEA")
-
+    # Assign colours for highlighting selected hospitals
     hosp_highlight <- case_when(highlight$flag == 2 ~ "#FF9999", # ucl
                                 highlight$flag == 3 ~ "#FF9999", # lcl
                                 highlight$flag == 1 ~ "#FFCD99", # uwl
@@ -616,8 +455,10 @@ p(tags$b("How to interpret a funnel plot")),
       select(location_name, period_label, deaths, pred,
              pats, smr, crd_rate) %>%
       rename(Location = location_name, "Period" = period_label, Deaths = deaths,
-             "Predicted deaths" = pred, Patients = pats, Crude_rate = crd_rate,
+             "Predicted deaths" = pred, Patients = pats, "Crude_rate (%)" = crd_rate,
              "Standardised Mortality Ratio (SMR)" = smr)
+
+    format(table, big.mark = ",", scientific = FALSE)
 
     table_colnames  <-  gsub("_", " ", colnames(table))
 
@@ -641,13 +482,12 @@ p(tags$b("How to interpret a funnel plot")),
   output$trend_table <- renderDataTable({
 
     table <- trend_data() %>% select(location_name, label_short, sub_grp, label, deaths,
-                                     pats, crd_rate, scot_crd_rate) %>%
-      rename(Location = location_name, Time_period = label_short, Subgroup = sub_grp,
-             Group = label, Deaths = deaths, Patients = pats, Crude_rate = crd_rate,
-             Scotland_crude_rate = scot_crd_rate) %>%
+                                     pats, crd_rate) %>%
+      rename(Location = location_name, "Time period" = label_short, Subgroup = sub_grp,
+             Group = label, Deaths = deaths, Patients = pats, "Crude rate (%)" = crd_rate) %>%
       mutate_if(is.numeric, round, 1)
 
-    table_colnames  <-  gsub("_", " ", colnames(table))
+    #table_colnames  <-  gsub("_", " ", colnames(table))
 
     datatable(table,
               style = 'bootstrap',
@@ -656,8 +496,7 @@ p(tags$b("How to interpret a funnel plot")),
               options = list(pageLength = 20,
                              dom = 't',
                              autoWidth = TRUE),
-              filter = "none",
-              colnames = table_colnames)
+              filter = "none")
 
   })
 
@@ -666,9 +505,9 @@ p(tags$b("How to interpret a funnel plot")),
   output$fa_table <- renderDataTable({
 
     fa <- fa_data() %>% select(location_name, label_short, deaths,
-                               pats, crd_rate, scot_crd_rate) %>%
+                               pats, crd_rate) %>%
       rename(Location = location_name, Quarter = label_short, Deaths = deaths,
-             Patients = pats, Crude_rate = crd_rate, Scotland_crude_rate = scot_crd_rate) %>%
+             Patients = pats, Crude_rate = crd_rate) %>%
       mutate_if(is.numeric, round, 1)
 
     table_colnames  <-  gsub("_", " ", colnames(fa))
@@ -683,6 +522,8 @@ p(tags$b("How to interpret a funnel plot")),
               filter = "none",
               colnames = table_colnames)
 
+  # couldn't get this to work
+  # datatable(fa, table_format)
 
   })
 
@@ -694,19 +535,25 @@ p(tags$b("How to interpret a funnel plot")),
 # This section prepares the data in each tab for download by
 # renaming variables where necessary.
 
-# HSMR
-hsmr_download <- reactive({
+# rename variables - trend and further analysis
 
-  hsmr_extract <- hsmr_data() %>% select(-hb, - q_num, -flag)
-})
+
+
+# HSMR
+  hsmr_download <- reactive({
+
+  hsmr_extract <- hsmr_data() %>%
+    select(-hb, - q_num, -flag) %>%
+    rename(hsmr_variable_names)
+  })
 
 
   output$download_hsmr_data <- downloadHandler(
-    filename ="hsmr_data.csv",
+    filename ="hsmr.csv",
     content = function(file) {
-      write_csv(hsmr_download(),
-                file) }
+      write_csv(hsmr_download(), file) }
   )
+
 
 
 # Crude trends
@@ -714,33 +561,29 @@ hsmr_download <- reactive({
 
     trend_extract <- trend_data() %>%
       select(-agg_label) %>%
-      rename("period_num" = mth_qtr)
-
-  })
+      rename(variable_names)
+    })
 
   output$download_trend_data <- downloadHandler(
-    filename ="crude_mortality_trends_data.csv",
+    filename ="crude_mortality_trends.csv",
     content = function(file) {
-      write_csv(trends_download(),
-                file) }
+      write_csv(trends_download(), file) }
   )
+
 
 # Further analysis
   fa_download <- reactive({
 
     fa_extract <- fa_data() %>%
-      select(-location, -agg_label, -sub_grp) %>%
-      rename("quarter_num" = mth_qtr,
-             "quarter_label" = label_short,
-             "indicator_label" = label)
-
-  })
+      rename(variable_names) %>%
+      rename("indicator_label" = "group") %>%
+      select(-location, -agg_label, -subgroup)
+    })
 
   output$download_fa_data <- downloadHandler(
-    filename ="further_analysis_data.csv",
+    filename ="further_analysis.csv",
     content = function(file) {
-      write_csv(fa_download(),
-                file) }
+      write_csv(fa_download(), file) }
   )
 
 
