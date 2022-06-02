@@ -1,4 +1,4 @@
-# server - HSMR public dashboard
+# Server - HSMR public dashboard
 
 function(input, output, session) {
 
@@ -14,14 +14,14 @@ function(input, output, session) {
     x <- input$subgroup_select
 
     if (x == "All admissions") {
-      trend_label = "Step 2. Select locations of interest"
+      trend_label = "Step 2. Select locations of interest."
       trend_choices = location_list
       #shinyjs::show("geoname_ui")
       enable("geotype")
     }
 
     if (x != "All admissions") {
-      trend_label = "Step 2. Scotland level data only for this subgroup"
+      trend_label = "Step 2. Scotland level data only for this subgroup."
       trend_choices = c("Scotland")
       #hide("geoname_ui")
       disable("geotype")
@@ -46,13 +46,13 @@ function(input, output, session) {
     if (input$subgroup_select != "All admissions") {
 
       updateRadioGroupButtons(session, "timeperiod",
-                              label = "Step 3. Quarterly data only for this subgroup",
+                              label = "Step 3. Quarterly data only for this subgroup.",
                               choices = c("Quarter"))
     }
 
     else {
       updateRadioGroupButtons(session, "timeperiod",
-                              label = "Step 3. Select to view trends by month or quarter",
+                              label = "Step 3. Select to view trends by month or quarter.",
                               choices = c("Quarter","Month"))
 
       enable("timeperiod")
@@ -100,7 +100,7 @@ function(input, output, session) {
   # Text for 'What are the sub groups'' info button
   subgroup_modal <- modalDialog(
     p("The subgroups that we have included are as follows:"),
-    p(tags$b("Age group: "),"this refers to the patient's age on admission. The ages are grouped into 5 year age bands."),
+    p(tags$b("Age group: "),"this refers to the patient's age on admission. The ages are grouped into 20 year age bands."),
     p(tags$b("Admission type: "), "this refers to whether the patient was an elective (planned) admission to hopsital, or
       non-elective (emergency) admission to hospital."),
     p(tags$b("Deprivation: "), "this is based on the patient's postcode of residence using the Scottish Index of Multiple
@@ -109,9 +109,9 @@ function(input, output, session) {
       this can relate to people having a low income but it can also mean fewer resources or opportunities. SIMD looks at the
       extent to which an area is deprived across seven domains: income, employment, education, health, access to services,
       crime and housing."),
-    p(tags$b("Sex: "), "refers to the sex recorded on the episode of admission."),
+    p(tags$b("Sex: "), "refers to the sex recorded on the episode of admission to hospital."),
     p(tags$b("Place of death: "), "this is the location where the patient died; in hospital or in the community (e.g residential
-      home, care home etc."),
+      home, care home, etc.)"),
     p(tags$b("Specialty: "), "we classify specialty group according to the specialty of the consultant/GP/healthcare
     professional who was in charge of the patient episode. The specialties are grouped into seven distinct specialty
     groups: Community, Dental, Emergency, Medical, Paediatrics, Surgery, and Women & Newborn."),
@@ -176,7 +176,7 @@ function(input, output, session) {
   # HSMR
   output$hsmr <- renderUI({
 
-    hsmr_chart_title <- paste0("HSMR for deaths within 30 days of admission by hospital; ", input$timeperiod_hsmr)
+    hsmr_chart_title <- paste0("HSMR for deaths within 30 days of admission by hospital: ", input$timeperiod_hsmr)
 
     main_points <- if(input$timeperiod_hsmr == latest_hsmr) {
           tagList(
@@ -210,13 +210,12 @@ function(input, output, session) {
   # Crude trends
   output$crude_trends <- renderUI({
 
-    trend_chart_title <- paste0("Crude mortality within 30 days of admission; ",
+    trend_chart_title <- paste0("Crude mortality (%) within 30 days of admission: ",
                                 input$subgroup_select)
 
     tagList(
     p("This section presents crude mortality rates for deaths within 30 days of
-      admission, which can be used to explore trends through time. Since crude mortality
-      rates do not account for differences in case mix, they are less appropriate
+      admission for the previous 5 years. Since crude mortality rates do not account for differences in case mix, they are less appropriate
       for comparing individual hospitals to Scotland. The data is also split by some
       of the factors that affect the underlying risk of death such as age, admission type
       and deprivation."),
@@ -239,21 +238,21 @@ function(input, output, session) {
     fa_chart_title <- case_when(input$indicator_select_fa == "Discharge" ~
                                   paste0("Crude mortality (%) within 30 days of discharge"),
                                 input$indicator_select_fa == "Population" ~
-                                  paste0("Crude population mortality per 1,000 population"))
+                                  paste0("Crude mortality per 1,000 population"))
 
     # Indicator description to update depending on selection
     fa_indicator_desc <- case_when(
       input$indicator_select_fa == "Discharge" ~
-      paste0("This chart shows the trend in mortality at Scotland and NHS Board of Treatment level according to a definition
-      similar to the Summary Hospital-level Mortality Indicator in England. SHMI takes
-      account of in-patient mortality and deaths within 30 days of discharge.
+      paste0("This chart shows the trend in mortality for Scotland and NHS Boards of treatment using a definition
+      similar to the Summary Hospital-level Mortality Indicator (SHMI) in England. SHMI takes
+      account of inpatient mortality and deaths within 30 days of discharge.
       The Scottish HSMR does not include patients that die in hospital more than
-      30 days from admission. In Scotland, the decision was made to associate the outcome
-      with decisions made at the point of admission - more information can be found in the full report."),
+      30 days from admission. In Scotland, we associate the outcome
+      with decisions made at the point of admission. More information can be found in the full report."),
       input$indicator_select_fa == "Population" ~
-      paste0("Mortality rates can also be examined by comparing the total number of deaths within the population
+      paste0("An alternative measure of mortality is to compare the total number of deaths within the population
       in a given time period and area. This approach provides an overall picture of the mortality in the
-      population. Crude population mortality rates for Scotland and NHS Boards of Residence are given
+      population. Crude population mortality rates for Scotland and NHS Boards of residence are given
       in this chart using the total number of deaths in each quarter and mid-year population estimates."))
 
     tagList(fluidRow(column(12, fa_indicator_desc)), br(),
@@ -284,8 +283,11 @@ function(input, output, session) {
     # Information to be displayed in tooltip
     tooltip_hsmr <- c(paste0(hsmr$location_name, "<br>",
                              hsmr$period_label, "<br>",
-                             "HSMR: ", round(hsmr$smr,2), "<br>",
-                             "Predicted deaths: ", round(hsmr$pred,0)))
+                             "HSMR: ", sprintf("%.2f", hsmr$smr), "<br>",
+                             "Predicted deaths: ", format(round(hsmr$pred,0), big.mark=","),"<br>",
+                            # "Predicted deaths: ", round(hsmr$pred,0), "<br>",
+                            "Observed deaths: ", format(hsmr$deaths, big.mark=",")))
+                            #"Observed deaths: ", hsmr$deaths))
 
      # Assign colours for hospital data points depending on flag
     hosp_colour <- case_when(hsmr$flag == 2 ~ "#FF0000", # ucl
@@ -341,23 +343,25 @@ function(input, output, session) {
   }
   )#plotly end
 
-  #legend=list(orientation="h",xanchor="center",x=0,y=1)) , x = 0, y = 1
 
 
   # Crude trends
   output$trend_chart <- renderPlotly({
 
     trend <- trend_data() %>%
-      mutate(label_short = factor(label_short, levels = unique(trend_data()$label_short)))
+      mutate(label_short = factor(label_short, levels = unique(trend_data()$label_short))) %>%
+      filter(label != "Unknown")
 
     # Information to be displayed in tooltip
     tooltip_trend <- c(paste0(input$timeperiod, ": ", trend$label_short, "<br>",
                               trend$location_name, "<br>",
-                              trend$sub_grp, " : ", trend$label, "<br>",
-                              "Crude mortality rate (%): ", round(trend$crd_rate,1)))
+                              trend$sub_grp, ": ", trend$label, "<br>",
+                              "Crude mortality rate (%): ", sprintf("%.1f", trend$crd_rate), "<br>",
+                              "Deaths: ", format(trend$deaths, big.mark = ","), "<br>",
+                              "Patients: ", format(trend$pats, big.mark = ",")))
 
     # Titles for axes
-    yaxis_plots[["title"]] <- "Crude rate (%)"
+    yaxis_plots[["title"]] <- "Crude mortality rate (%)"
     xaxis_plots[["title"]]<- input$timeperiod
 
     if(input$subgroup_select == "All admissions") {
@@ -368,37 +372,70 @@ function(input, output, session) {
 
         # location line
         add_lines(y = ~crd_rate, color= ~location_name, colors = chart_colours[1:group_num],
-                  text=tooltip_trend, hoverinfo="text", name = ~location_name) %>%
+                  text=tooltip_trend, hoverinfo="text", name = ~location_name,
+                  mode = 'lines+markers', symbol= ~location_name,
+                  symbols = list('circle','square','triangle-down', 'x', 'diamond', 'star-square', 'cross'),
+                  marker = list(size= 8)) %>%
         #Layout
         layout(margin = list(b = 80, t=5), #to avoid labels getting cut out
                yaxis = yaxis_plots,
                xaxis = xaxis_plots, list(categoryorder = "array", categoryarray = arrange(trend[,"mth_qtr"])),
                legend = list(orientation = "h", x=0, y=1.2)) %>% #position of legend
-        #add_annotations(text = "hello", x = -0.1, xref = 'paper', y = 0.5, yref = 'paper', showarrow = FALSE)) %>%
         # leaving only save plot button
         config(displaylogo = F, displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove)
-      #legend = list(x = 100, y = 0.5)
-      #, xanchor = "left", x=0.55, y=1.2
     }
 
     else {
 
       group_num <- length(unique(trend$label))
 
+      # assign colour palette depending on subgroup chosen
+      if (input$subgroup_select %in% c("Sex", "Admission type", "Place of death")) {
+        chart_colours <- palette2
+        }
+
+      else if (input$subgroup_select %in% c("Age group", "Deprivation")) {
+        chart_colours <- palette5
+        }
+
+      else {
+        chart_colours
+        }
+
       plot <- plot_ly(data=trend, x=~label_short) %>%
 
         # location line
-        add_lines(y = ~crd_rate, color = ~label, colors = chart_colours[1:group_num],
-                  text=tooltip_trend, hoverinfo="text", name = ~label) %>%
+        add_lines(y = ~crd_rate, color = ~label,
+                  colors = chart_colours[1:group_num],
+                  #colors = chart_colours,
+                  text=tooltip_trend, hoverinfo="text", name = ~label,
+                  mode = 'lines+markers', symbol= ~label,
+                  symbols = list('circle','square','triangle-down', 'x', 'diamond', 'star-square', 'cross'),
+                  marker = list(size= 8)) %>%
         #Layout
         layout(margin = list(b = 80, t=5), #to avoid labels getting cut out
                yaxis = yaxis_plots,
                xaxis = xaxis_plots, list(categoryorder = "array",
                                          categoryarray = arrange(trend[,"mth_qtr"])),
                legend = list(orientation = "h", x=0, y=1.2)) %>% #position of legend
+
+
+        # add_lines(y = ~crd_rate, color = ~label,
+        #           colors = chart_colours[1:group_num],
+        #           #colors = chart_colours,
+        #           text=tooltip_trend, hoverinfo="text", name = ~label) %>%
+        # add_markers(y = ~crd_rate, x=~label_short, symbol= 'triangle', symbols = ~label) %>%
+        # #Layout
+        # layout(margin = list(b = 80, t=5), #to avoid labels getting cut out
+        #        yaxis = yaxis_plots,
+        #        xaxis = xaxis_plots, list(categoryorder = "array",
+        #                                  categoryarray = arrange(trend[,"mth_qtr"])),
+        #        legend = list(orientation = "h", x=0, y=1.2)) %>% #position of legend
+
+
         # leaving only save plot button
         config(displaylogo = F, displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove)
-      #
+
     }
 
   }
@@ -411,14 +448,31 @@ function(input, output, session) {
     fa <- fa_data() %>%
       mutate(label_short = factor(label_short, levels = unique(fa_data()$label_short)))
 
-    # Information to be displayed in tooltip
-    tooltip_fa <- c(paste0(input$timeperiod, ": ", fa$label_short, "<br>",
-                           fa$location_name, "<br>",
-                           "Crude mortality rate: ", round(fa$crd_rate,1)))
-
     # Titles for axes
-    yaxis_plots[["title"]] <- "Crude rate (%)"
     xaxis_plots[["title"]] <- "Quarter"
+
+    if (input$indicator_select_fa == "Discharge") {
+      # Information to be displayed in tooltip - discharge indicator
+      tooltip_fa <- c(paste0(input$timeperiod, ": ", fa$label_short, "<br>",
+                             fa$location_name, "<br>",
+                             "Crude mortality rate (%): ", sprintf("%.1f", fa$crd_rate), "<br>",
+                             "Deaths: ", format(fa$deaths, big.mark = ","), "<br>",
+                             "Patients: ", format(fa$pats, big.mark = ",")))
+
+      yaxis_plots[["title"]] <- "Crude mortality rate (%)"
+
+
+    } else {
+      # Information to be displayed in tooltip - population rate indicator
+      tooltip_fa <- c(paste0(input$timeperiod, ": ", fa$label_short, "<br>",
+                             fa$location_name, "<br>",
+                             "Crude mortality per 1,000 population: ", sprintf("%.1f", fa$crd_rate), "<br>",
+                             "Deaths: ", format(fa$deaths, big.mark = ","), "<br>",
+                             "Population: ", format(fa$pats, big.mark = ",")))
+
+      yaxis_plots[["title"]] <- "Crude mortality"
+
+    }
 
     # To ensure correct colours
     group_num <- length(unique(fa$location_name))
@@ -427,7 +481,10 @@ function(input, output, session) {
 
       # location line
       add_lines(y = ~crd_rate, color= fa$location_name, colors = chart_colours[1:group_num], text=tooltip_fa, hoverinfo="text",
-                name = ~location_name) %>%
+                name = ~location_name,
+                mode = 'lines+markers', symbol= ~location_name,
+                symbols = list('circle','square','triangle-down', 'x', 'diamond', 'star-square', 'cross'),
+                marker = list(size= 8)) %>%
       #Layout
       layout(margin = list(b = 80, t=5), #to avoid labels getting cut out
              yaxis = yaxis_plots,
@@ -449,29 +506,26 @@ function(input, output, session) {
 
     table <- hsmr_highlight() %>%
       filter(hb == input$hb_hsmr) %>%
-      mutate(pred = round(pred,0),
-             crd_rate = round(crd_rate,1),
-             smr = round(smr, 2)) %>%
+      mutate(crd_rate = sprintf("%.1f", crd_rate),
+             smr = sprintf("%.1f", smr),
+             pred = format(round(pred,0), big.mark=","),
+             pats = format(pats, big.mark=","),
+             deaths = format(deaths, big.mark=",")) %>%
       select(location_name, period_label, deaths, pred,
              pats, smr, crd_rate) %>%
-      rename(Location = location_name, "Period" = period_label, Deaths = deaths,
-             "Predicted deaths" = pred, Patients = pats, "Crude_rate (%)" = crd_rate,
-             "Standardised Mortality Ratio (SMR)" = smr)
+      rename(Location = location_name, "Period" = period_label, "Observed deaths" = deaths,
+             "Predicted deaths" = pred, Patients = pats, "Crude mortality rate (%)" = crd_rate,
+             "Hospital standardised mortality ratio (HSMR)" = smr)
 
-    format(table, big.mark = ",", scientific = FALSE)
-
-    table_colnames  <-  gsub("_", " ", colnames(table))
-
-    # have tried to create a vector to reduce repetition, but it hasn't worked.
     datatable(table,
               style = 'bootstrap',
               class = 'table-bordered table-condensed',
               rownames = FALSE,
               options = list(pageLength = 20,
                              dom = 't',
-                             autoWidth = TRUE),
-              filter = "none",
-              colnames = table_colnames)
+                             autoWidth = TRUE,
+                             columnDefs = list(list(className = 'dt-right', targets = 2:6))),
+              filter = "none")
 
   })
 
@@ -483,11 +537,13 @@ function(input, output, session) {
 
     table <- trend_data() %>% select(location_name, label_short, sub_grp, label, deaths,
                                      pats, crd_rate) %>%
+      mutate(crd_rate = sprintf("%.1f", crd_rate),
+             pats = format(pats, big.mark=","),
+             deaths = format(deaths, big.mark=",")) %>%
       rename(Location = location_name, "Time period" = label_short, Subgroup = sub_grp,
-             Group = label, Deaths = deaths, Patients = pats, "Crude rate (%)" = crd_rate) %>%
-      mutate_if(is.numeric, round, 1)
+             Group = label, "Deaths" = deaths, Patients = pats, "Crude mortality rate (%)" = crd_rate)
 
-    #table_colnames  <-  gsub("_", " ", colnames(table))
+
 
     datatable(table,
               style = 'bootstrap',
@@ -495,7 +551,8 @@ function(input, output, session) {
               rownames = FALSE,
               options = list(pageLength = 20,
                              dom = 't',
-                             autoWidth = TRUE),
+                             autoWidth = TRUE,
+                             columnDefs = list(list(className = 'dt-right', targets = 4:6))),
               filter = "none")
 
   })
@@ -506,11 +563,18 @@ function(input, output, session) {
 
     fa <- fa_data() %>% select(location_name, label_short, deaths,
                                pats, crd_rate) %>%
-      rename(Location = location_name, Quarter = label_short, Deaths = deaths,
-             Patients = pats, Crude_rate = crd_rate) %>%
-      mutate_if(is.numeric, round, 1)
+      mutate(crd_rate = sprintf("%.1f", crd_rate),
+             pats = format(pats, big.mark=","),
+             deaths = format(deaths, big.mark=",")) %>%
+      rename(Location = location_name, Quarter = label_short, Deaths = deaths)
 
-    table_colnames  <-  gsub("_", " ", colnames(fa))
+    if (input$indicator_select_fa == "Discharge") {
+      fa %<>% rename(Patients = pats,
+                     "Crude mortality rate (%)" = crd_rate)}
+    else {
+      fa %<>% rename(Population = pats,
+                     "Crude mortality per 1,000 population" = crd_rate) }
+
 
     datatable(fa,
               style = 'bootstrap',
@@ -518,12 +582,11 @@ function(input, output, session) {
               rownames = FALSE,
               options = list(pageLength = 20,
                              dom = 't',
-                             autoWidth = TRUE),
-              filter = "none",
-              colnames = table_colnames)
+                             autoWidth = TRUE,
+                             columnDefs = list(list(className = 'dt-right', targets = 2:4))),
+              filter = "none")
+              #colnames = table_colnames)
 
-  # couldn't get this to work
-  # datatable(fa, table_format)
 
   })
 
@@ -561,7 +624,7 @@ function(input, output, session) {
 
     trend_extract <- trend_data() %>%
       select(-agg_label) %>%
-      rename(variable_names)
+      rename(all_of(trend_variable_names))
     })
 
   output$download_trend_data <- downloadHandler(
@@ -575,7 +638,7 @@ function(input, output, session) {
   fa_download <- reactive({
 
     fa_extract <- fa_data() %>%
-      rename(variable_names) %>%
+      rename(all_of(trend_variable_names)) %>%
       rename("indicator_label" = "group") %>%
       select(-location, -agg_label, -subgroup)
     })
