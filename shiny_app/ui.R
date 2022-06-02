@@ -31,7 +31,7 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
                        condition= 'input.home_select == "about"',
                        tagList(h3(tags$b("Hospital Standardised Mortality Ratios")),
                                h4(tags$b(latest_hsmr)),
-                               p(tags$b(paste0("Publication Date: ", format(pub_day, "%d %B %Y")))),br(),
+                               p(tags$b(paste0("Publication date: ", format(pub_day, "%d %B %Y")))),br(),
                                p(paste0("This dashboard, which accompanies the quarterly Hospital Standardised
                                Mortality Ratio (HSMR) publication, presents the latest HSMR for the period ",
                                latest_hsmr, " for hospitals in Scotland. In addition crude mortality
@@ -94,7 +94,7 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
                                the charts and data tables for their specific NHS Board, hospital,
                                or subgroup of interest. On the Crude trends and Further analysis tabs,
                                the location drop-down allows multiple locations to be added to the chart and table.
-                               These can easily be removed by selecting the location and deleting."),
+                               These can easily be removed by selecting the location and deleting."), br(),
 
                                p(tags$b("Downloading data")),
                                p(tags$li("There is the option to download data as a csv file by clicking the
@@ -113,13 +113,13 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
                                  "HSMR publication page", target="_blank"), ".")),
                                  p(tags$li("For more detailed information about the HSMR publication, visit the ",
                                  tags$a(href="https://www.isdscotland.org/Health-Topics/Quality-Indicators/HSMR/",
-                                        "HSMR webpages.", target="_blank"))),
+                                        "HSMR webpages (external website).", target="_blank"))),
                                p(tags$li("The ", tags$a(href="https://www.isdscotland.org/Health-Topics/Quality-Indicators/HSMR/Methodology/_docs/HSMR-2019-Technical-Specification.pdf",
-                                "Technical Document", target="_blank"), " explains in more detail about how the HSMRs
+                                "Technical Document (external website)", target="_blank"), " explains in more detail about how the HSMRs
                                 are calculated.")),
                                 p(tags$li("The ",
                                 tags$a(href="https://www.isdscotland.org/Health-Topics/Quality-Indicators/HSMR/FAQ/_docs/HSMR-2019-FAQs.pdf",
-                                 "Frequently Asked Questions", target="_blank"), "document answers common
+                                 "Frequently Asked Questions (external website)", target="_blank"), "document answers common
                                 questions about the HSMR publication.")),
 
                                p(tags$b("Data files")),
@@ -131,19 +131,19 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
                                p(tags$b("Open data")),
                                p(tags$li("Open data from this publication is available from the ",
                                  tags$a(href="https://www.opendata.nhs.scot/dataset/hospital-standardised-mortality-ratios",
-                                  "Scottish Health and Social Care Open Data platform.", target="_blank"))),
+                                  "Scottish Health and Social Care Open Data platform (external website).", target="_blank"))),
                                p(tags$li("The code used to produce this publication can be accessed in this ",
-                                 tags$a(href= "https://github.com/Public-Health-Scotland/hsmr", "GitHub repository.",
+                                 tags$a(href= "https://github.com/Public-Health-Scotland/hsmr", "GitHub repository (external website).",
                                         target="_blank"))),
                                p(tags$b("Data sources")),
                                p(tags$li(tags$a(href="https://www.ndc.scot.nhs.uk/National-Datasets/data.asp?ID=1&SubID=5",
-                                  "General Acute Inpatient and Day Case - Scottish Morbidity Record (SMR01)", target="_blank"))),
+                                  "General Acute Inpatient and Day Case - Scottish Morbidity Record (SMR01) (external website).", target="_blank"))),
                                p(tags$li(tags$a(href="https://www.ndc.scot.nhs.uk/National-Datasets/data.asp?ID=3&SubID=13",
-                                  "National Records of Scotland (NRS) - Deaths Data", target="_blank"))),
+                                  "National Records of Scotland (NRS) - Deaths Data (external website).", target="_blank"))),
                                p(tags$b("Data completeness")),
                                p("Information about the completeness of the SMR01 dataset at the time of this
                                  publication can be found on the ", tags$a(href="https://beta.isdscotland.org/products-and-services/data-management-hospital-activity/smr-completeness/",
-                                                                           "SMR completeness webpage.", target="_blank")),
+                                                                           "SMR completeness webpage (external website).", target="_blank")),
                                p(tags$b("Contact us")),
                                p("Please contact the ", tags$a(href="mailto:phs.qualityindicators@phs.scot",
                                                                "Quality Indicators team"), "if you have any
@@ -162,7 +162,7 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
                                 the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility
                                 Regulations 2018. This accessibility statement applies to the dashboard that accompanies
                                 the HSMR quarterly publication."),
-                               p(tags$a(href="https://mcmw.abilitynet.org.uk/", "AbilityNet", target="_blank"),
+                               p(tags$a(href="https://mcmw.abilitynet.org.uk/", "AbilityNet (external website)", target="_blank"),
                                  " has advice on making your device easier to use if you have a disability."),
 
                                p(tags$b("Compliance status")),
@@ -177,7 +177,7 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
                                p("The Equality and Human Rights Commission (EHRC) is responsible for enforcing the
                                Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations
                                  2018 (the ‘accessibility regulations’). If you’re not happy with how we respond to your complaint,",
-                               tags$a(href="https://www.equalityadvisoryservice.com/", "contact the Equality Advisory and Support Service (EASS).",
+                               tags$a(href="https://www.equalityadvisoryservice.com/", "contact the Equality Advisory and Support Service (EASS) (external website).",
                                       target = "_blank")),
 
                                p(tags$b("Preparation of this accessibility statement")),
@@ -185,10 +185,6 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
 
                        ) # tagList
                      ) #conditonalPanel
-
-
-
-                     #uiOutput("home")
                      ) # mainPanel
            ) # sidebarLayout
          ), # tabPanel
@@ -224,31 +220,23 @@ tabPanel(title = "HSMR", value = "hsmr", icon = icon("bed"),
 tabPanel(title = "Crude trends", value = "crude", icon = icon("area-chart"),
 
            wellPanel(
-                   # column(4, div(title="Select the subgroup you wish to explore.", # tooltip
-                   #               radioGroupButtons("subgroup_select",
-                   #                                 label= "Step 1. Select the subgroup you want to explore.",
-                   #                                 choices = subgroup_list, status = "primary",
-                   #                                 direction = "vertical", justified = T))),
-
                    column(4, div(title="Select the subgroup you wish to explore.", # tooltip
                                  selectizeInput("subgroup_select",
                                                 label= "Step 1. Select the subgroup you want to explore.",
                                                 choices = subgroup_list, selected = "All admissions",
                                                 multiple = F))),
 
-                   column(4, div(title="Select a location",
-                                 pickerInput("geotype", label = "Select a location",
+                   column(4, div(title="Select a location.",
+                                 pickerInput("geotype", label = "Select a location.",
                                         choices = location_list,
                                         options = list('actions-box' = TRUE),
                                         selected = "Scotland", multiple = T)),
                          uiOutput("geoname_ui")),
 
-                  column(4, div(title="Select frequency",
-                      radioGroupButtons("timeperiod", label = "Step 3. Select frequency", choices=c("Month", "Quarter"),
+                  column(4, div(title="Select frequency.",
+                      radioGroupButtons("timeperiod", label = "Step 3. Select frequency.", choices=c("Month", "Quarter"),
                                         status = "primary", direction = "horizontal", justified = T)),
                   uiOutput("timeperiod_ui"))
-                  #downloadButton("download_hsmr_data", "Download data", style = "float: left"))
-
                  ), # wellPanel
         mainPanel(
           width = 12,
@@ -263,12 +251,6 @@ tabPanel(title = "Crude trends", value = "crude", icon = icon("area-chart"),
 ##############################################.
 tabPanel(title = "Further analysis", value = "fa", icon = icon("chart-bar"),
          wellPanel(
-           # column(4, div(title="Select indicator.", # tooltip
-           #                       radioGroupButtons("indicator_select_fa",
-           #                                         label= "Step 1. Select the data you want to explore.",
-           #                                         choices = indicator_list_fa, status = "primary",
-           #                                         direction = "vertical", justified = T))),
-
                    column(4, div(title="Select the subgroup you wish to explore.", # tooltip
                                  selectizeInput("indicator_select_fa",
                                                 label= "Step 1. Select the data you want to explore.",
