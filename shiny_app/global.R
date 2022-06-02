@@ -1,4 +1,5 @@
 # Global - HSMR public dashboard
+
 library(shiny)
 library(plotly)           # for charts
 library(shinyWidgets)     # for dropdowns
@@ -52,6 +53,7 @@ latest_hsmr <- c("July 2020 to June 2021")
 ###############################################.
 
 trend <- readRDS(paste0("data/", pub_day, "-hsmr-trend-data.rds"))
+
 hsmr <- readRDS(paste0("data/", pub_day, "-hsmr-data.rds"))
 
 # Sort quarters in chronological order
@@ -71,7 +73,7 @@ geo_lookup_hb <- readRDS("data/geo_lookup.rds") %>%
 
 # List of indicator options on further analysis tab
 indicator_list_fa <- c("Crude mortality (%) within 30 days of discharge" = "Discharge",
-                       "Crude population mortality per 1,000 population" = "Population")
+                       "Crude mortality per 1,000 population" = "Population")
 
 # List of sub groups for Crude trends tab
 subgroup_list <- c("All admissions", "Admission type", "Age group", "Deprivation",
@@ -182,6 +184,18 @@ hsmr_variable_names <- c("predicted_deaths" = "pred",
 # PHS colour palette from phsstyles package
 chart_colours <- as.character(phs_colours()[1:8])
 
+
+palette2 <- phs_colours(c("phs-magenta", "phs-teal-80"))
+
+# palette5 <- phs_colours(c("phs-purple-10", "phs-purple-30", "phs-purple-50",
+#                          "phs-purple-80", "phs-purple"))
+
+palette5 <- c("#391E4F","#3F3685", "#6861A2", "#938DBE", "#BEBAD9")
+
+#next best
+#palette5 <- c("#ECEBF3","#C5C3DA", "#9F9BC2", "#655E9D", "#3F3685")
+
+#palette5 <- c("#3F3685", "#655E9D", "#9F9BC2", "#C5C3DA", "#ECEBF3")
 # chart_colours <- c('#9B4393','#83BB26','#C73918',
 #                    '#948DA3','#0078D4','#1E7F84',
 #                    '#6B5C85')
@@ -199,13 +213,13 @@ bttn_remove <-  list('select2d', 'lasso2d', 'zoomIn2d', 'zoomOut2d',
                      'hoverClosestCartesian', 'zoom2d', 'pan2d', 'resetScale2d')
 
 # couldn't get this to work
-# table_format <- list(c(style = 'bootstrap',
-#   class = 'table-bordered table-condensed',
-#   rownames = FALSE,
-#   options = list(pageLength = 20,
-#                  dom = 't',
-#                  autoWidth = TRUE),
-#   filter = "none"))
+table_format <- c(style = 'bootstrap',
+  class = 'table-bordered table-condensed',
+  rownames = FALSE,
+  options = list(pageLength = 20,
+                 dom = 't',
+                 autoWidth = TRUE),
+  filter = "none")
 
 ## END
 
