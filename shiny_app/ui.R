@@ -27,6 +27,7 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
                                           choices = home_list, status = "primary",
                                           direction = "vertical", justified = T)),
            mainPanel(width = 9,
+                     # About
                      conditionalPanel(
                        condition= 'input.home_select == "about"',
                        tagList(h3(tags$b("Hospital Standardised Mortality Ratios")),
@@ -34,7 +35,9 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
                                p(tags$b(paste0("Publication date: ", format(pub_day, "%d %B %Y")))),br(),
                                p(paste0("This dashboard, which accompanies the quarterly Hospital Standardised
                                Mortality Ratio (HSMR) publication, presents the latest HSMR for the period ",
-                               latest_hsmr, " for hospitals in Scotland. In addition crude mortality
+                               latest_hsmr, " for hospitals in Scotland. HSMR is presented using a 12 month reporting
+                               period when making comparisons against the national average. This is advanced by
+                               three months with each quarterly update. In addition crude mortality
                                trends are presented by month and quarter for the last five years. Hospital
                                mortality measures have an important role to play in stimulating reflection
                                on the quality and safety of patient care.")),
@@ -46,7 +49,7 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
                                ill than average. The adjusted mortality at individual hospitals
                                can then be compared to the Scottish average. This approach provides a better
                                starting point for investigating hospital mortality than crude mortality rates,
-                               which do not provide a fair comparison. Trends in crude mortality are provided
+                               which do not provide a fair comparison. Trends in crude mortality (unadjusted) are provided
                                to allow individual hospitals to monitor variation over time."),
 
                                p(tags$b("How is the HSMR calculated?")),
@@ -72,6 +75,7 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
                                ) # tagList
                        ), # conditionalPanel
 
+                    # Using the dashboard
                      conditionalPanel(
                        condition= 'input.home_select == "use"',
                        tagList(h3(tags$b("Using the dashboard")),
@@ -104,6 +108,7 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
                                ) #tagList
                        ), # condtionalPanel
 
+                     # Further information
                      conditionalPanel(
                        condition= 'input.home_select == "info"',
                        tagList(h3(tags$b("Further information")),
@@ -151,6 +156,7 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
                                ) #tagList
                        ), # conditionalPanel
 
+                    # Accessibility
                      conditionalPanel(
                        condition= 'input.home_select == "accessibility"',
                        tagList(h3(tags$b("Accessibility")),
@@ -196,7 +202,7 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
 
 tabPanel(title = "HSMR", value = "hsmr", icon = icon("bed"),
          wellPanel(#actionButton("browser", "browser"),
-                   column(4, div(title="Select NHS Board of treatment to highlight on chart",
+                   column(4, div(title="Select NHS Board of treatment to highlight on chart", # tooltip
                                  selectInput("hb_hsmr",
                                              label = "Step 1. Select NHS Board to highlight on chart.",
                                              choices = hsmr_hb_list,
@@ -217,8 +223,8 @@ tabPanel(title = "HSMR", value = "hsmr", icon = icon("bed"),
 ###############################################.
 ### Crude trends tab ----
 ##############################################.
-tabPanel(title = "Crude trends", value = "crude", icon = icon("area-chart"),
 
+tabPanel(title = "Crude trends", value = "crude", icon = icon("area-chart"),
            wellPanel(
                    column(4, div(title="Select the subgroup you wish to explore.", # tooltip
                                  selectizeInput("subgroup_select",
@@ -249,6 +255,7 @@ tabPanel(title = "Crude trends", value = "crude", icon = icon("area-chart"),
 ###############################################.
 ### Further analysis tab ----
 ##############################################.
+
 tabPanel(title = "Further analysis", value = "fa", icon = icon("chart-bar"),
          wellPanel(
                    column(4, div(title="Select the subgroup you wish to explore.", # tooltip
@@ -271,4 +278,5 @@ tabPanel(title = "Further analysis", value = "fa", icon = icon("chart-bar"),
   ) # navbarPage
 ) # tagList
 
-# END
+
+### END

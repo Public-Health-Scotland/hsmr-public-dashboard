@@ -43,28 +43,33 @@ data_folder <- dplyr::if_else(platform == "server",
                               '/conf/quality_indicators/hsmr/quarter_cycle/data/',
                               '//stats/quality_indicators/hsmr/quarter_cycle/data/')
 
+###############################################.
+## Things to update each publication ----
+###############################################.
+
 # Define publication date
 pub_day <-lubridate::dmy(09112021)
 
+# Define the HSMR period
 latest_hsmr <- c("July 2020 to June 2021")
+
+# Also check that the list of locations (~line 135) does not need updated for this publication.
 
 ###############################################.
 ## Data ----
 ###############################################.
 
+# Read in data that has been prepared by the hsmr_data_prep.R script
 trend <- readRDS(paste0("data/", pub_day, "-hsmr-trend-data.rds"))
-
 hsmr <- readRDS(paste0("data/", pub_day, "-hsmr-data.rds"))
 
 # Sort quarters in chronological order
 hsmr <- hsmr %>% arrange(hsmr[,"q_num"])
 
-
+# Read in lookups that are used
 geo_lookup <- readRDS("data/geo_lookup.rds")
 geo_lookup_hb <- readRDS("data/geo_lookup.rds") %>%
   filter(areatype %in% c("Scotland", "NHS Board of treatment"))
-
-#geo_lookup_list <- readRDS("data/geo_lookup_list.rds")
 
 
 ###############################################.
@@ -82,7 +87,6 @@ subgroup_list <- c("All admissions", "Admission type", "Age group", "Deprivation
 # List of sections in Home tab
 home_list <- c("About HSMR" = "about",
                "Using the dashboard" = "use",
-               #"Glossary" = "glossary",
                "Further information" = "info",
                "Accessibility" = "accessibility")
 
@@ -107,7 +111,7 @@ hb_list <- c("Scotland",
              "NHS Western Isles",
              "Golden Jubilee")
 
-# This is required for the HSMR funnel and table
+# List of HBs and codes - required for the HSMR funnel and table
 hsmr_hb_list <- c("Scotland" = "Scotland",
              "NHS Ayrshire & Arran" = "S08000015",
              "NHS Borders" = "S08000016",
@@ -154,6 +158,7 @@ location_list <- list(
   "NHS Western Isles" = c("NHS Western Isles", "Western Isles Hospital"),
   "Golden Jubilee" = c("Golden Jubilee National Hospital"))
 
+# List of variables to be renamed for the csv data download
 trend_variable_names <- c("period_label" = "label_short",
                     "period_number" = "mth_qtr",
                     "subgroup" = "sub_grp",
@@ -164,7 +169,7 @@ trend_variable_names <- c("period_label" = "label_short",
                     "scotland_patients" = "scot_pats",
                     "scotland_crude_rate" = "scot_crd_rate")
 
-
+# List of variables to be renamed for the csv data download
 hsmr_variable_names <- c("predicted_deaths" = "pred",
                     "patients" = "pats",
                     "crude_rate" = "crd_rate",
@@ -181,25 +186,18 @@ hsmr_variable_names <- c("predicted_deaths" = "pred",
 ## Palettes and plot parameters ----
 ###############################################.
 
+## Colour palettes
 # PHS colour palette from phsstyles package
 chart_colours <- as.character(phs_colours()[1:8])
 
-
+# PHS colour palette for 2 categories
 palette2 <- phs_colours(c("phs-magenta", "phs-teal-80"))
 
-# palette5 <- phs_colours(c("phs-purple-10", "phs-purple-30", "phs-purple-50",
-#                          "phs-purple-80", "phs-purple"))
-
+# PHS colour palette for 5 categories
 palette5 <- c("#391E4F","#3F3685", "#6861A2", "#938DBE", "#BEBAD9")
 
-#next best
-#palette5 <- c("#ECEBF3","#C5C3DA", "#9F9BC2", "#655E9D", "#3F3685")
 
-#palette5 <- c("#3F3685", "#655E9D", "#9F9BC2", "#C5C3DA", "#ECEBF3")
-# chart_colours <- c('#9B4393','#83BB26','#C73918',
-#                    '#948DA3','#0078D4','#1E7F84',
-#                    '#6B5C85')
-
+## Chart parameters
 # Style of x and y axis
 xaxis_plots <- list(title = FALSE, fixedrange=TRUE, ticks="outside",
                      rangemode="tozero", dtick = 2)
@@ -212,14 +210,6 @@ bttn_remove <-  list('select2d', 'lasso2d', 'zoomIn2d', 'zoomOut2d',
                      'autoScale2d',   'toggleSpikelines',  'hoverCompareCartesian',
                      'hoverClosestCartesian', 'zoom2d', 'pan2d', 'resetScale2d')
 
-# couldn't get this to work
-table_format <- c(style = 'bootstrap',
-  class = 'table-bordered table-condensed',
-  rownames = FALSE,
-  options = list(pageLength = 20,
-                 dom = 't',
-                 autoWidth = TRUE),
-  filter = "none")
 
 ## END
 
