@@ -21,6 +21,7 @@ library(readxl)
 library(phsstyles)
 library(formattable)
 library(scales)
+library(shinydashboard)
 
 ###############################################.
 ## Set up environment ----
@@ -200,7 +201,8 @@ palette5 <- c("#391E4F","#3F3685", "#6861A2", "#938DBE", "#BEBAD9")
 ## Chart parameters
 # Style of x and y axis
 xaxis_plots <- list(title = FALSE, fixedrange=TRUE, ticks="outside",
-                     rangemode="tozero", dtick = 2)
+                     rangemode="tozero", dtick = 2, range = FALSE)
+
 
 yaxis_plots <- list(title = FALSE, rangemode="tozero", fixedrange=TRUE,
                     ticks = "outside", showline=TRUE, range = FALSE)

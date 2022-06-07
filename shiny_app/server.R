@@ -359,6 +359,7 @@ function(input, output, session) {
     # Titles for axes
     yaxis_plots[["title"]] <- "Crude mortality rate (%)"
     xaxis_plots[["title"]]<- input$timeperiod
+    xaxis_plots[["range"]] <- c(-0.5, max(trend$mth_qtr))
 
     # Chart upates depending on subgroup selected
     if(input$subgroup_select == "All admissions") {
@@ -428,6 +429,7 @@ function(input, output, session) {
 
     # Titles for axes
     xaxis_plots[["title"]] <- "Quarter"
+    xaxis_plots[["range"]] <- c(-0.5, 20)
 
     if (input$indicator_select_fa == "Discharge") {
       # Information to be displayed in tooltip - discharge indicator
@@ -500,8 +502,11 @@ function(input, output, session) {
               class = 'table-bordered table-condensed',
               rownames = FALSE,
               options = list(pageLength = 20,
+                             paging=FALSE,
                              dom = 't',
-                             autoWidth = TRUE,
+                             #autoWidth = TRUE,
+                             scrollX = TRUE,
+                             scrollY = 620, scroller = TRUE,
                              columnDefs = list(list(className = 'dt-right', targets = 2:6))), # right align number columns
               filter = "none")
 
@@ -525,8 +530,11 @@ function(input, output, session) {
               class = 'table-bordered table-condensed',
               rownames = FALSE,
               options = list(pageLength = 20,
+                             paging=FALSE,
                              dom = 't',
-                             autoWidth = TRUE,
+                             #autoWidth = TRUE,
+                             scrollX = TRUE,
+                             scrollY = 620, scroller = TRUE,
                              columnDefs = list(list(className = 'dt-right', targets = 4:6))), # right align number columns
               filter = "none")
 
@@ -557,13 +565,15 @@ function(input, output, session) {
               class = 'table-bordered table-condensed',
               rownames = FALSE,
               options = list(pageLength = 20,
+                             paging = FALSE,
                              dom = 't',
-                             autoWidth = TRUE,
+                             #autoWidth = TRUE,
+                             scrollX = TRUE,
+                             scrollY = 620, scroller = TRUE,
                              columnDefs = list(list(className = 'dt-right', targets = 2:4))), # right align number columns
               filter = "none")
 
   })
-
 
 
 ###############################################.

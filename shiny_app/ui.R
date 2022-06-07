@@ -20,12 +20,13 @@
 ### Home ----
 ###############################################.
 tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
-         #actionButton("browser", "browser"),
-         sidebarLayout(
+        # actionButton("browser", "browser"),
+        sidebarLayout(
            sidebarPanel(width = 3,
                         radioGroupButtons("home_select",
                                           choices = home_list, status = "primary",
                                           direction = "vertical", justified = T)),
+
            mainPanel(width = 9,
                      # About
                      conditionalPanel(
@@ -75,8 +76,9 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
                                ) # tagList
                        ), # conditionalPanel
 
+
                     # Using the dashboard
-                     conditionalPanel(
+                       conditionalPanel(
                        condition= 'input.home_select == "use"',
                        tagList(h3(tags$b("Using the dashboard")),
                                p("The dashboard has 4 tabs across the top which can be selected:
@@ -97,8 +99,10 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
                                p("On each tab there are drop-down menus which allow the user to update
                                the charts and data tables for their specific NHS Board, hospital,
                                or subgroup of interest. On the Crude trends and Further analysis tabs,
-                               the location drop-down allows multiple locations to be added to the chart and table.
-                               These can easily be removed by selecting the location and deleting."), br(),
+                               the location drop-down allows multiple locations to be selected to add them to the chart and table.
+                               These can be removed by selecting the location and deleting. On the line charts,
+                               clicking on a category in the legend will remove it from the chart. This is useful to reduce the lines
+                                 and make them easier to see. A further click on the categories will add them back into the chart."), br(),
 
                                p(tags$b("Downloading data")),
                                p(tags$li("There is the option to download data as a csv file by clicking the
@@ -107,6 +111,7 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
                                          corner of any chart in the dashboard and a png image file will automatically download."))
                                ) #tagList
                        ), # condtionalPanel
+
 
                      # Further information
                      conditionalPanel(
@@ -125,35 +130,39 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
                                 p(tags$li("The ",
                                 tags$a(href="https://www.isdscotland.org/Health-Topics/Quality-Indicators/HSMR/FAQ/_docs/HSMR-2019-FAQs.pdf",
                                  "Frequently Asked Questions (external website)", target="_blank"), "document answers common
-                                questions about the HSMR publication.")),
+                                questions about the HSMR publication.")), br(),
 
                                p(tags$b("Data files")),
                                p(tags$li("The data can be downloaded as csv files by clicking the 'Download data'
                                  button above each of the tables in this dashboard.")),
                               p(tags$li("It is also available to download as excel files from the ",
                                  tags$a(href="https://publichealthscotland.scot/publications/hospital-standardised-mortality-ratios/",
-                                  "publication data files.", target="_blank"))),
+                                  "publication data files.", target="_blank"))), br(),
+
                                p(tags$b("Open data")),
                                p(tags$li("Open data from this publication is available from the ",
                                  tags$a(href="https://www.opendata.nhs.scot/dataset/hospital-standardised-mortality-ratios",
                                   "Scottish Health and Social Care Open Data platform (external website).", target="_blank"))),
                                p(tags$li("The code used to produce this publication can be accessed in this ",
                                  tags$a(href= "https://github.com/Public-Health-Scotland/hsmr", "GitHub repository (external website).",
-                                        target="_blank"))),
+                                        target="_blank"))), br(),
+
                                p(tags$b("Data sources")),
                                p(tags$li(tags$a(href="https://www.ndc.scot.nhs.uk/National-Datasets/data.asp?ID=1&SubID=5",
                                   "General Acute Inpatient and Day Case - Scottish Morbidity Record (SMR01) (external website).", target="_blank"))),
                                p(tags$li(tags$a(href="https://www.ndc.scot.nhs.uk/National-Datasets/data.asp?ID=3&SubID=13",
-                                  "National Records of Scotland (NRS) - Deaths Data (external website).", target="_blank"))),
+                                  "National Records of Scotland (NRS) - Deaths Data (external website).", target="_blank"))), br(),
+
                                p(tags$b("Data completeness")),
                                p("Information about the completeness of the SMR01 dataset at the time of this
                                  publication can be found on the ", tags$a(href="https://beta.isdscotland.org/products-and-services/data-management-hospital-activity/smr-completeness/",
-                                                                           "SMR completeness webpage (external website).", target="_blank")),
+                                                                           "SMR completeness webpage (external website).", target="_blank")), br(),
+
                                p(tags$b("Contact us")),
                                p("Please contact the ", tags$a(href="mailto:phs.qualityindicators@phs.scot",
                                                                "Quality Indicators team"), "if you have any
                                  questions about this publication or dashboard.")
-                               ) #tagList
+                               ) # tagList
                        ), # conditionalPanel
 
                     # Accessibility
@@ -188,12 +197,11 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
 
                                p(tags$b("Preparation of this accessibility statement")),
                                p("This statement was prepared on DD MMM 2022. It was last reviewed on DD MMM 2022.")
-
-                       ) # tagList
-                     ) #conditonalPanel
-                     ) # mainPanel
-           ) # sidebarLayout
-         ), # tabPanel
+                               ) # tagList
+                       ) # conditonalPanel
+                    ) # mainPanel
+          ) # sidebarLayout
+        ), # tabPanel
 
 
 ###############################################.
