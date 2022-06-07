@@ -49,12 +49,13 @@ data_folder <- dplyr::if_else(platform == "server",
 ###############################################.
 
 # Define publication date
-pub_day <-lubridate::dmy(09112021)
+pub_day <-lubridate::dmy(10052022)
 
-# Define the HSMR period
-latest_hsmr <- c("July 2020 to June 2021")
+# Define the HSMR period - move the period on one quarter.
+latest_hsmr <- c("January 2021 to December 2021")
 
 # Also check that the list of locations (~line 135) does not need updated for this publication.
+
 
 ###############################################.
 ## Data ----
@@ -92,7 +93,7 @@ home_list <- c("About HSMR" = "about",
                "Accessibility" = "accessibility")
 
 # List of quarters for HSMR time period drop-down
-timeperiod_list <- c(unique(hsmr$period_label))
+ timeperiod_list <- c(unique(hsmr$period_label))
 
 # List of HBs, used in Further analysis tab
 hb_list <- c("Scotland",

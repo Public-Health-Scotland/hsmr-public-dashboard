@@ -30,9 +30,15 @@ data_folder <- dplyr::if_else(platform == "server",
                               '/conf/quality_indicators/hsmr/quarter_cycle/data/',
                               '//stats/quality_indicators/hsmr/quarter_cycle/data/')
 
-# Define publication date
-pub_day <-lubridate::dmy(09112021)
 
+###############################################.
+## Things to update each publication ----
+###############################################.
+
+# Define publication date
+pub_day <-lubridate::dmy(10052022)
+
+# Also line 103: remove the first time period, add the most recent time period at the end, and re-number.
 
 ###############################################.
 ## Data ----
@@ -103,7 +109,9 @@ hsmr %<>% mutate(q_num = case_when(period_label == "April 2018 to March 2019" ~ 
                                    period_label == "October 2019 to September 2020" ~ 7,
                                    period_label == "January 2020 to December 2020" ~ 8,
                                    period_label == "April 2020 to March 2021"~ 9,
-                                   period_label == "July 2020 to June 2021" ~ 10))
+                                   period_label == "July 2020 to June 2021" ~ 10,
+                                   period_label == "October 2020 to September 2021" ~ 11,
+                                   period_label == "January 2021 to December 2021" ~ 12))
 
 
 # create warning and control confidence limits for funnel plot
@@ -142,7 +150,8 @@ hsmr %<>%
 # Keep only variables that are required for dashboard
 hsmr %<>% select(hb, location, location_name, q_num, period_label, deaths, pred,
                  pats, smr, crd_rate, smr_scot, death_scot, pats_scot,
-                 uwl, ucl, lwl, lcl, flag, completeness_date)
+                 uwl, ucl, lwl, lcl, flag, completeness_date) %>%
+  arrange(q_num)
 
 saveRDS(hsmr, file = paste0("shiny_app/data/", pub_day, "-hsmr-data.rds"))
 
