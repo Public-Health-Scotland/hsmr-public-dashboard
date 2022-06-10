@@ -1,15 +1,11 @@
 /* CSS styles used in the shiny app */
 
-/* to avoid red text error messages in the whole app, take out for testing*/
-/*.shiny-output-error { visibility: hidden; }
-/*.shiny-output-error:before { visibility: hidden; }
-
 /* Style sidebars/well panels */
 .well {background-color:#ffffff; border: 0 solid #9B4393;
-       padding: 5px; box-shadow: none; }
+       box-shadow: none; }
 
 /* Navigation bar following PHS colour scheme */
-.navbar-default {color: #ffffff; background-color: #3F3685; }
+.navbar-default {color: #ffffff; background-color: #5343a3; }
 
 .navbar-default .navbar-brand, .navbar-default:hover .navbar-brand:hover, .navbar-brand {color: #3F3685; background-color: #ffffff}
 
@@ -17,41 +13,99 @@
 
 .navbar-default .navbar-nav > .active > a, .navbar-default .navbar-nav > .active > a:focus, .navbar-default .navbar-nav > .active > a:hover {
     color: #ffffff;
-    background-color: #312760;
-}
+    background-color: #3F3685; }
 
 .navbar-default .navbar-nav > li > a:hover, .navbar-default .navbar-nav > li > a:focus {
-    color: #ffffff;     background-color: #5343a3;}
+    color: #ffffff;     background-color: #3F3685;}
 
 
-/*Added by CP */
+/* Style home page selector to match PHS colours */
+#home_select .btn-primary {
+color: #ffffff;
+  background-color: #5343a3;
+  border-color: #ffffff;
+  }
+
+#home_select .btn-primary:hover {
+color: #ffffff;
+  background-color: #3F3685;
+  border-color: #ffffff;
+  }
+
+#home_select .btn-primary.active, .btn-primary:active, .open>.dropdown-toggle.btn-primary {
+color: #ffffff;
+  background-color: #3F3685;
+  border-color: #ffffff;
+  }
+
+#home_select .btn-primary.active.focus, btn-primary.active:focus, .btn-primary.active:hover {
+color: #ffffff;
+  background-color: #3F3685;
+  border-color: #ffffff;
+  }
+
+#home_select .btn-group {
+  padding: 0;
+  margin: 0;
+}
+
+
 .btn-primary {
-    color: #ffffff;
-    background-color: #0060A9;
-    border-color: #ffffff;
+      color: #333;
+    background-color: #d4d4d4;
+    border-color: #8c8c8c; }
+
+
+.btn-default.active {
+      color: #333;
+    background-color: #e6e6e6;
+    border-color: #adadad;
 }
 
-.btn-primary:hover {
-    color: #ffffff;
-    background-color: #004275;
-    border-color: #ffffff;
+/*this adds a light purple shading to behind the user input boxes to make them standout */
+.shiny-input-container {
+  width: auto;
+  background-color: #ECEBF3;
+  padding: 5px;
+}
+
+/*this makes the HB sub-headings in the location drop-down bold */
+.dropdown-header .text {
+  font-weight: bolder;
+  font-size: small;
+}
+
+/*this removes the select all option from the location (pickerInput) drop-down */
+.bs-select-all {
+  display: none;
+}
+.bs-deselect-all {
+  width: 100%;
 }
 
 
 
-.btn-primary.active, .btn-primary:active, .open>.dropdown-toggle.btn-primary {
-    color: #ffffff;
-    background-color: #004275;
-    background-image: none;
-    border-color: #ffffff;
+/*this removes the light purple shading from around the home selector box */
+#home_select .form-group, .shiny-input-radiogroup, .shiny-input-container-inline, .shinyjs-resettable {
+  padding:0;
+  margin: 0;
 }
 
-.btn-primary.active.focus, btn-primary.active:focus, .btn-primary.active:hover {
-    color: #ffffff;
-    background-color: #004275;
-    border-color: #ffffff;
+/*this adds padding around the month-quarter radio button */
+#timeperiod {
+  padding-bottom:5px;
+  padding-right:5px;
+  padding-left:5px;
 }
 
-.infolayer [class^='y'][class$='title'] {
-  transform: rotate(0deg) translate(0px, 0px);
+#timeperiod-label {
+  padding-top:5px;
+  padding-right:5px;
+  padding-left:5px;
 }
+
+
+
+    ul {
+      list-style-type: none;
+    }
