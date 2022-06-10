@@ -47,7 +47,7 @@ data_folder <- dplyr::if_else(platform == "server",
 ###############################################.
 ## Things to update each publication ----
 ###############################################.
-
+# This might not be required if the code moves to the hsmr project
 # Define publication date
 pub_day <-lubridate::dmy(10052022)
 
@@ -64,9 +64,6 @@ latest_hsmr <- c("January 2021 to December 2021")
 # Read in data that has been prepared by the hsmr_data_prep.R script
 trend <- readRDS(paste0("data/", pub_day, "-hsmr-trend-data.rds"))
 hsmr <- readRDS(paste0("data/", pub_day, "-hsmr-data.rds"))
-
-# Sort quarters in chronological order
-hsmr <- hsmr %>% arrange(hsmr[,"q_num"])
 
 # Read in lookups that are used
 geo_lookup <- readRDS("data/geo_lookup.rds")

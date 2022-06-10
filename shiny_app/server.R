@@ -587,7 +587,7 @@ function(input, output, session) {
   hsmr_download <- reactive({
 
   hsmr_extract <- hsmr_data() %>%
-    select(-hb, - q_num, -flag) %>%
+    select(-hb, - order_var, -flag) %>%
     rename(hsmr_variable_names)
   })
 
