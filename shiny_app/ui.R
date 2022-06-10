@@ -14,7 +14,11 @@
                                  HTML("<html lang='en'>"),
                                  tags$link(rel="shortcut icon", href="favicon_phs.ico"), #Icon for browser tab
                                  #Including Google analytics
-                                 includeScript("google-analytics.js")),
+                                 HTML('<script async src="https://www.googletagmanager.com/gtag/js?id=G-FST2NWF23R"></script>'),
+                                 # includeScript("google-analytics.js"),
+                                 includeScript("gtag.js")
+                                 ),
+
 
 ###############################################.
 ### Home ----
@@ -72,7 +76,7 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
                                they were unexpected, or were attributable to failings in the quality of care."),
 
                                p(tags$b("Next publication")),
-                               p("The next release of this publication will be ", tags$b("10 May 2022"), ".")
+                               p("The next release of this publication will be ", tags$b("9 August 2022"), ".")
                                ) # tagList
                        ), # conditionalPanel
 
@@ -101,8 +105,9 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
                                or subgroup of interest. On the Crude trends and Further analysis tabs,
                                the location drop-down allows multiple locations to be selected to add them to the chart and table.
                                These can be removed by selecting the location and deleting. On the line charts,
-                               clicking on a category in the legend will remove it from the chart. This is useful to reduce the lines
-                                 and make them easier to see. A further click on the categories will add them back into the chart."), br(),
+                               clicking on a category in the legend will remove it from the chart. This is useful to reduce the number of lines
+                               on the chart and makes them easier to see. A further click on the categories will add them back into the chart.
+                                 The table can be sorted in ascending or descending order by clicking on the arrows next to the column headers."), br(),
 
                                p(tags$b("Downloading data")),
                                p(tags$li("There is the option to download data as a csv file by clicking the
@@ -210,13 +215,13 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
 
 tabPanel(title = "HSMR", value = "hsmr", icon = icon("bed"),
          wellPanel(#actionButton("browser", "browser"),
-                   column(4, div(title="Select NHS Board of treatment to highlight on chart", # tooltip
+                   column(4, div(title="Select NHS Board to highlight.", # tooltip
                                  selectInput("hb_hsmr",
                                              label = "Step 1. Select NHS Board to highlight on chart.",
                                              choices = hsmr_hb_list,
                                              selected =  "Scotland"),
                                  uiOutput("hb_hsmr_ui"))),
-                   column(4, div(title="Select a time period.",
+                   column(4, div(title="Select an HSMR period.",
                                  selectizeInput("timeperiod_hsmr",
                                                 label = "Step 2. Select a time period.",
                                                 choices= timeperiod_list,
@@ -234,20 +239,20 @@ tabPanel(title = "HSMR", value = "hsmr", icon = icon("bed"),
 
 tabPanel(title = "Crude trends", value = "crude", icon = icon("area-chart"),
            wellPanel(
-                   column(4, div(title="Select the subgroup you wish to explore.", # tooltip
+                   column(4, div(title="Select a subgroup.", # tooltip
                                  selectizeInput("subgroup_select",
                                                 label= "Step 1. Select the subgroup you want to explore.",
                                                 choices = subgroup_list, selected = "All admissions",
                                                 multiple = F))),
 
-                   column(4, div(title="Select a location.",
+                   column(4, div(title="Select an NHS Board, hospital or Scotland.",
                                  pickerInput("geotype", label = "Select a location.",
                                         choices = location_list,
                                         options = list('actions-box' = TRUE),
                                         selected = "Scotland", multiple = T)),
                          uiOutput("geoname_ui")),
 
-                  column(4, div(title="Select frequency.",
+                  column(4, div(title="Select month or quarter.",
                       radioGroupButtons("timeperiod", label = "Step 3. Select frequency.", choices=c("Month", "Quarter"),
                                         status = "primary", direction = "horizontal", justified = T)),
                   uiOutput("timeperiod_ui"))
@@ -266,13 +271,13 @@ tabPanel(title = "Crude trends", value = "crude", icon = icon("area-chart"),
 
 tabPanel(title = "Further analysis", value = "fa", icon = icon("chart-bar"),
          wellPanel(
-                   column(4, div(title="Select the subgroup you wish to explore.", # tooltip
+                   column(4, div(title="Select a measure.", # tooltip
                                  selectizeInput("indicator_select_fa",
                                                 label= "Step 1. Select the data you want to explore.",
                                                 choices = indicator_list_fa, selected = "Discharge",
                                                 multiple = F))),
 
-                   column(4, div(title="Select a location",
+                   column(4, div(title="Select a location.",
                                  selectizeInput("geotype_fa", label = "Step 2. Select NHS Board/s of interest.",
                                              choices= hb_list,
                                              selected = "Scotland", multiple = TRUE)),
