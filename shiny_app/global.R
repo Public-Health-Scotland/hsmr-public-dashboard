@@ -44,15 +44,20 @@ data_folder <- dplyr::if_else(platform == "server",
                               '/conf/quality_indicators/hsmr/quarter_cycle/data/',
                               '//stats/quality_indicators/hsmr/quarter_cycle/data/')
 
+source("funnel.R")
+
+
 ###############################################.
 ## Things to update each publication ----
 ###############################################.
 # This might not be required if the code moves to the hsmr project
 # Define publication date
-pub_day <-lubridate::dmy(10052022)
+pub_day <- lubridate::dmy(10052022)
 
 # Define the HSMR period - move the period on one quarter.
 latest_hsmr <- c("January 2021 to December 2021")
+
+next_pub <- c("9 August 2022")
 
 # Also check that the list of locations (~line 135) does not need updated for this publication.
 
@@ -61,9 +66,9 @@ latest_hsmr <- c("January 2021 to December 2021")
 ## Data ----
 ###############################################.
 
-# Read in data that has been prepared by the hsmr_data_prep.R script
-trend <- readRDS(paste0("data/", pub_day, "-hsmr-trend-data.rds"))
-hsmr <- readRDS(paste0("data/", pub_day, "-hsmr-data.rds"))
+# Read in data that has been produced by the publication RAP process
+trend <- readRDS(paste0(data_folder, pub_day, "/output/", pub_day, "_trend_data_public_dashboard.rds"))
+hsmr <- readRDS(paste0(data_folder, pub_day, "/output/", pub_day, "_SMR_data_public_dashboard.rds"))
 
 # Read in lookups that are used
 geo_lookup <- readRDS("data/geo_lookup.rds")
