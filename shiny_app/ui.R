@@ -15,7 +15,6 @@
                                  tags$link(rel="shortcut icon", href="favicon_phs.ico"), #Icon for browser tab
                                  #Including Google analytics
                                  HTML('<script async src="https://www.googletagmanager.com/gtag/js?id=G-FST2NWF23R"></script>'),
-                                 # includeScript("google-analytics.js"),
                                  includeScript("gtag.js")
                                  ),
 
@@ -76,7 +75,7 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
                                they were unexpected, or were attributable to failings in the quality of care."),
 
                                p(tags$b("Next publication")),
-                               p("The next release of this publication will be ", tags$b("9 August 2022"), ".")
+                               p("The next release of this publication will be ", tags$b(next_pub), "."), br()
                                ) # tagList
                        ), # conditionalPanel
 
