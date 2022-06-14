@@ -3,7 +3,7 @@
 function(input, output, session) {
 
   # For debugging
-  # observeEvent(input$browser, browser())
+   #observeEvent(input$browser, browser())
 ###############################################.
 ## Reactive controls  ----
 ###############################################.
@@ -129,15 +129,15 @@ function(input, output, session) {
   hsmr_data <- reactive({
 
     hsmr %>%
-      select(-completeness_date, -location) %>%
-      filter(period_label == input$timeperiod_hsmr & location_name != "Scotland")
+      select(-location) %>%
+      filter(period_label == input$timeperiod_hsmr)
   })
 
   # HSMR chart highlight - updates when NHS Board is selected
   hsmr_highlight <- reactive({
 
     hsmr %>%
-      select(-completeness_date, -location) %>%
+      select(-location) %>%
       filter(period_label == input$timeperiod_hsmr & hb == input$hb_hsmr)
   })
 
@@ -146,7 +146,7 @@ function(input, output, session) {
   trend_data <- reactive({
 
     trend %>%
-      select(-completeness_date, -hb, -location) %>%
+      select(-hb, -location) %>%
       filter(location_name %in% input$geotype &
                time_period == input$timeperiod &
                sub_grp == input$subgroup_select)
@@ -157,7 +157,7 @@ function(input, output, session) {
   fa_data <- reactive({
 
     trend_fa <- trend %>%
-      select(-completeness_date, -hb) %>%
+      select(-hb) %>%
       filter(location_name %in% input$geotype_fa &
                time_period == "Quarter" &
                sub_grp == input$indicator_select_fa)
@@ -176,19 +176,17 @@ function(input, output, session) {
 
     hsmr_chart_title <- paste0("HSMR for deaths within 30 days of admission by hospital: ", input$timeperiod_hsmr)
 
+
+    # Main points are presented for the most recent publication only
     main_points <- if(input$timeperiod_hsmr == latest_hsmr) {
           tagList(
-
-          # Main points are presented for the most recent publication only
           h4(tags$b("Main points for this publication")),
-          # This could be automated from the funnel_text function
-          p(tags$li("For the period ", input$timeperiod_hsmr, " no hospitals had a
-                    significantly higher standardised mortality ratio than the national average."),
-            tags$li("For the period ", input$timeperiod_hsmr, " one hospital had a significantly
-                    lower standardised mortality ratio than the national average: Western General Hospital (0.75)."))
+          tags$li(funnel_text(hsmr_data(), indicator = "above")),
+          tags$li(funnel_text(hsmr_data(), indicator = "below"))
+
         )}
 
-    else {}
+  else {}
 
     tagList(
       main_points, br(),
@@ -286,16 +284,16 @@ function(input, output, session) {
                             #"Observed deaths: ", hsmr$deaths))
 
     # Assign colours for hospital data points depending on flag
-    hosp_colour <- case_when(hsmr$flag == 2 ~ "#FF0000", # ucl
-                             hsmr$flag == 3 ~ "#FF0000", # lcl
-                             hsmr$flag == 1 ~ "#FF6700", # uwl
+    hosp_colour <- case_when(hsmr$flag == 1 ~ "#FF0000", # ucl
+                             hsmr$flag == 2 ~ "#FF0000", # lcl
+                             hsmr$flag == 3 ~ "#FF6700", # uwl
                              hsmr$flag == 4 ~ "#FF6700", # lwl
                              TRUE ~ "#0078D4")
 
     # Assign colours for highlighting the hospitals in the selected HB
-    hosp_highlight <- case_when(highlight$flag == 2 ~ "#FF9999", # ucl
-                                highlight$flag == 3 ~ "#FF9999", # lcl
-                                highlight$flag == 1 ~ "#FFCD99", # uwl
+    hosp_highlight <- case_when(highlight$flag == 1 ~ "#FF9999", # ucl
+                                highlight$flag == 2 ~ "#FF9999", # lcl
+                                highlight$flag == 3 ~ "#FFCD99", # uwl
                                 highlight$flag == 4 ~ "#FFCD99", # lwl
                                 TRUE ~ "#80BCEA")
 
@@ -501,12 +499,12 @@ function(input, output, session) {
               style = 'bootstrap',
               class = 'table-bordered table-condensed',
               rownames = FALSE,
-              options = list(pageLength = 20,
+              options = list(pageLength = 6,
                              paging=FALSE,
                              dom = 't',
                              #autoWidth = TRUE,
                              scrollX = TRUE,
-                             scrollY = 620, scroller = TRUE,
+                             scrollY = 300, scroller = TRUE,
                              columnDefs = list(list(className = 'dt-right', targets = 2:6))), # right align number columns
               filter = "none")
 
