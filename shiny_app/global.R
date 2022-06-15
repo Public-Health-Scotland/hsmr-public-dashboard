@@ -23,34 +23,11 @@ library(formattable)
 library(scales)
 library(shinydashboard)
 
-###############################################.
-## Set up environment ----
-###############################################.
-
-# Setting file permissions to anyone to allow writing/overwriting of project files
-Sys.umask("006")
-
-# Define Whether Running on Server or Locally
-# Covers both the old server and the pro one
-if (sessionInfo()$platform %in% c("x86_64-redhat-linux-gnu (64-bit)",
-                                  "x86_64-pc-linux-gnu (64-bit)")) {
-  platform <- "server"
-} else {
-  platform <- "locally"
-}
-
-# Define file path for data
-data_folder <- dplyr::if_else(platform == "server",
-                              '/conf/quality_indicators/hsmr/quarter_cycle/data/',
-                              '//stats/quality_indicators/hsmr/quarter_cycle/data/')
-
-source("funnel.R")
-
 
 ###############################################.
-## Things to update each publication ----
+## Update each publication ----
 ###############################################.
-# This might not be required if the code moves to the hsmr project
+
 # Define publication date
 pub_day <- lubridate::dmy(10052022)
 
@@ -59,20 +36,32 @@ latest_hsmr <- c("January 2021 to December 2021")
 
 next_pub <- c("9 August 2022")
 
-# Also check that the list of locations (~line 135) does not need updated for this publication.
+# Also check that the list of locations (~line 138) does not need updated for this publication.
+
+
+###############################################.
+## Set up environment ----
+###############################################.
+
+# Setting file permissions to anyone to allow writing/overwriting of project files
+Sys.umask("006")
+
+# Source function for creating the main points from funnel
+source("funnel.R")
 
 
 ###############################################.
 ## Data ----
 ###############################################.
 
-# Read in data that has been produced by the publication RAP process
-trend <- readRDS(paste0(data_folder, pub_day, "/output/", pub_day, "_trend_data_public_dashboard.rds"))
-hsmr <- readRDS(paste0(data_folder, pub_day, "/output/", pub_day, "_SMR_data_public_dashboard.rds"))
+# Read in data from shiny data folder
+hsmr <- readRDS(paste0("data/", pub_day, "-smr-data.rds"))
+trend <- readRDS(paste0("data/", pub_day, "-trend-data.rds"))
 
-# Read in lookups that are used
-geo_lookup <- readRDS("data/geo_lookup.rds")
-geo_lookup_hb <- readRDS("data/geo_lookup.rds") %>%
+
+# Read in lookup
+geo_lookup <- readRDS("lookups/geo_lookup.rds")
+geo_lookup_hb <- readRDS("lookups/geo_lookup.rds") %>%
   filter(areatype %in% c("Scotland", "NHS Board of treatment"))
 
 
