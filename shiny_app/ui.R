@@ -200,7 +200,7 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
                                       target = "_blank")),
 
                                p(tags$b("Preparation of this accessibility statement")),
-                               p("This statement was prepared on DD MMM 2022. It was last reviewed on DD MMM 2022.")
+                               p("This statement was prepared on 15 June 2022. It was last reviewed on 15 June 2022.")
                                ) # tagList
                        ) # conditonalPanel
                     ) # mainPanel
