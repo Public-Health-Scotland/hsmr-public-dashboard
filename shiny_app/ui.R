@@ -292,6 +292,6 @@ tabPanel(title = "Further analysis", value = "fa", icon = icon("chart-bar"),
     ) # tabPanel
   ) # navbarPage
 ) # tagList
-
+#) # secureApp
 
 ### END
