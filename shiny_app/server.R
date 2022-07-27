@@ -1,13 +1,27 @@
 # Server - HSMR public dashboard
+credentials <- readRDS("admin/credentials.rds")
+
 
 function(input, output, session) {
 
   # For debugging
    #observeEvent(input$browser, browser())
+  
 ###############################################.
 ## Reactive controls  ----
 ###############################################.
-
+  
+  # Shinymanager Auth
+  res_auth <- secure_server(
+    check_credentials = check_credentials(credentials)
+  )
+  
+  output$auth_output <- renderPrint({
+    reactiveValuesToList(res_auth)
+  })
+  
+  
+  
   # Crude trends - this updates the location options in the drop downs depending
   # on the sub group selection i.e. Scotland only to be selected when a subgroup is chosen.
   observeEvent(input$subgroup_select, {
@@ -375,7 +389,7 @@ function(input, output, session) {
         # Layout
         layout(margin = list(b = 80, t=5), # to avoid labels getting cut out
                yaxis = yaxis_plots,
-               xaxis = xaxis_plots, list(categoryorder = "array", categoryarray = arrange(trend[,"mth_qtr"])),
+               xaxis = xaxis_plots, list(categoryorder = "array", categoryarray = order(trend[,"mth_qtr"])),
                legend = list(orientation = "h", x=0, y=1.2)) %>% # position of legend
         # leaving only save plot button
         config(displaylogo = F, displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove)
@@ -409,7 +423,7 @@ function(input, output, session) {
         layout(margin = list(b = 80, t=5), #to avoid labels getting cut out
                yaxis = yaxis_plots,
                xaxis = xaxis_plots, list(categoryorder = "array",
-                                         categoryarray = arrange(trend[,"mth_qtr"])),
+                                         categoryarray = order(trend[,"mth_qtr"])),
                legend = list(orientation = "h", x=0, y=1.2)) %>% #position of legend
         # leaving only save plot button
         config(displaylogo = F, displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove)
@@ -466,7 +480,7 @@ function(input, output, session) {
       # Layout
       layout(margin = list(b = 80, t=5), # to avoid labels getting cut out
              yaxis = yaxis_plots,
-             xaxis = xaxis_plots, list(categoryorder = "array", categoryarray = arrange(fa[,"mth_qtr"])),
+             xaxis = xaxis_plots, list(categoryorder = "array", categoryarray = order(fa[,"mth_qtr"])),
              legend = list(orientation = "h", x=0, y=1.2)) %>% # position of legend
       # leaving only save plot button
       config(displaylogo = F, displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove)
