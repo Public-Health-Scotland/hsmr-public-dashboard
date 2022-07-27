@@ -35,6 +35,8 @@ latest_hsmr <- c("April 2021 to March 2022")
 
 next_pub <- c("8 November 2022")
 
+pub_day <- lubridate::dmy(09082022)
+
 # Also check that the list of locations (~line 138) does not need updated for this publication.
 
 
