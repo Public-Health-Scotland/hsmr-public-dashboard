@@ -1,6 +1,6 @@
 # UI - HSMR public dashboard
 
-secure_app( #uncomment if needing password protection
+#secure_app( #uncomment if needing password protection
  tagList( #needed for shinyjs
    useShinyjs(),  # Include shinyjs
    navbarPage(id = "intabset", # id used for jumping between tabs
@@ -36,7 +36,7 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
                        condition= 'input.home_select == "about"',
                        tagList(h3(tags$b("Hospital Standardised Mortality Ratios")),
                                h4(tags$b(latest_hsmr)),
-                               p(tags$b(paste0("Publication date: ", format(pub_day, "%d %B %Y")))),br(),
+                               h5(tags$b(paste0("Publication date: ", format(pub_day, "%d %B %Y")))),br(),
                                p(paste0("This dashboard, which accompanies the quarterly Hospital Standardised
                                Mortality Ratio (HSMR) publication, presents the latest HSMR for the period ",
                                latest_hsmr, " for hospitals in Scotland. HSMR is presented using a 12 month reporting
@@ -54,27 +54,27 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
                                can then be compared to the Scottish average. This approach provides a better
                                starting point for investigating hospital mortality than crude mortality rates,
                                which do not provide a fair comparison. Trends in crude mortality (unadjusted) are provided
-                               to allow individual hospitals to monitor variation over time."),
+                               to allow individual hospitals to monitor variation over time."), br(),
 
-                               p(tags$b("How is the HSMR calculated?")),
+                               h5(tags$b("How is the HSMR calculated?")),
                                p("We calculate HSMRs using information from validated SMR01 records (acute
                                inpatient and day case admissions only) which includes patients admitted
                                to all medical and surgical specialties in NHS Scotland, apart from obstetrics
                                and psychiatry. Our calculation takes account of patients who died within
                                30 days of hospital admission. This means that HSMR values also include
                                some deaths that occurred outside hospital, and excludes deaths that occurred
-                               in hospital more than 30 days after admission."),
+                               in hospital more than 30 days after admission."), br(),
 
-                               p(tags$b("What does the HSMR value mean?")),
+                               h5(tags$b("What does the HSMR value mean?")),
                                p("The Scottish HSMR is 1.00. If an HSMR value for a hospital is less than one,
                                this means the number of deaths within 30 days of admission for this hospital is
                                fewer than predicted. If an HSMR value for a hospital is greater than one, this
                                means the number of deaths within 30 days for this hospital is more than predicted.
                                If the number of deaths is more than predicted this does not necessarily mean that
                                these were avoidable deaths (i.e. that they should not have happened), or that
-                               they were unexpected, or were attributable to failings in the quality of care."),
+                               they were unexpected, or were attributable to failings in the quality of care."), br(),
 
-                               p(tags$b("Next publication")),
+                               h5(tags$b("Next publication")),
                                p("The next release of this publication will be ", tags$b(next_pub), "."), br()
                                ) # tagList
                        ), # conditionalPanel
@@ -83,7 +83,7 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
                     # Using the dashboard
                        conditionalPanel(
                        condition= 'input.home_select == "use"',
-                       tagList(h3(tags$b("Using the dashboard")),
+                       tagList(h3(tags$b("Using the dashboard")), br(),
                                p("The dashboard has 4 tabs across the top which can be selected:
                                  Home, HSMR, Crude trends, and Further analysis."),
                                p(tags$li(tags$b("Home: "), "includes sub-sections on the left hand side
@@ -98,7 +98,7 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
                                          mortality trends within 30 days of discharge by NHS Board of treatment
                                          and population mortality rates by NHS Board of residence.")), br(),
 
-                               p(tags$b("Interacting with the dashboard")),
+                               h5(tags$b("Interacting with the dashboard")),
                                p("On each tab there are drop-down menus which allow the user to update
                                the charts and data tables for their specific NHS Board, hospital,
                                or subgroup of interest. On the Crude trends and Further analysis tabs,
@@ -108,7 +108,7 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
                                on the chart and makes them easier to see. A further click on the categories will add them back into the chart.
                                  The table can be sorted in ascending or descending order by clicking on the arrows next to the column headers."), br(),
 
-                               p(tags$b("Downloading data")),
+                               h5(tags$b("Downloading data")),
                                p(tags$li("There is the option to download data as a csv file by clicking the
                                          'Download data' button which can be found above the table on each tab.")),
                                p(tags$li("To download an image of a chart, click the camera icon in the top-right
@@ -120,8 +120,8 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
                      # Further information
                      conditionalPanel(
                        condition= 'input.home_select == "info"',
-                       tagList(h3(tags$b("Further information")),
-                               p(tags$b("Publication")),
+                       tagList(h3(tags$b("Further information")), br(),
+                               h5(tags$b("Publication")),
                                p(tags$li("The summary report and full report for this quarterly publication can be found
                                  on the ", tags$a(href="https://publichealthscotland.scot/publications/hospital-standardised-mortality-ratios/",
                                  "HSMR publication page", target="_blank"), ".")),
@@ -136,14 +136,14 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
                                  "Frequently Asked Questions (external website)", target="_blank"), "document answers common
                                 questions about the HSMR publication.")), br(),
 
-                               p(tags$b("Data files")),
+                               h5(tags$b("Data files")),
                                p(tags$li("The data can be downloaded as csv files by clicking the 'Download data'
                                  button above each of the tables in this dashboard.")),
                               p(tags$li("It is also available to download as excel files from the ",
                                  tags$a(href="https://publichealthscotland.scot/publications/hospital-standardised-mortality-ratios/",
                                   "publication data files.", target="_blank"))), br(),
 
-                               p(tags$b("Open data")),
+                               h5(tags$b("Open data")),
                                p(tags$li("Open data from this publication is available from the ",
                                  tags$a(href="https://www.opendata.nhs.scot/dataset/hospital-standardised-mortality-ratios",
                                   "Scottish Health and Social Care Open Data platform (external website).", target="_blank"))),
@@ -154,18 +154,18 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
                                         tags$a(href= "https://github.com/Public-Health-Scotland/hsmr-public-dashboard", "HSMR dashboard GitHub repository (external website).",
                                                target="_blank"))), br(),
 
-                               p(tags$b("Data sources")),
+                               h5(tags$b("Data sources")),
                                p(tags$li(tags$a(href="https://www.ndc.scot.nhs.uk/National-Datasets/data.asp?ID=1&SubID=5",
                                   "General Acute Inpatient and Day Case - Scottish Morbidity Record (SMR01) (external website).", target="_blank"))),
                                p(tags$li(tags$a(href="https://www.ndc.scot.nhs.uk/National-Datasets/data.asp?ID=3&SubID=13",
                                   "National Records of Scotland (NRS) - Deaths Data (external website).", target="_blank"))), br(),
 
-                               p(tags$b("Data completeness")),
+                               h5(tags$b("Data completeness")),
                                p("Information about the completeness of the SMR01 dataset at the time of this
                                  publication can be found on the ", tags$a(href="https://beta.isdscotland.org/products-and-services/data-management-hospital-activity/smr-completeness/",
                                                                            "SMR completeness webpage (external website).", target="_blank")), br(),
 
-                               p(tags$b("Contact us")),
+                               h5(tags$b("Contact us")),
                                p("Please contact the ", tags$a(href="mailto:phs.qualityindicators@phs.scot",
                                                                "Quality Indicators team"), "if you have any
                                  questions about this publication or dashboard.")
@@ -175,7 +175,7 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
                     # Accessibility
                      conditionalPanel(
                        condition= 'input.home_select == "accessibility"',
-                       tagList(h3(tags$b("Accessibility")),
+                       tagList(h3(tags$b("Accessibility")), br(),
                                p("This website is run by ", tags$a(href="https://www.publichealthscotland.scot/",
                                                                    "Public Health Scotland", target="_blank"),
                                 ", Scotland's national organisation for public health. As a new organisation formed
@@ -185,24 +185,24 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
                                 Regulations 2018. This accessibility statement applies to the dashboard that accompanies
                                 the HSMR quarterly publication."),
                                p(tags$a(href="https://mcmw.abilitynet.org.uk/", "AbilityNet (external website)", target="_blank"),
-                                 " has advice on making your device easier to use if you have a disability."),
+                                 " has advice on making your device easier to use if you have a disability."), br(),
 
-                               p(tags$b("Compliance status")),
+                               h5(tags$b("Compliance status")),
                                p("This site has not yet been evaluated against Web Content Accessibility Guidelines
-                                 version 2.1 level AA standard."),
+                                 version 2.1 level AA standard."), br(),
 
-                               p(tags$b("Reporting any accessibility problems with this website")),
+                               h5(tags$b("Reporting any accessibility problems with this website")),
                                p("If you wish to contact us about any accessibility issues you encounter on this
-                                 site, please email ", tags$a(href="mailto:phs.qualityindicators@phs.scot", "phs.qualityindicators@phs.scot", ".")),
+                                 site, please email ", tags$a(href="mailto:phs.qualityindicators@phs.scot", "phs.qualityindicators@phs.scot", ".")), br(),
 
-                               p(tags$b("Enforcement procedure")),
+                               h5(tags$b("Enforcement procedure")),
                                p("The Equality and Human Rights Commission (EHRC) is responsible for enforcing the
                                Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations
                                  2018 (the ‘accessibility regulations’). If you’re not happy with how we respond to your complaint,",
                                tags$a(href="https://www.equalityadvisoryservice.com/", "contact the Equality Advisory and Support Service (EASS) (external website).",
-                                      target = "_blank")),
+                                      target = "_blank")), br(),
 
-                               p(tags$b("Preparation of this accessibility statement")),
+                               h5(tags$b("Preparation of this accessibility statement")),
                                p("This statement was prepared on 15 June 2022. It was last reviewed on 15 June 2022.")
                                ) # tagList
                        ) # conditonalPanel
@@ -292,6 +292,6 @@ tabPanel(title = "Further analysis", value = "fa", icon = icon("chart-bar"),
     ) # tabPanel
   ) # navbarPage
 ) # tagList
-) # secureApp
+#) # secureApp
 
 ### END
