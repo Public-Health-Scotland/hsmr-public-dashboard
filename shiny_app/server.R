@@ -6,22 +6,22 @@ function(input, output, session) {
 
   # For debugging
    #observeEvent(input$browser, browser())
-  
+
 ###############################################.
 ## Reactive controls  ----
 ###############################################.
-  
+
   # Shinymanager Auth
   res_auth <- secure_server(
     check_credentials = check_credentials(credentials)
   )
-  
+
   output$auth_output <- renderPrint({
     reactiveValuesToList(res_auth)
   })
-  
-  
-  
+
+
+
   # Crude trends - this updates the location options in the drop downs depending
   # on the sub group selection i.e. Scotland only to be selected when a subgroup is chosen.
   observeEvent(input$subgroup_select, {
@@ -194,6 +194,7 @@ function(input, output, session) {
     # Main points are presented for the most recent publication only
     main_points <- if(input$timeperiod_hsmr == latest_hsmr) {
           tagList(
+            br(),
           h4(tags$b("Main points for this publication")),
           tags$li(funnel_text(hsmr_data(), indicator = "above")),
           tags$li(funnel_text(hsmr_data(), indicator = "below"))
@@ -222,6 +223,7 @@ function(input, output, session) {
                                 input$subgroup_select)
 
     tagList(
+      br(),
     p("This section presents crude mortality rates for deaths within 30 days of
       admission for the previous 5 years. Since crude mortality rates do not account for
       differences in case mix, they are less appropriate for comparing individual hospitals
@@ -263,7 +265,7 @@ function(input, output, session) {
       population. Crude population mortality rates for Scotland and NHS Boards of residence are given
       in this chart using the total number of deaths in each quarter and mid-year population estimates."))
 
-    tagList(fluidRow(column(12, fa_indicator_desc)), br(),
+    tagList(fluidRow(column(12, br(), fa_indicator_desc)), br(),
             fluidRow(column(12, h4(tags$b(paste0(fa_chart_title)))),
                      column(12, withSpinner(plotlyOutput("fa_chart")))) %>%
               fluidRow(column(3, downloadButton('download_fa_data', 'Download data'))),
