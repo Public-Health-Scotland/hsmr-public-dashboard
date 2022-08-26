@@ -126,7 +126,7 @@ function(input, output, session) {
       home, care home, etc.)"),
     p(tags$b("Specialty: "), "we classify specialty group according to the specialty of the consultant/GP/healthcare
     professional who was in charge of the patient episode. The specialties are grouped into seven distinct specialty
-    groups: Community, Dental, Emergency, Medical, Paediatrics, Surgery, and Women & Newborn."),
+    groups: Community, Dental, Emergency, Medical, Paediatrics, Obstetrics and Gynaecology, and Surgery."),
     size = "l",
     easyClose = TRUE, fade=TRUE, footer = modalButton("Close (Esc)")
     )
