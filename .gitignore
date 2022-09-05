@@ -1,9 +1,10 @@
 # they include API keys
 cookie-control.js
 deploying_app.R
-deploy.R
 *deploy*.R
 create_credentials.R
+#R environment
+.env 
 #Not needed
 rsconnect
 .Rproj.user
@@ -30,7 +31,4 @@ admin/
 *.[rR][dD][sS]
 *.[rR][dD][aA]
 *.[fF][sS][tT]
-john
-ad_hoc_requests.R
-colin
-outpatient_functions.R
+
