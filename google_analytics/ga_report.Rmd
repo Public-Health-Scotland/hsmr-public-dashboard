@@ -33,6 +33,7 @@ tabvisits <- readRDS(paste0(data_folder, "tabvisits.rds"))
 tabvisits_year <- readRDS(paste0(data_folder, "tabvisits_yearly.rds"))
 device <- readRDS(paste0(data_folder, "device.rds"))
 source <- readRDS(paste0(data_folder, "source.rds"))
+pages <- readRDS(paste0(data_folder, "pages.rds"))
 
 ```
 
@@ -181,9 +182,15 @@ plot_ly(sessions) %>%
 
 ```
 
-## Top 20 sources of visits over the last year
+## Sources of visits over the last year
 
 ```{r source}
 kable(source)
+```
+
+## Pages visited
+
+```{r pages}
+kable(pages)
 ```
 

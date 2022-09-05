@@ -73,6 +73,12 @@ events_ga <- ga_data(ga_id,
                      dimensions = c("date", "customEvent:event_label")) %>% 
   clean_names() %>%  rename(eventlabel = custom_event_event_label)
 
+## Query to obtain pages consulted
+pages_ga <- ga_data(ga_id,
+                     date_range = c(start_date, last_date),
+                     metrics = c("sessions"),
+                     dimensions = c('pagePathPlusQueryString', "hostName"))
+
 ###############################################.
 ## Formatting data ----
 ###############################################.
@@ -149,6 +155,11 @@ device <- bind_rows(tot, device) %>%
          "Average session length (minutes)" = session_ave)
 
 saveRDS(device, paste0(data_folder, "device.rds"))
+
+###############################################.
+# Pages
+# This could be used to clean up visits from us running code
+saveRDS(pages_ga, paste0(data_folder, "pages.rds"))
 
 ###############################################.
 # Geography of users - Not adding this at the moment to the report
