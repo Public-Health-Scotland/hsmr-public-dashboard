@@ -1,11 +1,11 @@
 ---
-  title: "Covid wider impacts dashboard - Google analytics report"
+title: "HSMR public dashboard - Google analytics report"
 author: "Public Health Scotland"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: 
   html_document:
-  toc: true
-toc_float: true
+    toc: true
+    toc_float: true
 ---
   
   ```{r TODO, include = FALSE}
@@ -77,18 +77,12 @@ monthly_annotation =
 
 ###############################################.
 # Palettes 
-
-pal_pregbab <- c('#E39C8C', '#d4d3d5', '#83BB26', '#80BCEA', '#3F3685', '#8FBFC2',
-                 '#6B5C85', '#0078D4', '#C1DD93')  
-pal_cancer <- c('#4da6ff','#ffa64d') 
-pal_ch <- c('#000000', '#4da6ff','#ffa64d')
-pal_other <- c('#4da6ff','#ffa64d', '#2c7fb8', '#7fcdbb', '#a3a3c2', '#FF0000')
-
+pal_tabs <- c('#000000', '#4da6ff','#ffa64d')
 
 ```
 
 This reports shows the visits to the HSMR public dashboard and each one
-of their tabs. 
+of their tabs. Data only available from mid June 22 for overall visits and from the end of July 22 for tab visits.
 
 ## Number of sessions over the last year
 
@@ -108,10 +102,10 @@ plot_ly(sessions) %>%
   add_lines(x = ~week_ending, y = ~count,
             text=tooltip_sess, hoverinfo="text") %>% 
   layout(yaxis = yaxis_plots, xaxis = xaxis_plots,
-         margin = list(b = 80, t = 5, r = 25)) %>%  # to avoid labels getting cut off
-  # leaving only save plot button
+         margin = list(b = 80, t = 5, r = 25), # to avoid labels getting cut off
+         annotations = zoom_annotation) %>%    
   config(displaylogo = F, displayModeBar = TRUE, 
-         modeBarButtonsToRemove = bttn_remove )
+         modeBarButtonsToRemove = bttn_remove ) # leaving only save plot button
 
 ```
 
@@ -133,9 +127,7 @@ yaxis_bar[["categoryarray"]] <- tabvisits_year %>% arrange(count) %>% pull(tabna
 plot_ly(tabvisits_year) %>% 
   add_bars(y = ~tabname, x = ~count, textposition="none",
            text=tooltip_tabvisits, hoverinfo="text") %>% 
-  layout(yaxis = yaxis_bar, xaxis = yaxis_plots
-         # margin = list(b = 80, t = 5, r = 25)
-  ) %>%  # to avoid labels getting cut off
+  layout(yaxis = yaxis_bar, xaxis = yaxis_plots) %>% 
   # leaving only save plot button
   config(displaylogo = F, displayModeBar = TRUE, 
          modeBarButtonsToRemove = bttn_remove )
@@ -147,13 +139,13 @@ plot_ly(tabvisits_year) %>%
 ```{r tabweekvisits}
 #Plot function for tabs data
 
-  tooltip_plot <- c(paste0(x$tabname, "<br>",
-                           "Week ending: ", format(x$week_ending, "%d %B %Y"), "<br>",
-                           "Visits: ", x$count))
+  tooltip_plot <- c(paste0(tabvisits$tabname, "<br>",
+                           "Week ending: ", format(tabvisits$week_ending, "%d %B %Y"), "<br>",
+                           "Visits: ", tabvisits$count))
   
-  plot_ly(x, x = ~week_ending) %>% 
+  plot_ly(tabvisits, x = ~week_ending) %>% 
     add_trace(y = ~count, color = ~tabname,
-              colors = pal_pregbab,
+              colors = pal_tabs,
               type = "scatter", mode = "lines+markers",
               text=tooltip_plot, hoverinfo="text") %>% 
     #Layout
@@ -164,31 +156,6 @@ plot_ly(tabvisits_year) %>%
     config(displaylogo = F, displayModeBar = TRUE, 
            modeBarButtonsToRemove = bttn_remove )
 
-plot_tab(tabvisits[["Pregnancy/births/babies"]], pal_chose = pal_pregbab)
-```
-
-### Child health
-
-```{r childhealth}
-plot_tab(tabvisits[["Child health"]], pal_chose = pal_ch)
-```
-
-### Cancer
-
-```{r cancer}
-plot_tab(tabvisits[["Cancer"]], pal_chose = pal_cancer)
-```
-
-### Substance use
-
-```{r subst}
-plot_tab(tabvisits[["Substance use"]], pal_chose = c("blue"))
-```
-
-### Other tabs
-
-```{r others}
-plot_tab(tabvisits[["Others"]], pal_chose = pal_other)
 ```
 
 ## Average session length
