@@ -1,0 +1,188 @@
+---
+title: "HSMR public dashboard - Google analytics report"
+author: "Public Health Scotland"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+---
+  
+```{r TODO, include = FALSE}
+# Add tables/downloadable data?
+# Anything else to add to report? (geography?)
+# Schedule it to run every month
+
+```
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F, warning = F) # prevents code to be shown in report
+
+#Packages
+library(dplyr)
+library(plotly)
+library(knitr)
+```
+
+```{r env}
+data_folder <- "/conf/quality_indicators/hsmr/quarter_cycle/Dashboard/google_analytics/"
+
+sessions <- readRDS(paste0(data_folder, "sessions.rds"))
+tabvisits <- readRDS(paste0(data_folder, "tabvisits.rds"))
+tabvisits_year <- readRDS(paste0(data_folder, "tabvisits_yearly.rds"))
+device <- readRDS(paste0(data_folder, "device.rds"))
+source <- readRDS(paste0(data_folder, "source.rds"))
+pages <- readRDS(paste0(data_folder, "pages.rds"))
+
+```
+
+```{r plot_parameter}
+
+# Style of x and y axis
+xaxis_plots <- list(title = FALSE, tickfont = list(size=14), 
+                    titlefont = list(size=14),
+                    showline = TRUE, fixedrange=TRUE,
+                    rangeslider = list(type = "date", thickness = 0.075
+                                       # Without this, range will change when adding/removing markers
+                    ))
+
+yaxis_plots <- list(title = "Number of visits", rangemode="tozero", 
+                    fixedrange=TRUE, size = 4,
+                    tickfont = list(size=14), titlefont = list(size=14))
+
+# Buttons to remove
+bttn_remove <-  list('select2d', 'lasso2d', 'zoomIn2d', 'zoomOut2d',
+                     'autoScale2d',   'toggleSpikelines',  'hoverCompareCartesian',
+                     'hoverClosestCartesian', 'zoom2d', 'pan2d', 'resetScale2d') 
+
+# For annotation
+zoom_hover_text =
+  "Drag the markers at either end of<br>the bar to view specific time periods"
+
+# We need an annotation to show user how to use the rangeslider
+zoom_annotation =
+  list(text = "Drag to zoom", borderpad = 2,
+       hovertext = zoom_hover_text,
+       showarrow = TRUE, ax = 0, ay = 18,
+       x = 0, xref = "paper", xanchor = "left",
+       y = -0.35, yref = "paper", yanchor = "middle")
+
+###############################################.
+# Palettes 
+pal_tabs <- c('#000000', '#1f78b4','#b2df8a', '#a6cee3')
+
+```
+
+This reports shows the visits to the HSMR public dashboard and each one
+of their tabs. Data only available from mid June 22 for overall visits and from the end of July 22 for tab visits.
+
+## Number of sessions over the last year
+
+```{r overall}
+kable(device)
+```
+
+## Overall visits to the dashboard
+
+```{r sessions}
+#Tooltip for the sessions chart
+tooltip_sess <- c(paste0("Week ending: ", format(sessions$week_ending, "%d %B %Y"), "<br>",
+                         "Visits: ", sessions$count))
+
+# Plot for the overall visits
+plot_ly(sessions) %>% 
+  add_lines(x = ~week_ending, y = ~count,
+            text=tooltip_sess, hoverinfo="text") %>% 
+  layout(yaxis = yaxis_plots, xaxis = xaxis_plots,
+         margin = list(b = 80, t = 5, r = 25), # to avoid labels getting cut off
+         annotations = zoom_annotation) %>%    
+  config(displaylogo = F, displayModeBar = TRUE, 
+         modeBarButtonsToRemove = bttn_remove ) # leaving only save plot button
+
+```
+
+## Visits to each tab
+
+### Visits in last year
+```{r taboverallvisits}
+#Tooltip for the sessions chart
+tooltip_tabvisits <- c(paste0("Section: ", tabvisits_year$tabname, "<br>",
+                              "Visits: ", tabvisits_year$count))
+
+# Adjusting some of the axis formatting
+yaxis_bar <- xaxis_plots
+yaxis_bar[["rangeslider"]] <- NULL
+yaxis_bar[["categoryorder"]] <- "array"
+yaxis_bar[["categoryarray"]] <- tabvisits_year %>% arrange(count) %>% pull(tabname)
+
+# Plot for the overall visits
+plot_ly(tabvisits_year) %>% 
+  add_bars(y = ~tabname, x = ~count, textposition="none",
+           text=tooltip_tabvisits, hoverinfo="text") %>% 
+  layout(yaxis = yaxis_bar, xaxis = yaxis_plots) %>% 
+  # leaving only save plot button
+  config(displaylogo = F, displayModeBar = TRUE, 
+         modeBarButtonsToRemove = bttn_remove )
+
+```
+
+### Visits per week
+
+```{r tabweekvisits}
+#Plot function for tabs data
+
+  tooltip_plot <- c(paste0(tabvisits$tabname, "<br>",
+                           "Week ending: ", format(tabvisits$week_ending, "%d %B %Y"), "<br>",
+                           "Visits: ", tabvisits$count))
+  
+  plot_ly(tabvisits, x = ~week_ending) %>% 
+    add_trace(y = ~count, color = ~tabname,
+              colors = pal_tabs,
+              type = "scatter", mode = "lines+markers",
+              text=tooltip_plot, hoverinfo="text") %>% 
+    #Layout
+    layout(yaxis = yaxis_plots, xaxis = xaxis_plots,
+           margin = list(b = 80, t = 5, r = 25), # to avoid labels getting cut off
+           annotations = zoom_annotation) %>% 
+    # leaving only save plot button
+    config(displaylogo = F, displayModeBar = TRUE, 
+           modeBarButtonsToRemove = bttn_remove )
+
+```
+
+## Average session length
+
+```{r ave_sess}
+
+
+#Tooltip for the sessions chart
+tooltip_sess <- c(paste0("Week ending: ", format(sessions$week_ending, "%d %B %Y"), "<br>",
+                         "Average minutes: ", sessions$session_ave))
+
+# Plot for the overall visits
+plot_ly(sessions) %>% 
+  add_lines(x = ~week_ending, y = ~session_ave,
+            text=tooltip_sess, hoverinfo="text") %>% 
+  layout(yaxis = list(yaxis_plots, title = "Average minutes spent in website"), 
+         xaxis = xaxis_plots,
+         margin = list(b = 80, t = 5, r = 25), # to avoid labels getting cut off
+         annotations = zoom_annotation) %>% 
+  # leaving only save plot button
+  config(displaylogo = F, displayModeBar = TRUE, 
+         modeBarButtonsToRemove = bttn_remove )
+
+```
+
+## Sources of visits over the last year
+
+```{r source}
+kable(source)
+```
+
+## Pages visited
+
+```{r pages}
+kable(pages)
+```
+
