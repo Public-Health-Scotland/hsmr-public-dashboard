@@ -8,7 +8,7 @@ output:
     toc_float: true
 ---
   
-  ```{r TODO, include = FALSE}
+```{r TODO, include = FALSE}
 # Add tables/downloadable data?
 # Anything else to add to report? (geography?)
 # Schedule it to run every month
@@ -68,17 +68,9 @@ zoom_annotation =
        x = 0, xref = "paper", xanchor = "left",
        y = -0.35, yref = "paper", yanchor = "middle")
 
-# Annotation to mark when 
-monthly_annotation =
-  list(text = "Drag to zoom", borderpad = 2,
-       hovertext = zoom_hover_text,
-       showarrow = TRUE, ax = 0, ay = 18,
-       x = 0, xref = "paper", xanchor = "left",
-       y = -0.35, yref = "paper", yanchor = "middle")
-
 ###############################################.
 # Palettes 
-pal_tabs <- c('#000000', '#4da6ff','#ffa64d')
+pal_tabs <- c('#000000', '#1f78b4','#b2df8a', '#a6cee3')
 
 ```
 
@@ -135,7 +127,7 @@ plot_ly(tabvisits_year) %>%
 
 ```
 
-### Visits per wek
+### Visits per week
 
 ```{r tabweekvisits}
 #Plot function for tabs data

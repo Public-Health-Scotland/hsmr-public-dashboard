@@ -1,4 +1,4 @@
-# Extracting google analytics data for wider impacts
+# Extracting google analytics data for HSMR public dashboard
 # From https://code.markedmondson.me/googleAnalyticsR/articles/setup.html
 # Google Analytics API guide: https://ga-dev-tools.web.app/dimensions-metrics-explorer/
 
@@ -24,6 +24,9 @@ list_events <- data.frame( stringsAsFactors = F,
                            eventlabel = c( "hsmr", "fa", "home", "crude"),
                            tabname = c("HSMR", "Further analysis", "Home", "Crude trends"))
 
+# Setting file permissions to anyone to allow writing/overwriting of project files
+Sys.umask("006")
+
 ###############################################.
 ## Connecting to GA and extracting data ----
 ###############################################.
@@ -33,6 +36,9 @@ list_events <- data.frame( stringsAsFactors = F,
 # log in with an email that has access to your Google Analytics - it will take you 
 # to a screen with an OOB token. Copy-paste that token back into RStudio:
 # email_login is an object with the email address of the account with access to GA
+# It sits in the environment file. To create that file, create a new text file and add
+# email = "emailyouareusing@providerofyouremail.com" then save in the root folder
+# of the project with the name ".env" This file is not picked by Git
 readRenviron(".env")
 email_login <- Sys.getenv("email_login")
 ga_auth(email = email_login)
