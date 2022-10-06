@@ -10,7 +10,7 @@ hospitals in Scotland, as well as some additional mortality indicators.
 - The smr, crude trends and lookup data files required for this dashboard have been produced 
 during the HSMR publication process. 
 - save_app_files: script that includes all the data files used by the app and the right version 
-(datestamped) of each one. The publication date should be updated and the script run in order 
+(datestamped) of each one. The publication date should be updated and the script run 
 to save the files locally in order to update the dashboard and deploy.
 
 ### shiny_app folder
