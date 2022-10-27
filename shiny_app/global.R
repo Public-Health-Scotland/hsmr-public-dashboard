@@ -1,4 +1,7 @@
-# Global - HSMR public dashboard
+###############################################.
+## HSMR public dashboard ----
+## Global ----
+###############################################.
 
 library(shiny)
 library(plotly)           # for charts
@@ -22,30 +25,33 @@ library(phsstyles)
 library(formattable)
 library(scales)
 library(shinydashboard)
-
+library(hsmr)
+library(english)
 
 
 ###############################################.
-## Update each publication ----
+## Publication dates - update each quarter ----
 ###############################################.
 
+# Start and end date of the HSMR period (i.e progress both dates by 3 months each publication)
+start_date        <- lubridate::dmy(01072021) # UPDATE
+end_date          <- lubridate::dmy(30062022) # UPDATE
 
-# Define the HSMR period - move the period on one quarter.
-latest_hsmr <- c("April 2021 to March 2022")
+# HSMR period (1 year) moves on one quarter each publication
+latest_hsmr <- c(paste0(format(start_date, "%B %Y"), " to ", format(end_date, "%B %Y")))
 
-next_pub <- c("8 November 2022")
+# Publication dates
+pub_day <- pub_date(end_date = end_date, "current")
+next_pub <- pub_date(end_date = end_date, "next")
 
-pub_day <- lubridate::dmy(09082022)
 
-# Also check that the list of locations (~line 138) does not need updated for this publication.
+# Also check that the list of locations (in Objects, names and lists section) doesn't
+# need updated for this publication.
 
 
 ###############################################.
 ## Set up environment ----
 ###############################################.
-
-# Setting file permissions to anyone to allow writing/overwriting of project files
-Sys.umask("006")
 
 # Source function for creating the main points from funnel
 source("funnel.R")
@@ -84,7 +90,7 @@ home_list <- c("About HSMR" = "about",
                "Further information" = "info",
                "Accessibility" = "accessibility")
 
-# List of quarters for HSMR time period drop-down
+# List of years for HSMR time period drop-down
  timeperiod_list <- c(unique(hsmr$period_label))
 
 # List of HBs, used in Further analysis tab
