@@ -116,21 +116,24 @@ function(input, output, session) {
   # Text for 'What are the subgroups' info button
   subgroup_modal <- modalDialog(
     p("The subgroups that we have included are as follows:"),
-    p(tags$b("Age group: "),"this refers to the patient's age on admission. The ages are grouped into 20 year age bands."),
-    p(tags$b("Admission type: "), "this refers to whether the patient was an elective (planned) admission to hopsital, or
-      non-elective (emergency) admission to hospital."),
-    p(tags$b("Deprivation: "), "this is based on the patient's postcode of residence using the Scottish Index of Multiple
-      Deprivation (SIMD). The SIMD is calculated by the Scottish Government and is a
-      relative measure of deprivation across 6,976 small areas (called data zones). If an area is identified as ‘deprived’,
-      this can relate to people having a low income but it can also mean fewer resources or opportunities. SIMD looks at the
-      extent to which an area is deprived across seven domains: income, employment, education, health, access to services,
-      crime and housing."),
+    p(tags$b("Age group: "),"this refers to the patient's age on admission. The ages are
+      grouped into 20 year age bands."),
+    p(tags$b("Admission type: "), "this refers to whether the patient was an elective
+      (planned) admission to hopsital, or non-elective (emergency) admission to hospital."),
+    p(tags$b("Deprivation: "), "this is based on the patient's postcode of residence using
+      the Scottish Index of Multiple Deprivation (SIMD). The SIMD is calculated by the
+      Scottish Government and is a relative measure of deprivation across 6,976 small areas
+      (called data zones). If an area is identified as ‘deprived’, this can relate to people
+      having a low income but it can also mean fewer resources or opportunities. SIMD looks at the
+      extent to which an area is deprived across seven domains: income, employment, education,
+      health, access to services, crime and housing."),
     p(tags$b("Sex: "), "refers to the sex recorded on the episode of admission to hospital."),
-    p(tags$b("Place of death: "), "this is the location where the patient died; in hospital or in the community (e.g residential
-      home, care home, etc.)"),
-    p(tags$b("Specialty: "), "we classify specialty group according to the specialty of the consultant/GP/healthcare
-    professional who was in charge of the patient episode. The specialties are grouped into seven distinct specialty
-    groups: Community, Dental, Emergency, Medical, Paediatrics, Gynaecology and Surgery."),
+    p(tags$b("Place of death: "), "this is the location where the patient died; in hospital
+      or in the community (e.g residential home, care home, etc.)"),
+    p(tags$b("Specialty: "), "we classify specialty group according to the specialty of the
+      consultant/GP/healthcare professional who was in charge of the patient episode. The
+      specialties are grouped into seven distinct specialty groups: Community, Dental, Emergency,
+      Medical, Paediatrics, Gynaecology and Surgery."),
     size = "l",
     easyClose = TRUE, fade=TRUE, footer = modalButton("Close (Esc)")
     )
@@ -194,20 +197,6 @@ function(input, output, session) {
 
     hsmr_chart_title <- paste0("HSMR for deaths within 30 days of admission by hospital: ", input$timeperiod_hsmr)
 
-   # unique(data$period_label)
-    # Main points are presented for the most recent publication only
-    # main_points <-
-    # #if(input$timeperiod_hsmr == latest_hsmr) {
-    #       tagList(
-    #         br(),
-    #       h4(tags$b("Main points for this publication")),
-    #       tags$li(funnel_text(hsmr_data(), indicator = "above")),
-    #       tags$li(funnel_text(hsmr_data(), indicator = "below"))
-    #
-    #     )#}
-
-  #else {}
-
     tagList(
       br(),
       h4(tags$b("Main points for this publication")),
@@ -262,17 +251,18 @@ function(input, output, session) {
     # Indicator description to update depending on selection
     fa_indicator_desc <- case_when(
       input$indicator_select_fa == "Discharge" ~
-      paste0("This chart shows the trend in mortality for Scotland and NHS Boards of treatment using a definition
-      similar to the Summary Hospital-level Mortality Indicator (SHMI) in England. SHMI takes
-      account of inpatient mortality and deaths within 30 days of discharge.
+      paste0("This chart shows the trend in mortality for Scotland and NHS Boards of treatment
+      using a definition similar to the Summary Hospital-level Mortality Indicator (SHMI) in
+      England. SHMI takes account of inpatient mortality and deaths within 30 days of discharge.
       The Scottish HSMR does not include patients that die in hospital more than
       30 days from admission. In Scotland, we associate the outcome
       with decisions made at the point of admission. More information can be found in the full report."),
       input$indicator_select_fa == "Population" ~
-      paste0("An alternative measure of mortality is to compare the total number of deaths within the population
-      in a given time period and area. This approach provides an overall picture of the mortality in the
-      population. Crude population mortality rates for Scotland and NHS Boards of residence are given
-      in this chart using the total number of deaths in each quarter and mid-year population estimates."))
+      paste0("An alternative measure of mortality is to compare the total number of deaths
+      within the population in a given time period and area. This approach provides an overall
+      picture of the mortality in the population. Crude population mortality rates for Scotland
+      and NHS Boards of residence are given in this chart using the total number of deaths in
+      each quarter and mid-year population estimates."))
 
     tagList(fluidRow(column(12, br(), fa_indicator_desc)), br(),
             fluidRow(column(12, h4(tags$b(paste0(fa_chart_title)))),
@@ -515,7 +505,7 @@ function(input, output, session) {
   }
 
 # Function to create data table. Parameters:
-  # data - the data to be used in the table
+  # data - the data to be presented in the table
   # pagelength - number of rows visible in the table
   # scrolly - specify the fixed height of your table
   # targets - specifythe numeric columns which are to be right-aligned
