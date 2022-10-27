@@ -1,13 +1,20 @@
-# HSMR public dashboard
+###############################################.
+## HSMR public dashboard ----
 # This script reads the latest version of each file and saves it in your local repository.
-
-
-###############################################.
-## Update each quarter ----
 ###############################################.
 
-# Define publication date
-pub_day <- lubridate::dmy(09082022)
+library(hsmr)
+
+###############################################.
+## Extract dates ----
+###############################################.
+
+# End date for the cut off for data extract
+# Update each quarter
+end_date          <- lubridate::dmy(30062022)
+
+# Publication dates
+pub_day <- pub_date(end_date = end_date, "current")
 
 
 ###############################################.
