@@ -1,4 +1,8 @@
-# Server - HSMR public dashboard
+###############################################.
+## HSMR public dashboard ----
+## Server ----
+###############################################.
+
 credentials <- readRDS("admin/credentials.rds")
 
 
@@ -126,7 +130,7 @@ function(input, output, session) {
       home, care home, etc.)"),
     p(tags$b("Specialty: "), "we classify specialty group according to the specialty of the consultant/GP/healthcare
     professional who was in charge of the patient episode. The specialties are grouped into seven distinct specialty
-    groups: Community, Dental, Emergency, Medical, Paediatrics, Obstetrics and Gynaecology, and Surgery."),
+    groups: Community, Dental, Emergency, Medical, Paediatrics, Gynaecology and Surgery."),
     size = "l",
     easyClose = TRUE, fade=TRUE, footer = modalButton("Close (Esc)")
     )
@@ -190,27 +194,32 @@ function(input, output, session) {
 
     hsmr_chart_title <- paste0("HSMR for deaths within 30 days of admission by hospital: ", input$timeperiod_hsmr)
 
-
+   # unique(data$period_label)
     # Main points are presented for the most recent publication only
-    main_points <- if(input$timeperiod_hsmr == latest_hsmr) {
-          tagList(
-            br(),
-          h4(tags$b("Main points for this publication")),
-          tags$li(funnel_text(hsmr_data(), indicator = "above")),
-          tags$li(funnel_text(hsmr_data(), indicator = "below"))
+    # main_points <-
+    # #if(input$timeperiod_hsmr == latest_hsmr) {
+    #       tagList(
+    #         br(),
+    #       h4(tags$b("Main points for this publication")),
+    #       tags$li(funnel_text(hsmr_data(), indicator = "above")),
+    #       tags$li(funnel_text(hsmr_data(), indicator = "below"))
+    #
+    #     )#}
 
-        )}
-
-  else {}
+  #else {}
 
     tagList(
-      main_points, br(),
+      br(),
+      h4(tags$b("Main points for this publication")),
+      tags$li(funnel_text(hsmr_data(), indicator = "above")),
+      tags$li(funnel_text(hsmr_data(), indicator = "below")), br(),
+
       fluidRow(column(9, h4(tags$b(paste0(hsmr_chart_title)))),
                column(3, div(actionButton("funnel_info","What is a funnel plot?",
                                       icon = icon('question-circle')), style = "float: right"))),
-      fluidRow(column(12, withSpinner(plotlyOutput("hsmr_chart")))),
+      fluidRow(withSpinner(plotlyOutput("hsmr_chart"))),
       fluidRow(column(3, downloadButton('download_hsmr_data', 'Download data'))),
-      fluidRow(column(12, dataTableOutput("hsmr_table"))), br(), br()
+      fluidRow(dataTableOutput("hsmr_table")), br(), br()
           ) #tagList
 
   })
@@ -495,62 +504,73 @@ function(input, output, session) {
   ## Table ----
   ###############################################.
 
-  # HSMR
+# Function to carry out the formatting common to all tables
+  # data - the data to be used in the table
+  format_table <- function(data) {
+  data %<>%
+    mutate(crd_rate = sprintf("%.1f", crd_rate),
+           pats = format(pats, big.mark=","),
+           deaths = format(deaths, big.mark=",")) %>%
+    rename(Location = location_name, Patients = pats, "Crude mortality rate (%)" = crd_rate)
+  }
+
+# Function to create data table. Parameters:
+  # data - the data to be used in the table
+  # pagelength - number of rows visible in the table
+  # scrolly - specify the fixed height of your table
+  # targets - specifythe numeric columns which are to be right-aligned
+  create_datatable <- function(data, pagelength, scrolly, targets ) {
+
+    datatable(data,
+              style = 'bootstrap',
+              class = 'table-bordered table-condensed',
+              rownames = FALSE,
+              options = list(pageLength = pagelength,
+                             paging = FALSE,
+                             dom = 't',
+                             #autoWidth = TRUE,
+                             scrollX = TRUE,
+                             scrollY = scrolly, scroller = TRUE,
+                             columnDefs = list(list(className = 'dt-right', targets = targets))), # right align number columns
+              filter = "none")
+
+    }
+
+
+   # HSMR
   output$hsmr_table <- renderDataTable({
 
     table <- hsmr_highlight() %>%
       filter(hb == input$hb_hsmr) %>%
-      mutate(crd_rate = sprintf("%.1f", crd_rate),
-             smr = sprintf("%.1f", smr),
-             pred = format(round(pred,0), big.mark=","),
-             pats = format(pats, big.mark=","),
-             deaths = format(deaths, big.mark=",")) %>%
-      select(location_name, period_label, deaths, pred,
-             pats, smr, crd_rate) %>%
-      rename(Location = location_name, "Period" = period_label, "Observed deaths" = deaths,
-             "Predicted deaths" = pred, Patients = pats, "Crude mortality rate (%)" = crd_rate,
-             "Hospital standardised mortality ratio (HSMR)" = smr)
+      select(location_name, period_label, deaths, pred, pats, smr, crd_rate)
 
-    datatable(table,
-              style = 'bootstrap',
-              class = 'table-bordered table-condensed',
-              rownames = FALSE,
-              options = list(pageLength = 6,
-                             paging=FALSE,
-                             dom = 't',
-                             #autoWidth = TRUE,
-                             scrollX = TRUE,
-                             scrollY = 300, scroller = TRUE,
-                             columnDefs = list(list(className = 'dt-right', targets = 2:6))), # right align number columns
-              filter = "none")
+       table <-  format_table(data=table) %>%
+         mutate(smr = sprintf("%.2f", smr),
+                pred = format(round(pred,0), big.mark=",")) %>%
+         rename("Period" = period_label,
+                "Observed deaths" = deaths,
+                "Predicted deaths" = pred,
+                "Hospital standardised mortality ratio (HSMR)" = smr)
 
-  })
+    create_datatable(data = table, pagelength = 6, scrolly = 300, targets = 2:6)
+
+    })
 
 
 
   # Crude trends
   output$trend_table <- renderDataTable({
 
-    table <- trend_data() %>% select(location_name, label_short, sub_grp, label, deaths,
-                                     pats, crd_rate) %>%
-      mutate(crd_rate = sprintf("%.1f", crd_rate),
-             pats = format(pats, big.mark=","),
-             deaths = format(deaths, big.mark=",")) %>%
-      rename(Location = location_name, "Time period" = label_short, Subgroup = sub_grp,
-             Group = label, "Deaths" = deaths, Patients = pats, "Crude mortality rate (%)" = crd_rate)
+    table <- trend_data() %>%
+      select(location_name, label_short, sub_grp, label, deaths, pats, crd_rate)
 
-    datatable(table,
-              style = 'bootstrap',
-              class = 'table-bordered table-condensed',
-              rownames = FALSE,
-              options = list(pageLength = 20,
-                             paging=FALSE,
-                             dom = 't',
-                             #autoWidth = TRUE,
-                             scrollX = TRUE,
-                             scrollY = 620, scroller = TRUE,
-                             columnDefs = list(list(className = 'dt-right', targets = 4:6))), # right align number columns
-              filter = "none")
+    table <- format_table(data=table) %>%
+      rename("Time period" = label_short,
+             Subgroup = sub_grp,
+             Group = label,
+             Deaths = deaths)
+
+    create_datatable(data = table, pagelength = 20, scrolly = 620, targets = 4:6)
 
   })
 
@@ -558,34 +578,18 @@ function(input, output, session) {
   # Further analysis
   output$fa_table <- renderDataTable({
 
-    fa <- fa_data() %>% select(location_name, label_short, deaths,
-                               pats, crd_rate) %>%
-      mutate(crd_rate = sprintf("%.1f", crd_rate),
-             pats = format(pats, big.mark=","),
-             deaths = format(deaths, big.mark=",")) %>%
-      rename(Location = location_name, Quarter = label_short, Deaths = deaths)
+    table <- fa_data() %>% select(location_name, label_short, deaths, pats, crd_rate)
+
+    table <- format_table(data=table) %>%
+      rename(Quarter = label_short,
+             Deaths = deaths)
 
     # Update title and denominator name based on indicator selected
-    if (input$indicator_select_fa == "Discharge") {
-      fa %<>% rename(Patients = pats,
-                     "Crude mortality rate (%)" = crd_rate)}
-    else {
-      fa %<>% rename(Population = pats,
-                     "Crude mortality per 1,000 population" = crd_rate) }
+    if (input$indicator_select_fa == "Population") {
+      table %<>% rename(Population = Patients,
+                     "Crude mortality per 1,000 population" = "Crude mortality rate (%)") }
 
-
-    datatable(fa,
-              style = 'bootstrap',
-              class = 'table-bordered table-condensed',
-              rownames = FALSE,
-              options = list(pageLength = 20,
-                             paging = FALSE,
-                             dom = 't',
-                             #autoWidth = TRUE,
-                             scrollX = TRUE,
-                             scrollY = 620, scroller = TRUE,
-                             columnDefs = list(list(className = 'dt-right', targets = 2:4))), # right align number columns
-              filter = "none")
+    create_datatable(data = table, pagelength = 20, scrolly = 620, targets = 2:4)
 
   })
 
@@ -649,4 +653,16 @@ function(input, output, session) {
 
 
 ##END
+
+# # chart outputs for Scotland/NHS board trends
+# output$trend_chart <- renderPlotly({
+#   create_line_chart(dataset=trend_data(), )})
+#
+# create_line_chart <- function(dataset, ) {
+#
+#
+# }
+
+
+
 
