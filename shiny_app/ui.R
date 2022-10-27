@@ -1,4 +1,7 @@
-# UI - HSMR public dashboard
+###############################################.
+## HSMR public dashboard ----
+## UI ----
+###############################################.
 
 #secure_app( #uncomment if needing password protection
  tagList( #needed for shinyjs
@@ -75,7 +78,7 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
                                they were unexpected, or were attributable to failings in the quality of care."), br(),
 
                                h5(tags$b("Next publication")),
-                               p("The next release of this publication will be ", tags$b(next_pub), "."), br()
+                               p("The next release of this publication will be ", tags$b(format(next_pub, "%d %B %Y")), "."), br()
                                ) # tagList
                        ), # conditionalPanel
 
