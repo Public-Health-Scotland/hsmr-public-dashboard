@@ -3,51 +3,9 @@
 ## Global ----
 ###############################################.
 
-library(shiny)
-library(plotly)           # for charts
-library(shinyWidgets)     # for dropdowns
-library(dplyr)            # for data manipulation
-library(DT)               # for data table
-library(shinycssloaders)  # for loading icons, see line below
-# it uses github version devtools::install_github("andrewsali/shinycssloaders")
-# This is to avoid issues with loading symbols behind charts and perhaps with bouncing of app
-library(shinyjs)          # for enable/disable functions
-library(readr)            # for writing/reading csvs
-library(stringr)          # for manipulating strings
-library(flextable)
-library(shinyBS)          # for collapsible panels in commentary
-library(zoo)
-library(magrittr)
-library(shinymanager)
-library(lubridate)
-library(readxl)
-library(phsstyles)
-library(formattable)
-library(scales)
-library(shinydashboard)
-library(hsmr)
-library(english)
-
-
-###############################################.
-## Publication dates - update each quarter ----
-###############################################.
-
-# Start and end date of the HSMR period (i.e progress both dates by 3 months each publication)
-start_date        <- lubridate::dmy(01072021) # UPDATE
-end_date          <- lubridate::dmy(30062022) # UPDATE
-
-# HSMR period (1 year) moves on one quarter each publication
-latest_hsmr <- c(paste0(format(start_date, "%B %Y"), " to ", format(end_date, "%B %Y")))
-
-# Publication dates
-pub_day <- pub_date(end_date = end_date, "current")
-next_pub <- pub_date(end_date = end_date, "next")
-
-
-# Also check that the list of locations (in Objects, names and lists section) doesn't
+# Important: Check that the list of locations (in Objects, names and lists section) doesn't
 # need updated for this publication.
-
+# Otherwise, there are no updates required for the quarterly publication.
 
 ###############################################.
 ## Set up environment ----
@@ -55,6 +13,37 @@ next_pub <- pub_date(end_date = end_date, "next")
 
 # Source function for creating the main points from funnel
 source("funnel.R")
+
+library(shiny)            # for building shiny app
+library(shinymanager)     # authentification mechanism for shiny apps
+library(shinyjs)          # for allowing element to be clicked (i.e. buttons)
+library(shinyWidgets)     # for dropdowns
+library(plotly)           # for charts
+library(dplyr)            # for data manipulation
+library(magrittr)         # for the assignment pipe
+library(DT)               # for data table
+library(lubridate)        # for date formats
+library(phsstyles)        # for PHS colour palettes
+library(hsmr)             # for automatically generating publication dates
+library(english)          # for writing numbers in text form
+library(shinycssloaders)  # for loading icons, see line below
+# it uses github version devtools::install_github("andrewsali/shinycssloaders")
+# This is to avoid issues with loading symbols behind charts and perhaps with bouncing of app
+
+
+###############################################.
+## Publication dates ----
+###############################################.
+
+# Read in key dates saved out in save_app_files.R
+dates <- readRDS(paste0("data/pub_dates.rds"))
+
+# HSMR period (1 year) moves on one quarter each publication
+latest_hsmr <- c(paste0(format(dates$start_date, "%B %Y"), " to ", format(dates$end_date, "%B %Y")))
+
+# Publication dates
+pub_day <- pub_date(end_date = dates$end_date, "current")
+next_pub <- pub_date(end_date = dates$end_date, "next")
 
 
 ###############################################.
@@ -204,7 +193,7 @@ xaxis_plots <- list(title = FALSE, fixedrange=TRUE, ticks="outside",
 
 
 yaxis_plots <- list(title = FALSE, rangemode="tozero", fixedrange=TRUE,
-                    ticks = "outside", showline=TRUE, range = FALSE)
+                    ticks = "outside", showline=FALSE, range = FALSE)
 
 # Buttons to remove
 bttn_remove <-  list('select2d', 'lasso2d', 'zoomIn2d', 'zoomOut2d',
