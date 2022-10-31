@@ -5,11 +5,10 @@
 
 credentials <- readRDS("admin/credentials.rds")
 
-
 function(input, output, session) {
 
   # For debugging
-   #observeEvent(input$browser, browser())
+  # observeEvent(input$browser, browser())
 
 ###############################################.
 ## Reactive controls  ----
@@ -206,9 +205,9 @@ function(input, output, session) {
       fluidRow(column(9, h4(tags$b(paste0(hsmr_chart_title)))),
                column(3, div(actionButton("funnel_info","What is a funnel plot?",
                                       icon = icon('question-circle')), style = "float: right"))),
-      fluidRow(withSpinner(plotlyOutput("hsmr_chart"))),
-      fluidRow(column(3, downloadButton('download_hsmr_data', 'Download data'))),
-      fluidRow(dataTableOutput("hsmr_table")), br(), br()
+      withSpinner(plotlyOutput("hsmr_chart")),
+      column(3, downloadButton('download_hsmr_data', 'Download data')),
+      column(12, dataTableOutput("hsmr_table")), br(), br()
           ) #tagList
 
   })
@@ -230,10 +229,10 @@ function(input, output, session) {
 
     fluidRow(column(9, h4(tags$b(paste0(trend_chart_title)))),
              column(3, div(actionButton("subgroup_info","What are the subgroups?",
-                                    icon = icon('question-circle'), style = "float: right"))),
-             column(12, withSpinner(plotlyOutput("trend_chart"))), br(),
-             column(3, downloadButton('download_trend_data', 'Download data')),
-             column(12, dataTableOutput("trend_table"))), br(), br()
+                                    icon = icon('question-circle'), style = "float: right")))),
+    column(12, withSpinner(plotlyOutput("trend_chart"))), br(),
+    column(3, downloadButton('download_trend_data', 'Download data')),
+    column(12, dataTableOutput("trend_table")), br(), br()
     ) #tagList
 
   })
@@ -264,11 +263,11 @@ function(input, output, session) {
       and NHS Boards of residence are given in this chart using the total number of deaths in
       each quarter and mid-year population estimates."))
 
-    tagList(fluidRow(column(12, br(), fa_indicator_desc)), br(),
-            fluidRow(column(12, h4(tags$b(paste0(fa_chart_title)))),
-                     column(12, withSpinner(plotlyOutput("fa_chart")))) %>%
-              fluidRow(column(3, downloadButton('download_fa_data', 'Download data'))),
-              fluidRow(column(12, dataTableOutput("fa_table"))), br(), br()
+    tagList(column(12, br(), fa_indicator_desc), br(),
+            column(12, h4(tags$b(paste0(fa_chart_title)))),
+            column(12, withSpinner(plotlyOutput("fa_chart"))),
+            column(3, downloadButton('download_fa_data', 'Download data')),
+            column(12, dataTableOutput("fa_table")), br(), br()
     )
   })
 
@@ -278,6 +277,26 @@ function(input, output, session) {
 ## Charts ----
 ###############################################.
 
+  chart_layout <- function(format_plot, categoryorder = FALSE, categoryarray = FALSE,
+                           ytitle, xtitle, xrange = FALSE, yrange = FALSE, ticks = FALSE) {
+
+    yaxis_plots[["title"]] <- ytitle
+    xaxis_plots[["title"]] <- xtitle
+    xaxis_plots[["range"]] <- xrange
+    xaxis_plots[["dtick"]] <- ticks
+    yaxis_plots[["range"]] <- yrange
+
+
+    format_plot %>%
+      layout(margin = list(b = 80, t=5), # to avoid labels getting cut out
+             yaxis = yaxis_plots,
+             xaxis = xaxis_plots,
+             list(categoryorder = categoryorder, categoryarray = categoryarray),
+             legend = list(orientation = "h", x=0, y=1.2)) %>% # position of legend
+      # leaving only save plot button
+      config(displaylogo = F, displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove)
+
+  }
 
   # HSMR funnel plot
   output$hsmr_chart <- renderPlotly({
@@ -294,9 +313,8 @@ function(input, output, session) {
                              hsmr$period_label, "<br>",
                              "HSMR: ", sprintf("%.2f", hsmr$smr), "<br>",
                              "Predicted deaths: ", format(round(hsmr$pred,0), big.mark=","),"<br>",
-                            # "Predicted deaths: ", round(hsmr$pred,0), "<br>",
-                            "Observed deaths: ", format(hsmr$deaths, big.mark=",")))
-                            #"Observed deaths: ", hsmr$deaths))
+                             "Observed deaths: ", format(hsmr$deaths, big.mark=",")))
+
 
     # Assign colours for hospital data points depending on flag
     hosp_colour <- case_when(hsmr$flag == 1 ~ "#FF0000", # ucl
@@ -312,11 +330,6 @@ function(input, output, session) {
                                 highlight$flag == 4 ~ "#FFCD99", # lwl
                                 TRUE ~ "#80BCEA")
 
-    # Define formats
-    yaxis_plots[["range"]] <- c(0, 2)
-    yaxis_plots[["title"]] <- "HSMR"
-    xaxis_plots[["title"]] <- "Predicted deaths"
-    xaxis_plots[["dtick"]] <- FALSE
 
     plot <- plot_ly() %>%
 
@@ -342,14 +355,10 @@ function(input, output, session) {
       # lcl line
       add_lines(data=hsmr, x=~pred, y = ~lcl, mode='line', type='scatter', line = list(color = 'FF0000'),
                 hoverinfo='skip', showlegend=F) %>%
-      # Layout
-      layout(margin = list(b = 80, t=5), # to avoid labels getting cut out
-             yaxis = yaxis_plots,
-             xaxis = xaxis_plots,
-             legend = list(orientation = "h", x=0, y=1.2)) %>% # position of legend
-      # leaving only save plot button
-      config(displaylogo = F, displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove )
-  }
+
+      chart_layout(ytitle = "HSMR", xtitle = "Predicted deaths", yrange = c(0, 2))
+
+    }
   )#plotly end
 
 
@@ -369,10 +378,6 @@ function(input, output, session) {
                               "Deaths: ", format(trend$deaths, big.mark = ","), "<br>",
                               "Patients: ", format(trend$pats, big.mark = ",")))
 
-    # Titles for axes
-    yaxis_plots[["title"]] <- "Crude mortality rate (%)"
-    xaxis_plots[["title"]]<- input$timeperiod
-    xaxis_plots[["range"]] <- c(-0.5, max(trend$mth_qtr))
 
     # Chart upates depending on subgroup selected
     if(input$subgroup_select == "All admissions") {
@@ -387,13 +392,10 @@ function(input, output, session) {
                   mode = 'lines+markers', symbol= ~location_name,
                   symbols = list('circle','square','triangle-down', 'x', 'diamond', 'star-square', 'cross'),
                   marker = list(size= 8)) %>%
-        # Layout
-        layout(margin = list(b = 80, t=5), # to avoid labels getting cut out
-               yaxis = yaxis_plots,
-               xaxis = xaxis_plots, list(categoryorder = "array", categoryarray = order(trend[,"mth_qtr"])),
-               legend = list(orientation = "h", x=0, y=1.2)) %>% # position of legend
-        # leaving only save plot button
-        config(displaylogo = F, displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove)
+        chart_layout(categoryorder = "array", categoryarray =  order(trend[,"mth_qtr"]),
+                     ytitle = "Crude mortality rate (%)", xtitle = input$timeperiod,
+                     xrange = c(-0.5, max(trend$mth_qtr)), ticks = 2)
+
     }
 
     else {
@@ -420,14 +422,11 @@ function(input, output, session) {
                   mode = 'lines+markers', symbol= ~label,
                   symbols = list('circle','square','triangle-down', 'x', 'diamond', 'star-square', 'cross'),
                   marker = list(size= 8)) %>%
-        #Layout
-        layout(margin = list(b = 80, t=5), #to avoid labels getting cut out
-               yaxis = yaxis_plots,
-               xaxis = xaxis_plots, list(categoryorder = "array",
-                                         categoryarray = order(trend[,"mth_qtr"])),
-               legend = list(orientation = "h", x=0, y=1.2)) %>% #position of legend
-        # leaving only save plot button
-        config(displaylogo = F, displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove)
+
+      chart_layout(categoryorder = "array", categoryarray =  order(trend[,"mth_qtr"]),
+                   ytitle = "Crude mortality rate (%)", xtitle = input$timeperiod,
+                   xrange = c(-0.5, max(trend$mth_qtr)), ticks = 2)
+
     }
 
   }
@@ -440,9 +439,6 @@ function(input, output, session) {
     fa <- fa_data() %>%
       mutate(label_short = factor(label_short, levels = unique(fa_data()$label_short)))
 
-    # Titles for axes
-    xaxis_plots[["title"]] <- "Quarter"
-    xaxis_plots[["range"]] <- c(-0.5, 20)
 
     if (input$indicator_select_fa == "Discharge") {
       # Information to be displayed in tooltip - discharge indicator
@@ -451,8 +447,6 @@ function(input, output, session) {
                              "Crude mortality rate (%): ", sprintf("%.1f", fa$crd_rate), "<br>",
                              "Deaths: ", format(fa$deaths, big.mark = ","), "<br>",
                              "Patients: ", format(fa$pats, big.mark = ",")))
-
-      yaxis_plots[["title"]] <- "Crude mortality rate (%)"
 
 
     } else {
@@ -463,8 +457,6 @@ function(input, output, session) {
                              "Deaths: ", format(fa$deaths, big.mark = ","), "<br>",
                              "Population: ", format(fa$pats, big.mark = ",")))
 
-      yaxis_plots[["title"]] <- "Crude mortality"
-
     }
 
     # To ensure correct colours
@@ -473,29 +465,29 @@ function(input, output, session) {
     plot <- plot_ly(data=fa, x=~label_short) %>%
 
       # location line
-      add_lines(y = ~crd_rate, color= fa$location_name, colors = chart_colours[1:group_num], text=tooltip_fa, hoverinfo="text",
+      add_lines(y = ~crd_rate, color= fa$location_name, colors = chart_colours[1:group_num],
+                text=tooltip_fa, hoverinfo="text",
                 name = ~location_name,
                 mode = 'lines+markers', symbol= ~location_name,
                 symbols = list('circle','square','triangle-down', 'x', 'diamond', 'star-square', 'cross'),
                 marker = list(size= 8)) %>%
-      # Layout
-      layout(margin = list(b = 80, t=5), # to avoid labels getting cut out
-             yaxis = yaxis_plots,
-             xaxis = xaxis_plots, list(categoryorder = "array", categoryarray = order(fa[,"mth_qtr"])),
-             legend = list(orientation = "h", x=0, y=1.2)) %>% # position of legend
-      # leaving only save plot button
-      config(displaylogo = F, displayModeBar = TRUE, modeBarButtonsToRemove = bttn_remove)
+
+      chart_layout(categoryorder = "array", categoryarray =  order(fa[,"mth_qtr"]),
+                   ytitle = "Crude mortality", xtitle = "Quarter", xrange = c(-0.5, 20),
+                   ticks = 2)
+
 
   }
   )#plotly end
 
 
-  ###############################################.
-  ## Table ----
-  ###############################################.
+###############################################.
+## Tables ----
+###############################################.
 
 # Function to carry out the formatting common to all tables
   # data - the data to be used in the table
+
   format_table <- function(data) {
   data %<>%
     mutate(crd_rate = sprintf("%.1f", crd_rate),
@@ -509,6 +501,7 @@ function(input, output, session) {
   # pagelength - number of rows visible in the table
   # scrolly - specify the fixed height of your table
   # targets - specifythe numeric columns which are to be right-aligned
+
   create_datatable <- function(data, pagelength, scrolly, targets ) {
 
     datatable(data,
@@ -518,7 +511,6 @@ function(input, output, session) {
               options = list(pageLength = pagelength,
                              paging = FALSE,
                              dom = 't',
-                             #autoWidth = TRUE,
                              scrollX = TRUE,
                              scrollY = scrolly, scroller = TRUE,
                              columnDefs = list(list(className = 'dt-right', targets = targets))), # right align number columns
@@ -587,8 +579,20 @@ function(input, output, session) {
 ###############################################.
 ## Data downloads ----
 ###############################################.
-# This section prepares the data in each tab for csv download by
-# renaming variables where necessary.
+# This section prepares the data in each tab for csv download.
+
+# Function to download data. Parameters:
+  # filename - name of file when downloaded
+  # dataset - reactive dataset to be downloaded
+
+  download_data <- function(filename, dataset) {
+
+        downloadHandler(
+        filename = filename,
+        content = function(file) {
+          write_csv(dataset, file) })
+
+    }
 
 
 # HSMR
@@ -599,16 +603,11 @@ function(input, output, session) {
     rename(hsmr_variable_names)
   })
 
-
-  output$download_hsmr_data <- downloadHandler(
-    filename ="hsmr.csv",
-    content = function(file) {
-      write_csv(hsmr_download(), file) }
-  )
+  output$download_hsmr_data <-
+    download_data(filename = "hsmr.csv", dataset = hsmr_download())
 
 
-
-# Crude trends
+  # Crude trends
   trends_download <- reactive({
 
     trend_extract <- trend_data() %>%
@@ -616,11 +615,8 @@ function(input, output, session) {
       rename(all_of(trend_variable_names))
     })
 
-  output$download_trend_data <- downloadHandler(
-    filename ="crude_mortality_trends.csv",
-    content = function(file) {
-      write_csv(trends_download(), file) }
-  )
+  output$download_trend_data <-
+    download_data(filename = "crude_mortality_trends.csv", dataset = trends_download())
 
 
 # Further analysis
@@ -632,27 +628,13 @@ function(input, output, session) {
       select(-location, -agg_label, -subgroup)
     })
 
-  output$download_fa_data <- downloadHandler(
-    filename ="further_analysis.csv",
-    content = function(file) {
-      write_csv(fa_download(), file) }
-  )
+  output$download_fa_data <-
+    download_data(filename = "further_analysis.csv", dataset = fa_download())
 
 
-  } # server end
+
+   } # server end
 
 
 ##END
-
-# # chart outputs for Scotland/NHS board trends
-# output$trend_chart <- renderPlotly({
-#   create_line_chart(dataset=trend_data(), )})
-#
-# create_line_chart <- function(dataset, ) {
-#
-#
-# }
-
-
-
 
