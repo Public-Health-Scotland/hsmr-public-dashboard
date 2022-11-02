@@ -41,18 +41,14 @@ dates <- readRDS(paste0("data/pub_dates.rds"))
 # HSMR period (1 year) moves on one quarter each publication
 latest_hsmr <- c(paste0(format(dates$start_date, "%B %Y"), " to ", format(dates$end_date, "%B %Y")))
 
-# Publication dates
-pub_day <- pub_date(end_date = dates$end_date, "current")
-next_pub <- pub_date(end_date = dates$end_date, "next")
-
 
 ###############################################.
 ## Data ----
 ###############################################.
 
 # Read in data from shiny data folder
-hsmr <- readRDS(paste0("data/", pub_day, "-smr-data.rds"))
-trend <- readRDS(paste0("data/", pub_day, "-trend-data.rds"))
+hsmr <- readRDS(paste0("data/", dates$pub_day, "-smr-data.rds"))
+trend <- readRDS(paste0("data/", dates$pub_day, "-trend-data.rds"))
 
 
 # Read in lookup

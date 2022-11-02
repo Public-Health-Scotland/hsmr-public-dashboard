@@ -39,7 +39,7 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
                        condition= 'input.home_select == "about"',
                        tagList(h3(tags$b("Hospital Standardised Mortality Ratios")),
                                h4(tags$b(latest_hsmr)),
-                               h5(tags$b(paste0("Publication date: ", format(pub_day, "%d %B %Y")))),br(),
+                               h5(tags$b(paste0("Publication date: ", format(dates$pub_day, "%d %B %Y")))),br(),
                                p(paste0("This dashboard, which accompanies the quarterly Hospital Standardised
                                Mortality Ratio (HSMR) publication, presents the latest HSMR for the period ",
                                latest_hsmr, " for hospitals in Scotland. HSMR is presented using a 12 month reporting
@@ -78,7 +78,7 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
                                they were unexpected, or were attributable to failings in the quality of care."), br(),
 
                                h5(tags$b("Next publication")),
-                               p("The next release of this publication will be ", tags$b(format(next_pub, "%d %B %Y")), "."), br()
+                               p("The next release of this publication will be ", tags$b(format(dates$next_pub, "%d %B %Y")), "."), br()
                                ) # tagList
                        ), # conditionalPanel
 
