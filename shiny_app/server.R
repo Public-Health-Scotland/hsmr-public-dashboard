@@ -501,7 +501,7 @@ function(input, output, session) {
     table <- hsmr_highlight() %>%
       filter(hb == input$hb_hsmr) %>%
       mutate(crd_rate = sprintf("%.1f", crd_rate),
-             smr = sprintf("%.1f", smr),
+             smr = sprintf("%.2f", smr),
              pred = format(round(pred,0), big.mark=","),
              pats = format(pats, big.mark=","),
              deaths = format(deaths, big.mark=",")) %>%

@@ -31,11 +31,11 @@ library(shinydashboard)
 
 
 # Define the HSMR period - move the period on one quarter.
-latest_hsmr <- c("April 2021 to March 2022")
+latest_hsmr <- c("July 2021 to June 2022")
 
-next_pub <- c("8 November 2022")
+next_pub <- c("14 February 2023")
 
-pub_day <- lubridate::dmy(09082022)
+pub_day <- lubridate::dmy(08112022)
 
 # Also check that the list of locations (~line 138) does not need updated for this publication.
 
