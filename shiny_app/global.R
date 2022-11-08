@@ -41,7 +41,6 @@ dates <- readRDS(paste0("data/pub_dates.rds"))
 # HSMR period (1 year) moves on one quarter each publication
 latest_hsmr <- c(paste0(format(dates$start_date, "%B %Y"), " to ", format(dates$end_date, "%B %Y")))
 
-
 ###############################################.
 ## Data ----
 ###############################################.
