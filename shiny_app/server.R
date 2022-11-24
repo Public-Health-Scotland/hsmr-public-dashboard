@@ -206,7 +206,7 @@ function(input, output, session) {
                column(3, div(actionButton("funnel_info","What is a funnel plot?",
                                       icon = icon('question-circle')), style = "float: right"))),
       withSpinner(plotlyOutput("hsmr_chart")),
-      column(3, downloadButton('download_hsmr_data', 'Download data')),
+      column(3, download_data_UI(id = "download_hsmr_data")),
       column(12, dataTableOutput("hsmr_table")), br(), br()
           ) #tagList
 
@@ -231,7 +231,7 @@ function(input, output, session) {
              column(3, div(actionButton("subgroup_info","What are the subgroups?",
                                     icon = icon('question-circle'), style = "float: right")))),
     column(12, withSpinner(plotlyOutput("trend_chart"))), br(),
-    column(3, downloadButton('download_trend_data', 'Download data')),
+    column(3,download_data_UI(id = "download_trend_data")),
     column(12, dataTableOutput("trend_table")), br(), br()
     ) #tagList
 
@@ -266,7 +266,7 @@ function(input, output, session) {
     tagList(column(12, br(), fa_indicator_desc), br(),
             column(12, h4(tags$b(paste0(fa_chart_title)))),
             column(12, withSpinner(plotlyOutput("fa_chart"))),
-            column(3, downloadButton('download_fa_data', 'Download data')),
+            column(3, download_data_UI(id = "download_fa_data")),
             column(12, dataTableOutput("fa_table")), br(), br()
     )
   })
@@ -580,22 +580,9 @@ function(input, output, session) {
 ## Data downloads ----
 ###############################################.
 # This section prepares the data in each tab for csv download.
+ 
 
-# Function to download data. Parameters:
-  # filename - name of file when downloaded
-  # dataset - reactive dataset to be downloaded
-
-  download_data <- function(filename, dataset) {
-
-        downloadHandler(
-        filename = filename,
-        content = function(file) {
-          write_csv(dataset, file) })
-
-    }
-
-
-# HSMR
+# HSMR data to be downloaded
   hsmr_download <- reactive({
 
   hsmr_extract <- hsmr_data() %>%
@@ -603,11 +590,8 @@ function(input, output, session) {
     rename(hsmr_variable_names)
   })
 
-  output$download_hsmr_data <-
-    download_data(filename = "hsmr.csv", dataset = hsmr_download())
 
-
-  # Crude trends
+ # Crude trends data to be downloaded
   trends_download <- reactive({
 
     trend_extract <- trend_data() %>%
@@ -615,11 +599,8 @@ function(input, output, session) {
       rename(all_of(trend_variable_names))
     })
 
-  output$download_trend_data <-
-    download_data(filename = "crude_mortality_trends.csv", dataset = trends_download())
-
-
-# Further analysis
+  
+# Further analysis data to be downloaded
   fa_download <- reactive({
 
     fa_extract <- fa_data() %>%
@@ -628,10 +609,11 @@ function(input, output, session) {
       select(-location, -agg_label, -subgroup)
     })
 
-  output$download_fa_data <-
-    download_data(filename = "further_analysis.csv", dataset = fa_download())
 
-
+  download_data_server(id = "download_hsmr_data", data = hsmr_download, filename = "hsmr")
+  download_data_server(id = "download_trend_data", data = trends_download, filename = "crude_mortality_trends")
+  download_data_server(id = "download_fa_data", data = fa_download, filename = "further_analysis")
+  
 
    } # server end
 
