@@ -1,4 +1,7 @@
-# UI - HSMR public dashboard
+###############################################.
+## HSMR public dashboard ----
+## UI ----
+###############################################.
 
 #secure_app( #uncomment if needing password protection
  tagList( #needed for shinyjs
@@ -36,7 +39,7 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
                        condition= 'input.home_select == "about"',
                        tagList(h3(tags$b("Hospital Standardised Mortality Ratios")),
                                h4(tags$b(latest_hsmr)),
-                               h5(tags$b(paste0("Publication date: ", format(pub_day, "%d %B %Y")))),br(),
+                               h5(tags$b(paste0("Publication date: ", format(dates$pub_day, "%d %B %Y")))),
                                p(paste0("This dashboard, which accompanies the quarterly Hospital Standardised
                                Mortality Ratio (HSMR) publication, presents the latest HSMR for the period ",
                                latest_hsmr, " for hospitals in Scotland. HSMR is presented using a 12 month reporting
@@ -75,7 +78,12 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
                                they were unexpected, or were attributable to failings in the quality of care."), br(),
 
                                h5(tags$b("Next publication")),
-                               p("The next release of this publication will be ", tags$b(next_pub), "."), br()
+                               p("The next release of this publication will be ", tags$b(format(dates$next_pub, "%d %B %Y")), "."), br(),
+
+                               h5(tags$b("Contact us")),
+                               p("Please contact the ", tags$a(href="mailto:phs.qualityindicators@phs.scot",
+                                                               "Quality Indicators team"), "if you have any
+                                 questions about this publication or dashboard.")
                                ) # tagList
                        ), # conditionalPanel
 
@@ -122,26 +130,10 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
                        condition= 'input.home_select == "info"',
                        tagList(h3(tags$b("Further information")), br(),
                                h5(tags$b("Publication")),
-                               p(tags$li("The summary report and full report for this quarterly publication can be found
+                               p(tags$li("The summary report, full report and date files for this quarterly publication can be found
                                  on the ", tags$a(href="https://publichealthscotland.scot/publications/hospital-standardised-mortality-ratios/",
-                                 "HSMR publication page", target="_blank"), ".")),
-                                 p(tags$li("For more detailed information about the HSMR publication, visit the ",
-                                 tags$a(href="https://www.isdscotland.org/Health-Topics/Quality-Indicators/HSMR/",
-                                        "HSMR webpages (external website).", target="_blank"))),
-                               p(tags$li("The ", tags$a(href="https://www.isdscotland.org/Health-Topics/Quality-Indicators/HSMR/Methodology/_docs/HSMR-2019-Technical-Specification.pdf",
-                                "Technical Document (external website)", target="_blank"), " explains in more detail about how the HSMRs
-                                are calculated.")),
-                                p(tags$li("The ",
-                                tags$a(href="https://www.isdscotland.org/Health-Topics/Quality-Indicators/HSMR/FAQ/_docs/HSMR-2019-FAQs.pdf",
-                                 "Frequently Asked Questions (external website)", target="_blank"), "document answers common
-                                questions about the HSMR publication.")), br(),
+                                 "HSMR publication page", target="_blank"), ".")), br(),
 
-                               h5(tags$b("Data files")),
-                               p(tags$li("The data can be downloaded as csv files by clicking the 'Download data'
-                                 button above each of the tables in this dashboard.")),
-                              p(tags$li("It is also available to download as excel files from the ",
-                                 tags$a(href="https://publichealthscotland.scot/publications/hospital-standardised-mortality-ratios/",
-                                  "publication data files.", target="_blank"))), br(),
 
                                h5(tags$b("Open data")),
                                p(tags$li("Open data from this publication is available from the ",
@@ -216,7 +208,7 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
 ###############################################.
 
 tabPanel(title = "HSMR", value = "hsmr", icon = icon("bed"),
-         wellPanel(#actionButton("browser", "browser"),
+         wellPanel(#actionButton("browser", "browser"), #used for debugging
                    column(4, div(title="Select NHS Board to highlight.", # tooltip
                                  selectInput("hb_hsmr",
                                              label = "Step 1. Select NHS Board to highlight on chart.",
