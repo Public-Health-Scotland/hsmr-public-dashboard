@@ -196,5 +196,43 @@ bttn_remove <-  list('select2d', 'lasso2d', 'zoomIn2d', 'zoomOut2d',
                      'hoverClosestCartesian', 'zoom2d', 'pan2d', 'resetScale2d')
 
 
+
+
+
+
+
+###############################################.
+## Modules ----
+###############################################.
+
+## for downloading data in each tab
+
+# module ui function
+download_data_UI <- function(id) {
+  ns <- NS(id)
+  
+  downloadButton(ns("data_download"), label = "Download Data")
+}
+
+
+# module server function
+download_data_server <- function(id, data, filename) {
+  moduleServer(
+    id,
+    function(input, output, session) {
+      output$data_download <- downloadHandler(
+        filename = function() {
+          paste(filename, ".csv")
+        },
+        content = function(file) {
+          write.csv(data(), file) 
+        })
+    }
+  )
+}
+
+
+
+
 ## END
 
