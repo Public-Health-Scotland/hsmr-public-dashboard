@@ -14,6 +14,10 @@
 # Source function for creating the main points from funnel
 source("funnel.R")
 
+#To ensure hsmr loads when deploying:
+library(remotes)
+remotes::install_github("Public-Health-Scotland/hsmr", build = FALSE)
+
 library(shiny)            # for building shiny app
 library(shinymanager)     # authentification mechanism for shiny apps
 library(shinyjs)          # for allowing element to be clicked (i.e. buttons)
