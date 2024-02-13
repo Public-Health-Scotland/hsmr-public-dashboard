@@ -206,7 +206,7 @@ function(input, output, session) {
                column(3, div(actionButton("funnel_info","What is a funnel plot?",
                                       icon = icon('question-circle')), style = "float: right"))),
       withSpinner(plotlyOutput("hsmr_chart")),
-      p("NB Forth Valley Royal Hospital is on, not below, the lower warning limit."),
+      p("Note: Forth Valley Royal Hospital is on, not below, the lower warning limit."),
       column(3, download_data_UI(id = "download_hsmr_data")),
       column(12, dataTableOutput("hsmr_table")), br(), br()
           ) #tagList
