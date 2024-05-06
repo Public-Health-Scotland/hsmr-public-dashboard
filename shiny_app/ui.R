@@ -3,7 +3,7 @@
 ## UI ----
 ###############################################.
 
-# secure_app( #uncomment if needing password protection
+ secure_app( #uncomment if needing password protection
  tagList( #needed for shinyjs
    useShinyjs(),  # Include shinyjs
    navbarPage(id = "intabset", # id used for jumping between tabs
@@ -147,14 +147,14 @@ tabPanel(title = "Home", icon = icon("info-circle"), value = "home",
                                                target="_blank"))), br(),
 
                                h5(tags$b("Data sources")),
-                               p(tags$li(tags$a(href="https://www.ndc.scot.nhs.uk/National-Datasets/data.asp?ID=1&SubID=5",
+                               p(tags$li(tags$a(href="https://publichealthscotland.scot/services/national-data-catalogue/smr-data-manual/definitions-by-smr-record-section/smr01-generalacute-inpatient-and-day-case/",
                                   "General Acute Inpatient and Day Case - Scottish Morbidity Record (SMR01) (external website).", target="_blank"))),
-                               p(tags$li(tags$a(href="https://www.ndc.scot.nhs.uk/National-Datasets/data.asp?ID=3&SubID=13",
+                               p(tags$li(tags$a(href="https://publichealthscotland.scot/services/national-data-catalogue/national-datasets/a-to-z-of-datasets/national-records-of-scotland-nrs-deaths-data/",
                                   "National Records of Scotland (NRS) - Deaths Data (external website).", target="_blank"))), br(),
 
                                h5(tags$b("Data completeness")),
                                p("Information about the completeness of the SMR01 dataset at the time of this
-                                 publication can be found on the ", tags$a(href="https://beta.isdscotland.org/products-and-services/data-management-hospital-activity/smr-completeness/",
+                                 publication can be found on the ", tags$a(href="https://publichealthscotland.scot/services/data-management/data-management-in-secondary-care-hospital-activity/scottish-morbidity-records-smr/completeness/",
                                                                            "SMR completeness webpage (external website).", target="_blank")), br(),
 
                                h5(tags$b("Contact us")),
@@ -284,6 +284,6 @@ tabPanel(title = "Further analysis", value = "fa", icon = icon("chart-bar"),
     ) # tabPanel
   ) # navbarPage
 ) # tagList
-# ) # secureApp
+ ) # secureApp
 
 ### END
