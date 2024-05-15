@@ -24,7 +24,7 @@ library(magrittr)         # for the assignment pipe
 library(DT)               # for data table
 library(lubridate)        # for date formats
 library(phsstyles)        # for PHS colour palettes
-library(hsmr)             # for automatically generating publication dates
+#library(hsmr)             # for automatically generating publication dates
 library(english)          # for writing numbers in text form
 library(shinycssloaders)  # for loading icons, see line below
 # it uses github version devtools::install_github("andrewsali/shinycssloaders")
