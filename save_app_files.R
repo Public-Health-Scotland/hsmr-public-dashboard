@@ -36,8 +36,8 @@ lookup_folder <- dplyr::if_else(platform == "server",
 ###############################################.
 
 # Start and end date of the HSMR period (i.e progress both dates by 3 months each publication)
-start_date        <- lubridate::dmy(01012023) # UPDATE
-end_date          <- lubridate::dmy(31122023) # UPDATE
+start_date        <- lubridate::dmy(01042023) # UPDATE
+end_date          <- lubridate::dmy(31032024) # UPDATE
 
 
 # Publication dates

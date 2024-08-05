@@ -17,6 +17,7 @@ packrat/lib*/
 # 'data' folder #
 data/
 archive/
+lookups/
 shiny app admin/
 admin/
 # Common text files that may contain data #
